@@ -1,0 +1,488 @@
+/* ================= PAGE ================= */
+.tables-page {
+  padding: 24px;
+  background: #f6f7fb;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ================= HEADER ================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+/* ================= STATES ================= */
+.state {
+  margin-top: 60px;
+  text-align: center;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.empty-state {
+  margin-top: 80px;
+  text-align: center;
+
+  h3 {
+    font-size: 18px;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+}
+
+/* ================= TABLE GRID ================= */
+.table-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* ================= TABLE CARD ================= */
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* ================= CARD HEADER ================= */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+
+  .title {
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .capacity {
+      font-size: 13px;
+      color: #6b7280;
+    }
+  }
+}
+
+/* ================= STATUS PILL ================= */
+.status-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.available {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &.occupied {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+/* ================= CARD ACTIONS ================= */
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ================= BUTTONS ================= */
+.btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &.primary {
+    background: #6366f1;
+    color: #fff;
+
+    &:hover {
+      background: #4f46e5;
+    }
+  }
+
+  &.success {
+    background: #16a34a;
+    color: #fff;
+
+    &:hover {
+      background: #15803d;
+    }
+  }
+
+  &.warn {
+    background: #f97316;
+    color: #fff;
+
+    &:hover {
+      background: #ea580c;
+    }
+  }
+
+  &.view {
+    background: #f3f4f6;
+    color: #374151;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+  }
+
+  &.ghost {
+    background: transparent;
+    color: #4b5563;
+    padding: 0 10px;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+
+    &.danger {
+      color: #dc2626;
+
+      &:hover {
+        background: #fee2e2;
+      }
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.actions-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* ================= MODAL ================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+  animation: modalFade 0.25s ease;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 20px;
+  }
+}
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= FORM ================= */
+.form-group {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+  }
+}
+
+/* ================= MODAL ACTIONS ================= */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+
+/* ================= TOAST ================= */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  animation: toastSlide 0.3s ease;
+  z-index: 2000;
+
+  &.success {
+    background: #16a34a;
+  }
+
+  &.error {
+    background: #dc2626;
+  }
+}
+
+@keyframes toastSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= STATUS ANIMATION ================= */
+.status-pill.animate {
+  animation: statusPop 0.3s ease;
+}
+
+@keyframes statusPop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+// .tables-page {
+//   padding: 28px;
+//   background: linear-gradient(180deg, #f7f8fc 0%, #f2f4f8 100%);
+//   min-height: 100vh;
+//   font-family: 'Inter', system-ui, sans-serif;
+// }
+
+// /* ---------- HEADER ---------- */
+// .header {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-bottom: 24px;
+
+//   h2 {
+//     font-size: 22px;
+//     font-weight: 600;
+//     color: #111827;
+//   }
+// }
+
+// /* ---------- GRID ---------- */
+// .table-grid {
+//   display: grid;
+//   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+//   gap: 20px;
+// }
+
+// /* ---------- CARD ---------- */
+// .table-card {
+//   background: #ffffff;
+//   border-radius: 18px;
+//   padding: 18px;
+//   box-shadow:
+//     0 8px 24px rgba(0, 0, 0, 0.06),
+//     0 2px 6px rgba(0, 0, 0, 0.04);
+//   transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+//   &:hover {
+//     transform: translateY(-4px);
+//     box-shadow:
+//       0 14px 34px rgba(0, 0, 0, 0.1),
+//       0 4px 10px rgba(0, 0, 0, 0.05);
+//   }
+// }
+
+// /* ---------- CARD HEADER ---------- */
+// .card-header {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-bottom: 14px;
+// }
+
+// .title {
+//   h3 {
+//     font-size: 16px;
+//     font-weight: 600;
+//     color: #111827;
+//     margin: 0;
+//   }
+
+//   .capacity {
+//     font-size: 13px;
+//     color: #6b7280;
+//     margin-top: 2px;
+//     display: block;
+//   }
+// }
+
+// /* ---------- STATUS PILL ---------- */
+// .status-pill {
+//   padding: 6px 12px;
+//   border-radius: 999px;
+//   font-size: 12px;
+//   font-weight: 600;
+//   letter-spacing: 0.3px;
+//   text-transform: uppercase;
+
+//   &.available {
+//     background: #dcfce7;
+//     color: #166534;
+//   }
+
+//   &.occupied {
+//     background: #fee2e2;
+//     color: #991b1b;
+//   }
+// }
+
+// /* ---------- ACTIONS ---------- */
+// .card-actions {
+//   display: flex;
+//   gap: 10px;
+//   margin-top: 10px;
+// }
+
+// /* ---------- BUTTONS ---------- */
+// .btn {
+//   height: 36px;
+//   padding: 0 16px;
+//   border-radius: 10px;
+//   font-size: 13px;
+//   font-weight: 500;
+//   border: none;
+//   cursor: pointer;
+//   transition: all 0.2s ease;
+
+//   &.success {
+//     background: linear-gradient(135deg, #22c55e, #16a34a);
+//     color: white;
+//   }
+
+//   &.warn {
+//     background: linear-gradient(135deg, #fb923c, #f97316);
+//     color: white;
+//   }
+
+//   &.ghost {
+//     background: transparent;
+//     border: 1px solid #e5e7eb;
+//   }
+
+//   &.danger {
+//     color: #dc2626;
+//     border-color: #fecaca;
+
+//     &:hover {
+//       background: #fee2e2;
+//     }
+//   }
+
+//   &:hover {
+//     transform: translateY(-1px);
+//   }
+
+//   &:active {
+//     transform: scale(0.96);
+//   }
+// }
+
+// /* ---------- EMPTY STATE ---------- */
+// .empty-state {
+//   margin-top: 100px;
+//   text-align: center;
+//   color: #6b7280;
+
+//   h3 {
+//     font-size: 18px;
+//     margin-bottom: 6px;
+//   }
+
+//   p {
+//     font-size: 14px;
+//     margin-bottom: 14px;
+//   }
+// }
+
+// /* ---------- PRIMARY BUTTON ---------- */
+// .btn.primary {
+//   background: linear-gradient(135deg, #6366f1, #4f46e5);
+//   color: white;
+// }

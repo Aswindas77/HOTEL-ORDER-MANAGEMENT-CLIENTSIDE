@@ -1,19 +1,62 @@
 import { Routes } from '@angular/router';
-import { MenuComponent } from './pages/menu/menu';
-import { OrdersComponent } from './pages/orders/orders';
-import { TablesComponent } from './pages/tables/tables';
-import { UsersComponent } from './pages/users/users';
+
+import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { MenuComponent } from './pages/menu/menu.component';
+import { OrdersComponent } from './pages/orders/orders.component';
+import { TablesComponent } from './pages/tables/tables.component';
+import { UsersComponent } from './pages/users/users.component';
 
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'admin',
+    component: AdminLayoutComponent,
     children: [
-      { path: 'menu', component: MenuComponent },
-      { path: 'orders', component: OrdersComponent },
-      { path: 'tables', component: TablesComponent },
-      { path: 'users', component: UsersComponent },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        runGuardsAndResolvers: 'always'
+      },
+      {
+        path: 'menu',
+        component: MenuComponent,
+        runGuardsAndResolvers: 'always'
+      },
+      {
+        path: 'orders',
+        component: OrdersComponent,
+        runGuardsAndResolvers: 'always'
+      },
+      {
+        path: 'tables',
+        component: TablesComponent,
+        runGuardsAndResolvers: 'always'
+      },
+      {
+        path: 'users',
+        component: UsersComponent,
+        runGuardsAndResolvers: 'always'
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
-  }
+    ],
+  },
+  { path: '', redirectTo: 'admin', pathMatch: 'full' },
+  { path: '**', redirectTo: 'admin' }
 ];
+// export const routes: Routes = [
+//   {
+//     path: 'admin',
+//     component: AdminLayoutComponent,
+//     children: [
+//       { path: 'dashboard', component: DashboardComponent },
+//       { path: 'menu', component: MenuComponent },
+//       { path: 'orders', component: OrdersComponent },
+//       { path: 'tables', component: TablesComponent },
+//       { path: 'users', component: UsersComponent },
+//       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+//     ],
+//   },
+//   { path: '', redirectTo: 'admin', pathMatch: 'full' },
+//   { path: '**', redirectTo: 'admin' }
+// ];

@@ -1,0 +1,609 @@
+/* =============================
+   PAGE LAYOUT
+============================= */
+.menu-page {
+  padding: 24px 32px;
+  background: #f5f7fb;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* =============================
+   HEADER
+============================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+}
+
+
+/* =============================
+   SEARCH & FILTER BAR (PREMIUM)
+============================= */
+
+.filter-bar {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+
+  input,
+  select {
+    height: 44px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    background: #f9fafb;
+    min-width: 180px;
+    transition: all 0.2s ease;
+  }
+
+  input {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  input::placeholder {
+    color: #9ca3af;
+  }
+
+  input:focus,
+  select:focus {
+    background: white;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .btn {
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 10px;
+  }
+
+  .btn.primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+/* =============================
+   TABLE CARD (PREMIUM)
+============================= */
+
+.table-card {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* =============================
+   PREMIUM TABLE
+============================= */
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead {
+  background: #f8fafc;
+
+  th {
+    padding: 18px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #eef2f7;
+  }
+}
+thead th {
+  background: #f8fafc;
+  letter-spacing: 0.08em;
+}
+
+tbody {
+  tr {
+    transition: background 0.15s ease, transform 0.1s ease;
+
+    &:hover {
+      background: #f9fafb;
+    }
+  }
+
+  td {
+    padding: 18px 20px;
+    font-size: 14px;
+    color: #111827;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+tbody tr:hover {
+  box-shadow: inset 4px 0 0 #2563eb;
+}
+
+
+/* =============================
+   TABLE ACTION BUTTONS
+============================= */
+
+td:last-child {
+  display: flex;
+  gap: 10px;
+}
+
+td .btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+td .btn {
+  min-width: 70px;
+  justify-content: center;
+}
+
+td .btn:not(.warn):not(.primary) {
+  background: #f3f4f6;
+  color: #374151;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+td .btn.warn {
+  background: #fee2e2;
+  color: #991b1b;
+
+  &:hover {
+    background: #fecaca;
+  }
+}
+
+
+
+/* =============================
+   BUTTONS
+============================= */
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #e5e7eb;
+  color: #111827;
+
+  &:hover {
+    background: #d1d5db;
+  }
+
+  &.primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    }
+  }
+
+  &.warn {
+    background: #dc2626;
+    color: white;
+
+    &:hover {
+      background: #b91c1c;
+    }
+  }
+}
+
+/* =============================
+   STATES
+============================= */
+.state {
+  padding: 24px;
+  text-align: center;
+  color: #6b7280;
+  background: white;
+  border-radius: 12px;
+}
+
+/* =============================
+/* =============================
+   STATUS BADGE (ANIMATED)
+============================= */
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.15s ease;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge:active {
+  transform: scale(0.95);
+}
+
+/* =============================
+   TOGGLE SWITCH (PREMIUM)
+============================= */
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background-color: #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  top: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ON */
+.toggle input:checked + .slider {
+  background-color: #22c55e;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+/* =============================
+   PREMIUM PAGINATION (CENTER)
+============================= */
+
+/* Wrapper that already exists around pagination */
+.pagination {
+  display: flex;
+  justify-content: center; /* 👈 center horizontally */
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* Pagination buttons */
+.pagination button {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.pagination button:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+/* Active page */
+.pagination button.active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Disabled Prev / Next */
+.pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Optional: slightly separate from table card */
+.table-card + .pagination {
+  padding-bottom: 8px;
+}
+/* =============================
+   MODAL BACKDROP
+============================= */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+}
+
+/* =============================
+   MODAL CONTENT
+============================= */
+.modal-content {
+  width: 420px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #111827;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+  }
+
+  textarea {
+    resize: none;
+    height: 90px;
+  }
+
+  img {
+    display: block;
+    margin-top: 12px;
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* =============================
+   MODAL ACTIONS
+============================= */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* =============================
+   ANIMATIONS
+============================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+
+/* =============================
+   ACTION BUTTONS (PREMIUM)
+============================= */
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Enable button */
+.btn.enable {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-weight: 600;
+}
+
+.btn.enable:hover {
+  background: #d1fae5;
+}
+
+/* Disable button */
+.btn.disable {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-weight: 600;
+}
+
+.btn.disable:hover {
+  background: #fee2e2;
+}
+
+/* Edit button */
+.btn.ghost {
+  background: #f3f4f6;
+  color: #111827;
+  border: none;
+}
+
+.btn.ghost:hover {
+  background: #e5e7eb;
+}
+
+/* =============================
+   DISABLED ROW (ADMIN STYLE)
+============================= */
+
+.disabled-row {
+  opacity: 0.55;
+  background-color: #f8fafc;
+  transition: all 0.25s ease;
+
+  td {
+    color: #9ca3af;
+  }
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}
+
+/* =============================
+   PREMIUM EXPAND SECTION
+============================= */
+
+.expand-row td {
+  background: linear-gradient(180deg, #f9fafb, #ffffff);
+  border-top: 1px solid #e5e7eb;
+  padding: 22px 26px;
+  position: relative;
+}
+
+/* left accent bar */
+.expand-row td::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #2563eb, #1d4ed8);
+}
+
+/* expand container */
+.expand-content {
+  padding-left: 14px;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: expandFade 0.25s ease;
+}
+
+/* description label */
+.expand-content strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* description text */
+.expand-content p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.6;
+}
+
+/* preparation time */
+.expand-content div {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+/* subtle card feeling */
+.expand-row td {
+  box-shadow: inset 0 1px 0 #eef2f7;
+}
+
+/* smooth animation */
+@keyframes expandFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

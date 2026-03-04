@@ -1,0 +1,196 @@
+<div class="menu-page">
+
+  <div class="header">
+    <h2>Menu Management</h2>
+    <button class="btn primary" (click)="openAddMenu()">+ Add Menu</button>
+  </div>
+<!-- FILTER TOOLBAR -->
+<div class="filter-card">
+  <div class="filter-bar">
+
+    <input
+      type="text"
+      placeholder="Search menu..."
+      [(ngModel)]="filters.search"
+    />
+
+    <select [(ngModel)]="filters.category">
+      <option value="">All Categories</option>
+      <option *ngFor="let c of categories" [value]="c">
+        {{ c }}
+      </option>
+    </select>
+
+    <select [(ngModel)]="filters.foodType">
+      <option value="">All Food Types</option>
+      <option *ngFor="let f of foodTypes" [value]="f">
+        {{ f }}
+      </option>
+    </select>
+
+    <div class="filter-actions">
+      <button class="btn primary" (click)="loadMenus()">Search</button>
+      <button class="btn ghost" (click)="clearFilters()">Clear</button>
+    </div>
+
+  </div>
+</div>
+
+
+  <div *ngIf="loading" class="state">Loading menus...</div>
+  <div *ngIf="!loading && menus.length === 0" class="state">No menu items found.</div>
+ <div class="table-card">
+<table *ngIf="!loading && menus.length > 0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Food Type</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th width="160">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+
+ <ng-container *ngFor="let menu of paginatedMenus">
+ <tr [class.disabled-row]="!menu.isAvailable">
+        <td>{{ menu.name }}</td>
+        <td>{{ menu.category }}</td>
+        <td>{{ menu.foodType }}</td>
+        <td>₹{{ menu.price }}</td>
+        <td>
+  <span
+    class="status-badge"
+    [class.active]="menu.isAvailable"
+    [class.inactive]="!menu.isAvailable"
+  >
+    {{ menu.isAvailable ? 'Available' : 'Unavailable' }}
+          </span>
+        </td>
+<td class="actions-cell">
+  
+  <button
+  class="btn ghost"
+  (click)="toggleExpand(menu._id)">
+  {{ expandedMenuId === menu._id ? 'Hide' : 'View' }}
+</button>
+
+<button
+  class="btn ghost"
+  (click)="openEditMenu(menu)"
+  [disabled]="!menu.isAvailable"
+>
+  Edit
+</button>
+
+  <button
+    class="btn"
+    [class.disable]="menu.isAvailable"
+    [class.enable]="!menu.isAvailable"
+    (click)="toggleAvailability(menu)"
+  >
+    {{ menu.isAvailable ? 'Disable' : 'Enable' }}
+  </button>
+</td>
+      </tr>
+<tr *ngIf="expandedMenuId === menu._id" class="expand-row">
+  <td colspan="6">
+
+    <div class="expand-content">
+
+      <div class="description">
+        <strong>Description:</strong>
+        <p>{{ menu.description || 'No description available' }}</p>
+      </div>
+
+      <div *ngIf="menu.preparationTime">
+        <strong>Preparation Time:</strong>
+        {{ menu.preparationTime }} mins
+      </div>
+
+      <!-- <div *ngIf="menu.image">
+        <strong>Image:</strong>
+        <br>
+        <img
+          [src]="menu.image"
+          style="width:120px;border-radius:8px;margin-top:8px"
+        />
+      </div> -->
+
+    </div>
+
+  </td>
+</tr>
+  </ng-container>
+
+    </tbody>
+  </table>
+</div>
+ 
+
+<!-- PAGINATION -->
+<div class="pagination" *ngIf="totalPages > 1">
+
+  <button
+    class="btn ghost"
+    [disabled]="currentPage === 1"
+    (click)="prevPage()">
+    Prev
+  </button>
+
+  <button
+    *ngFor="let p of [].constructor(totalPages); let i = index"
+    class="btn page"
+    [class.active]="currentPage === i + 1"
+    (click)="goToPage(i + 1)">
+    {{ i + 1 }}
+  </button>
+
+  <button
+    class="btn ghost"
+    [disabled]="currentPage === totalPages"
+    (click)="nextPage()">
+    Next
+  </button>
+
+</div>
+
+  <!-- MODAL -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>{{ editingMenuId ? 'Edit Menu' : 'Add Menu' }}</h3>
+
+      <input placeholder="Name" [(ngModel)]="menuForm.name">
+      <textarea placeholder="Description" [(ngModel)]="menuForm.description"></textarea>
+
+      <input type="number" placeholder="Price" [(ngModel)]="menuForm.price">
+      <input type="number" placeholder="Preparation Time (mins)" [(ngModel)]="menuForm.preparationTime">
+
+      <select [(ngModel)]="menuForm.category">
+        <option value="">Select Category</option>
+        <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+      </select>
+
+      <select [(ngModel)]="menuForm.foodType">
+        <option value="">Select Food Type</option>
+        <option *ngFor="let f of foodTypes" [value]="f">{{ f }}</option>
+      </select>
+<input
+  placeholder="Image URL"
+  [(ngModel)]="menuForm.image"
+/>
+
+<img
+  *ngIf="menuForm.image"
+  [src]="menuForm.image"
+  alt="Preview"
+  style="width:120px; margin-top:10px; border-radius:8px"
+/>
+      <div class="actions">
+        <button class="btn primary" (click)="saveMenu()">Save</button>
+        <button class="btn" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
