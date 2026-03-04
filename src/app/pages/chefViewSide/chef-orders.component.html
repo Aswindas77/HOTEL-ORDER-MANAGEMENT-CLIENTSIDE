@@ -1,0 +1,293 @@
+<canvas id="chef-canvas-bg"></canvas>
+<div class="grain-overlay"></div>
+<div class="particles-container" id="chef-particles"></div>
+
+<div class="chef-ui">
+
+  <!-- ══ HEADER ══ -->
+  <header class="chef-header">
+    <div class="logo">
+      <div class="logo-mark">
+        <span class="logo-diamond"></span>
+        <span class="logo-diamond logo-diamond--2"></span>
+      </div>
+      <div class="logo-text">
+        Grand Lumière
+        <span>Kitchen · Command Center</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="chef-eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Live Orders · {{ today | date:'EEEE, MMMM d' }}</span>
+        <span class="eyebrow-line"></span>
+      </div>
+    </div>
+
+    <div class="header-meta">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span class="live-text">KITCHEN LIVE</span>
+      </div>
+      <!-- <div class="header-stats">
+        <div class="stat-pill">
+          <span class="stat-num">{{ pendingCount }}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-pill">
+          <span class="stat-num stat-num--blue">{{ preparingCount }}</span>
+          <span class="stat-label">Preparing</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-pill">
+          <span class="stat-num stat-num--green">{{ readyCount }}</span>
+          <span class="stat-label">Ready</span>
+        </div>
+      </div> -->
+    </div>
+  </header>
+
+  <!-- ══ DIVIDER ══ -->
+  <div class="section-divider">
+    <div class="divider-line"></div>
+    <div class="divider-ornament">
+      <span class="divider-gem"></span>
+      <span class="divider-gem divider-gem--center"></span>
+      <span class="divider-gem"></span>
+    </div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ══ CONTROLS BAR ══ -->
+  <div class="controls-bar">
+
+    <div class="search-wrap">
+      <span class="search-icon">◈</span>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search table, order ID..."
+        [value]="search"
+        (input)="onSearch($any($event.target).value)"
+      />
+      <span class="search-clear" *ngIf="search" (click)="onSearch('')">✕</span>
+    </div>
+
+    <div class="date-range">
+      <div class="date-field">
+        <span class="date-label">FROM</span>
+        <input
+          class="date-input"
+          type="date"
+          [value]="startDate || ''"
+          (change)="setStartDate($any($event.target).value)"
+        />
+      </div>
+      <span class="date-sep">—</span>
+      <div class="date-field">
+        <span class="date-label">TO</span>
+        <input
+          class="date-input"
+          type="date"
+          [value]="endDate || ''"
+          (change)="setEndDate($any($event.target).value)"
+        />
+      </div>
+      <button class="date-clear-btn" *ngIf="startDate || endDate" (click)="clearDates()">
+        ✕ Clear
+      </button>
+    </div>
+
+    <button class="refresh-btn" (click)="loadOrders()" [class.spinning]="loading">
+      <span class="refresh-icon">↻</span>
+      <span>Refresh</span>
+    </button>
+
+  </div>
+
+  <!-- ══ FILTER TABS ══ -->
+  <div class="filter-wrap">
+    <div class="filters">
+      <button
+        class="filter-btn"
+        *ngFor="let f of filterOptions"
+        [class.active]="activeFilter === f.key"
+        (click)="setFilter(f.key)"
+      >
+        <span class="filter-inner">
+          <span class="filter-icon">{{ f.icon }}</span>
+          {{ f.label }}
+        </span>
+        <span class="filter-count" *ngIf="getCountForFilter(f.key) > 0">
+          {{ getCountForFilter(f.key) }}
+        </span>
+        <span class="filter-glow"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ LOADING ══ -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-orb"></div>
+    <div class="loading-orb loading-orb--2"></div>
+    <div class="loading-orb loading-orb--3"></div>
+    <p class="loading-text">Fetching Orders...</p>
+  </div>
+
+  <!-- ══ EMPTY STATE ══ -->
+  <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
+    <div class="empty-icon">◇</div>
+    <p class="empty-title">The kitchen is quiet</p>
+    <p class="empty-sub">No orders match your current filters</p>
+  </div>
+
+  <!-- ══ ORDERS GRID ══ -->
+  <div class="orders-grid" *ngIf="!loading && filteredOrders.length > 0">
+
+    <div
+      class="order-card"
+      *ngFor="let order of filteredOrders; let i = index"
+      [attr.data-status]="order.status"
+      [style.animation-delay]="(i * 0.07) + 's'"
+    >
+      <div class="card-accent-bar"></div>
+
+      <!-- Status ribbon -->
+      <div class="status-ribbon" [ngClass]="getStatusClass(order.status)">
+        <span class="ribbon-dot"></span>
+        {{ order.status }}
+      </div>
+
+      <!-- Header: table + order meta -->
+      <div class="order-card-header">
+        <div class="table-info">
+          <span class="table-label">TABLE</span>
+          <span class="table-number">{{ order.tableNumber }}</span>
+        </div>
+        <div class="order-meta-col">
+          <div class="order-id">
+            <span class="meta-label">ORDER</span>
+            <span class="meta-val">#{{ order._id | slice:0:6 | uppercase }}</span>
+          </div>
+          <div class="token-badge">
+            <span class="meta-label">TOKEN</span>
+            <span class="meta-val meta-val--token">{{ order.tokenNumber }}</span>
+          </div>
+          <div class="order-time">
+            <span class="meta-label">TIME</span>
+            <span class="meta-val">{{ order.createdAt | date:'hh:mm a' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ornamental divider -->
+      <div class="card-divider">
+        <span class="cdiv-line"></span>
+        <span class="card-divider-gem"></span>
+        <span class="cdiv-line"></span>
+      </div>
+
+      <!-- Items -->
+      <div class="items-list">
+        <div
+          class="item-row"
+          *ngFor="let item of order.items"
+          [class.veg-item]="item.foodType === 'VEG'"
+        >
+          <span class="item-dot" [class.veg-dot]="item.foodType === 'VEG'"></span>
+          <span class="item-name">{{ item.name }}</span>
+          <span class="item-qty">× {{ item.quantity }}</span>
+        </div>
+      </div>
+
+      <!-- Financials -->
+      <div class="order-financials">
+        <div class="fin-row">
+          <span>Subtotal</span>
+          <span>${{ order.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="fin-row">
+          <span>Tax</span>
+          <span>${{ order.tax | number:'1.2-2' }}</span>
+        </div>
+        <div class="fin-row fin-row--total">
+          <span>Grand Total</span>
+          <span class="fin-total-val">${{ order.grandTotal | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Status Progress Track -->
+      <div class="status-track">
+        <ng-container *ngFor="let s of statusSteps; let si = index">
+          <div
+            class="track-step"
+            [class.done]="isStatusDone(order.status, s)"
+            [class.active]="order.status === s"
+          >
+            <span class="track-dot"></span>
+            <span class="track-label">{{ getStepLabel(s) }}</span>
+          </div>
+          <div class="track-line" *ngIf="si < statusSteps.length - 1"
+            [class.done]="isStatusDone(order.status, statusSteps[si + 1])">
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Footer -->
+      <div class="card-footer">
+        <div class="item-count">
+          <span class="item-count-num">{{ getTotalItems(order) }}</span>
+          <span class="item-count-label">{{ getTotalItems(order) === 1 ? 'dish' : 'dishes' }}</span>
+        </div>
+
+        <button
+          class="action-btn"
+          *ngIf="getNextStatus(order.status) as nextStatus"
+          [ngClass]="getActionClass(nextStatus)"
+          (click)="updateStatus(order, nextStatus)"
+        >
+          <span class="action-shimmer"></span>
+          <span class="action-icon">{{ getActionIcon(nextStatus) }}</span>
+          <span class="action-text">{{ getActionLabel(nextStatus) }}</span>
+          <span class="action-arrow">→</span>
+        </button>
+
+        <div class="done-badge" *ngIf="order.status === 'COMPLETED'">
+          <span>✦</span> Completed
+        </div>
+      </div>
+
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ PAGINATION ══ -->
+  <div class="pagination" *ngIf="totalPages > 1 && !loading">
+    <button class="page-btn" (click)="prevPage()" [disabled]="page === 1">
+      ← Prev
+    </button>
+    <div class="page-info">
+      <span class="page-cur">{{ page }}</span>
+      <span class="page-sep">of</span>
+      <span class="page-tot">{{ totalPages }}</span>
+    </div>
+    <button class="page-btn" (click)="nextPage()" [disabled]="page === totalPages">
+      Next →
+    </button>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="chef-footer">
+    <div class="section-divider" style="margin-bottom:24px; opacity:0.5;">
+      <div class="divider-line"></div>
+      <span class="divider-gem"></span>
+      <div class="divider-line"></div>
+    </div>
+    <p>Grand Lumière · Kitchen Dashboard · Auto-refreshes every 15s</p>
+  </div>
+
+</div>
