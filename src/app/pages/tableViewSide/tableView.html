@@ -1,0 +1,351 @@
+<canvas id="canvas-bg"></canvas>
+
+<!-- Floating particles -->
+<div class="particles-container" id="particles"></div>
+
+<!-- Grain overlay for texture -->
+<div class="grain-overlay"></div>
+
+<div class="ui-overlay">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="logo">
+      <div class="logo-mark">
+        <span class="logo-diamond"></span>
+        <span class="logo-diamond logo-diamond--2"></span>
+      </div>
+      <div class="logo-text">
+        Grand Lumière
+        <span>Fine Dining · Est. 1924</span>
+      </div>
+    </div>
+
+    <nav>
+      <a href="/tableview" class="active">
+        <span class="nav-line"></span>Menu
+      </a>
+      <a href="#">Wine</a>
+      <a href="#">Occasions</a>
+      <a href="#">Story</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="reserve-btn">
+        <span class="btn-shimmer"></span>
+        Reserve a Table
+      </button>
+    </div>
+  </header>
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-line"></span>
+      <span class="eyebrow-text">Curated · Seasonal · Extraordinary</span>
+      <span class="eyebrow-line"></span>
+    </div>
+
+    <h1 class="hero-title">
+      An <em>Art</em> of<br>
+      <span class="hero-title-sub">Fine Dining</span>
+    </h1>
+
+    <p class="hero-sub">Where each plate tells a story of passion and provenance</p>
+
+    <div class="hero-scroll-hint">
+      <span></span>
+    </div>
+  </div>
+
+  <!-- ── DIVIDER ── -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-ornament">
+      <span class="divider-gem"></span>
+      <span class="divider-gem divider-gem--center"></span>
+      <span class="divider-gem"></span>
+    </div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ── SEARCH & FILTER BAR ── -->
+  <div class="search-section">
+
+    <!-- Search input -->
+    <div class="search-bar" [class.focused]="searchFocused">
+      <span class="search-icon-left">◈</span>
+      <input
+        #searchInput
+        class="search-field"
+        type="text"
+        placeholder="Search dishes, ingredients..."
+        [value]="searchQuery"
+        (input)="onSearchInput($any($event.target).value)"
+        (focus)="searchFocused = true"
+        (blur)="searchFocused = false"
+      />
+      <button
+        class="search-clear-btn"
+        *ngIf="searchQuery"
+        (click)="clearSearch()"
+      >✕</button>
+      <div class="search-bar-glow"></div>
+    </div>
+
+    <!-- Food type toggle -->
+    <div
+      class="food-type-toggle"
+      [class.state-all]="activeFoodType === null"
+      [class.state-veg]="activeFoodType === 'VEG'"
+      [class.state-nonveg]="activeFoodType === 'NON_VEG'"
+      (click)="cycleFoodType()"
+    >
+      <!-- Sliding cover pill -->
+      <div class="toggle-cover" [ngClass]="getToggleCoverClass()"></div>
+
+      <!-- Three label segments -->
+      <div class="toggle-segments">
+
+        <div class="toggle-seg" [class.seg-active--all]="activeFoodType === null">
+          <span class="seg-dot seg-dot--all"></span>
+          <span class="seg-label">All</span>
+        </div>
+
+        <div class="toggle-seg-div"></div>
+
+        <div class="toggle-seg" [class.seg-active--veg]="activeFoodType === 'VEG'">
+          <span class="seg-dot seg-dot--veg"></span>
+          <span class="seg-label">Veg</span>
+        </div>
+
+        <div class="toggle-seg-div"></div>
+
+        <div class="toggle-seg" [class.seg-active--nonveg]="activeFoodType === 'NON_VEG'">
+          <span class="seg-dot seg-dot--nonveg"></span>
+          <span class="seg-label">Non-Veg</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── CATEGORIES ── -->
+  <div class="categories-wrap">
+    <div class="categories">
+      <button
+        class="cat-btn"
+        *ngFor="let cat of categories"
+        [class.active]="activeCategory === cat"
+        (click)="setCategory(cat)"
+      >
+        <span class="cat-btn-inner">{{ cat }}</span>
+        <span class="cat-btn-glow"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MENU GRID ── -->
+  <div class="menu-grid">
+
+    <ng-container *ngFor="let item of menuItems; let i = index">
+      <div class="menu-card" [attr.data-delay]="item.delay" [class.veg]="item.foodType === 'VEG'">
+
+        <!-- Top accent bar -->
+        <div class="card-accent-bar"></div>
+
+        <!-- Food type badge -->
+        <div class="food-type-badge" [class.veg-badge]="item.foodType === 'VEG'">
+          <span class="badge-dot"></span>
+          {{ item.foodType === 'VEG' ? 'VEG' : 'NON VEG' }}
+        </div>
+
+        <!-- Image area -->
+        <div class="card-img-wrap" [style.background]="item.bg">
+          <div class="card-img-glow"></div>
+          <div class="food-visual">
+            {{ item.foodType === 'VEG' ? '🥗' : '🍗' }}
+          </div>
+          <div class="card-img-overlay"></div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body">
+
+          <div class="card-meta">
+            <div class="card-category">{{ item.category }}</div>
+            <span class="card-tag">{{ item.tag }}</span>
+          </div>
+
+          <div class="card-title">{{ item.name }}</div>
+          <div class="card-desc">{{ item.description }}</div>
+
+          <div class="card-footer">
+            <div class="card-price-wrap">
+              <span class="price-currency">$</span>
+              <span class="card-price">{{ item.price }}</span>
+            </div>
+
+            <button
+              class="add-btn"
+              [class.added]="item.added"
+              (click)="addToOrder(item)"
+            >
+              <span class="add-btn-icon">{{ item.added ? '✓' : '+' }}</span>
+              <span class="add-btn-ripple"></span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Corner decoration -->
+        <div class="card-corner-tl"></div>
+        <div class="card-corner-br"></div>
+
+      </div>
+    </ng-container>
+
+  </div>
+
+  <!-- ── CART MODAL ── -->
+  <div class="cart-overlay" *ngIf="isCartOpen" (click)="closeCartOnBackdrop($event)">
+
+    <div class="cart-modal" (click)="$event.stopPropagation()">
+
+      <!-- Modal header -->
+      <div class="cart-header">
+        <div class="cart-header-left">
+          <div class="cart-header-ornament">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="cart-title">Your Order</span>
+        </div>
+        <button class="close-btn" (click)="closeCart()">
+          <span>✕</span>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="cart-divider">
+        <span class="cart-divider-line"></span>
+        <span class="cart-divider-gem"></span>
+        <span class="cart-divider-line"></span>
+      </div>
+
+      <!-- Items -->
+      <div class="cart-body" *ngIf="cart.length > 0; else emptyCart">
+
+        <div class="cart-item" *ngFor="let item of cart; let i = index">
+
+          <div class="cart-item-info">
+            <div class="cart-item-dot" [class.veg-dot]="item.foodType === 'VEG'"></div>
+            <div class="cart-name">{{ item.name }}</div>
+          </div>
+
+          <div class="cart-controls">
+            <button class="qty-btn" (click)="decreaseQty(item)">−</button>
+            <span class="qty-value">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="increaseQty(item)">+</button>
+          </div>
+
+          <div class="cart-item-price">
+            <span class="cart-price-sym">$</span>{{ item.price * item.quantity }}
+          </div>
+
+          <button class="remove-btn" (click)="removeItem(i)">
+            <span>✕</span>
+          </button>
+
+        </div>
+
+        <!-- Total -->
+        <div class="cart-total-wrap">
+          <div class="cart-total-divider"></div>
+          <div class="cart-total-row">
+            <span class="cart-total-label">Total</span>
+            <span class="cart-total-amount"><span>$</span>{{ cartTotal }}</span>
+          </div>
+        </div>
+
+        <!-- Confirm -->
+        <button class="confirm-btn" (click)="placeOrder()">
+          <span class="confirm-btn-shimmer"></span>
+          <span class="confirm-btn-text">Confirm Order</span>
+          <span class="confirm-btn-arrow">→</span>
+        </button>
+
+      </div>
+
+      <!-- Empty state -->
+      <ng-template #emptyCart>
+        <div class="empty-cart">
+          <div class="empty-cart-icon">◇</div>
+          <div class="empty-cart-text">Your table is bare</div>
+          <div class="empty-cart-sub">Add something exquisite to begin</div>
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="page-footer">
+    <div class="divider" style="margin-bottom:30px; opacity:1;">
+      <div class="divider-line"></div>
+      <div class="divider-gem"></div>
+      <div class="divider-line"></div>
+    </div>
+    <p>Reservations available Tuesday – Sunday · Private dining for groups of 8 or more</p>
+    <p class="footer-brand">GRAND LUMIÈRE · EST. 1924</p>
+  </div>
+
+</div>
+
+<!-- ── FIXED FLOATING ORDER DOCK (always visible, fixed bottom) ── -->
+<div class="order-dock" [class.has-items]="cart.length > 0">
+
+  <!-- Top accent glow line -->
+  <div class="dock-accent-line"></div>
+
+  <div class="order-dock-inner">
+
+    <!-- Left: item summary -->
+    <div class="dock-summary">
+      <div class="dock-summary-icon">
+        <span class="dock-plate">◈</span>
+      </div>
+      <div class="dock-summary-text">
+        <span class="dock-count-line" *ngIf="cart.length > 0">
+          <strong>{{ cart.length }}</strong> {{ cart.length === 1 ? 'item' : 'items' }} selected
+        </span>
+        <span class="dock-empty-line" *ngIf="cart.length === 0">
+          Select dishes to begin
+        </span>
+        <span class="dock-total-line" *ngIf="cart.length > 0">
+          Subtotal <span class="dock-total-val">${{ cartTotal }}</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Center: main CTA button -->
+    <button class="view-order-btn" (click)="openCart()">
+      <span class="order-btn-shimmer"></span>
+      <span class="order-btn-content">
+        <span class="order-btn-icon">⬡</span>
+        <span class="order-btn-text">View Order</span>
+      </span>
+      <span class="order-count-badge" *ngIf="cart.length > 0">
+        {{ cart.length }}
+      </span>
+    </button>
+
+    <!-- Right: decorative ornament -->
+    <div class="dock-ornament">
+      <span class="dock-gem"></span>
+      <span class="dock-gem dock-gem--lg"></span>
+      <span class="dock-gem"></span>
+    </div>
+
+  </div>
+</div>
