@@ -1,0 +1,204 @@
+<div class="orders-page">
+
+  <!-- ================= HEADER ================= -->
+  <div class="orders-header">
+    <h2>Orders Management</h2>
+    </div>
+
+<!-- FILTER TOOLBAR -->
+<div class="filter-card">
+  <div class="filter-bar">
+
+    <input
+      type="text"
+      placeholder="Search Order / Token"
+      [(ngModel)]="search"
+    />
+
+    <select [(ngModel)]="selectedStatus">
+      <option [ngValue]="null">All Status</option>
+      <option *ngFor="let s of statuses" [value]="s">
+        {{ s }}
+      </option>
+    </select>
+
+    <select [(ngModel)]="selectedPayment">
+      <option [ngValue]="null">All Payments</option>
+      <option *ngFor="let p of payments" [value]="p">
+        {{ p }}
+      </option>
+    </select>
+
+    <div class="filter-actions">
+      <button class="btn primary" (click)="loadOrders()">Search</button>
+      <button class="btn ghost" (click)="resetFilters()">Clear</button>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- ================= LOADING ================= -->
+  <div *ngIf="loading" class="state loading">
+    Loading orders...
+  </div>
+
+  <!-- ================= EMPTY STATE ================= -->
+  <div *ngIf="!loading && orders.length === 0" class="state empty">
+    No orders found
+  </div>
+
+  <!-- ================= ORDERS LIST ================= -->
+   <div class="orders-list">
+  <div class="order-card" *ngFor="let order of paginatedOrders">
+
+    <!-- ORDER SUMMARY ROW -->
+    <div class="order-row">
+      <div class="left">
+        <div class="order-number">
+          <strong>{{ order.orderNumber }}</strong>
+          <span class="token">Token #{{ order.tokenNumber }}</span>
+        </div>
+        <div class="meta">
+          <span class="date">
+            {{ order.createdAt | date:'dd MMM yyyy, hh:mm a' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="right">
+        <span
+          class="badge status"
+          [ngClass]="order.status.toLowerCase()">
+          {{ order.status }}
+        </span>
+
+        <span
+          class="badge payment"
+          [ngClass]="order.paymentStatus.toLowerCase()">
+          {{ order.paymentStatus }}
+        </span>
+
+        <span class="amount">
+          ₹{{ order.grandTotal }}
+        </span>
+
+        <button
+          class="btn view"
+          (click)="toggleExpand(order._id)">
+          {{ expandedOrderId === order._id ? 'Hide' : 'View' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= ORDER DETAILS ================= -->
+    <div class="details" *ngIf="expandedOrderId === order._id">
+
+      <!-- ITEMS -->
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of order.items">
+            <td>{{ item.name }}</td>
+            <td>x{{ item.quantity }}</td>
+            <td>₹{{ item.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ACTIONS -->
+<div class="actions">
+  <div class="status-action">
+    <label>Status</label>
+
+    <!-- Current Status Badge -->
+    <span
+      class="badge status"
+      [ngClass]="order.status.toLowerCase()"
+    >
+      {{ order.status }}
+    </span>
+
+    <!-- ACTION BUTTONS -->
+
+<button
+  *ngIf="order.status === OrderStatus.PENDING"
+  class="btn view"
+  (click)="changeStatus(order, OrderStatus.PREPARING)">
+  Mark Preparing
+</button>
+
+<button
+  *ngIf="order.status === OrderStatus.PREPARING"
+  class="btn view"
+  (click)="changeStatus(order, OrderStatus.READY)">
+  Mark Ready
+</button>
+
+<button
+  *ngIf="order.status === OrderStatus.READY"
+  class="btn view"
+  (click)="changeStatus(order, OrderStatus.SERVED)">
+  Mark Served
+</button>
+
+<button
+  *ngIf="order.status === OrderStatus.SERVED"
+  class="btn success"
+  (click)="changeStatus(order, OrderStatus.COMPLETED)">
+  Mark Completed
+</button>
+  </div>
+
+        <div class="payment-action">
+<button
+  *ngIf="order.paymentStatus === 'UNPAID' && order.status === 'SERVED'"
+  class="btn success"
+  (click)="markPaid(order)">
+  Mark Paid
+</button>
+
+          <button
+            *ngIf="order.paymentStatus === 'PAID'"
+            class="btn warn"
+            (click)="markUnpaid(order)">
+            Mark Unpaid
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <!-- PAGINATION -->
+<div class="pagination" *ngIf="totalPages > 1">
+
+  <button
+    class="btn ghost"
+    [disabled]="currentPage === 1"
+    (click)="prevPage()">
+    Prev
+  </button>
+
+  <button
+    *ngFor="let p of [].constructor(totalPages); let i = index"
+    class="btn page"
+    [class.active]="currentPage === i + 1"
+    (click)="goToPage(i + 1)">
+    {{ i + 1 }}
+  </button>
+
+  <button
+    class="btn ghost"
+    [disabled]="currentPage === totalPages"
+    (click)="nextPage()">
+    Next
+  </button>
+
+</div>

@@ -1,0 +1,268 @@
+/* ================= PAGE ================= */
+.users-page {
+  padding: 24px;
+  background: #f6f7fb;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ================= HEADER ================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+/* ================= BUTTONS ================= */
+.btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.primary {
+    background: #4f46e5;
+    color: white;
+
+    &:hover {
+      background: #4338ca;
+    }
+  }
+
+  &.ghost {
+    background: #f3f4f6;
+    color: #374151;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+  }
+
+  &.warn {
+    background: #f97316;
+    color: white;
+
+    &:hover {
+      background: #ea580c;
+    }
+  }
+
+  &.success {
+    background: #16a34a;
+    color: white;
+
+    &:hover {
+      background: #15803d;
+    }
+  }
+
+  &.view {
+    background: transparent;
+    color: #374151;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ================= TABLE WRAPPER ================= */
+.table-wrapper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* ================= USERS TABLE ================= */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f9fafb;
+  }
+
+  th {
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-align: left;
+  }
+
+  td {
+    padding: 16px 18px;
+    font-size: 14px;
+    color: #111827;
+  }
+
+  tr:not(:last-child) {
+    border-bottom: 1px solid #f1f5f9;
+  }
+}
+
+/* ================= ROW STATES ================= */
+.inactive-user {
+  opacity: 0.45;
+}
+
+/* ================= ROLE BADGES ================= */
+.role-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.admin {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+
+  &.staff {
+    background: #e0f2fe;
+    color: #075985;
+  }
+}
+
+/* ================= STATUS BADGES ================= */
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.active {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &.inactive {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+/* ================= ACTIONS ================= */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions-col {
+  text-align: right;
+}
+
+/* ================= EMPTY ================= */
+.empty-row {
+  text-align: center;
+  padding: 30px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ================= MODAL ================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+}
+
+.modal {
+  width: 380px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+}
+
+.form-group {
+  margin-bottom: 14px;
+
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ================= TOAST ================= */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  animation: toastSlide 0.3s ease;
+  z-index: 2000;
+
+  &.success {
+    background: #16a34a;
+  }
+
+  &.error {
+    background: #dc2626;
+  }
+}
+
+@keyframes toastSlide {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

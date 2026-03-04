@@ -1,0 +1,56 @@
+<div class="dashboard-page">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <h2>Dashboard</h2>
+      <p class="subtitle">Hotel Order Management Overview</p>
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div class="stats-grid">
+
+    <div class="stat-card menu">
+      <div class="icon">🍽️</div>
+      <div class="info">
+        <span>Total Menus</span>
+        <strong>{{ summary.totalMenus }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card orders">
+      <div class="icon">🧾</div>
+      <div class="info">
+        <span>Total Orders</span>
+        <strong>{{ summary.totalOrders }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card pending">
+      <div class="icon">⏳</div>
+      <div class="info">
+        <span>Pending Orders</span>
+        <strong>{{ summary.pendingOrders }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card tables">
+      <div class="icon">🪑</div>
+      <div class="info">
+        <span>Active Tables</span>
+        <strong>{{ summary.activeTables }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card users">
+      <div class="icon">👥</div>
+      <div class="info">
+        <span>Total Users</span>
+        <strong>{{ summary.totalUsers }}</strong>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,6 @@
+export enum MenuCategory {
+  STARTER = 'STARTER',
+  MAIN_COURSE = 'MAIN_COURSE',
+  BEVERAGE = 'BEVERAGE',
+  DESSERT = 'DESSERT',
+}

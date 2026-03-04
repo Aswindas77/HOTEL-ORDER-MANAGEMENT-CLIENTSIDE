@@ -1,0 +1,267 @@
+<div class="tables-page">
+
+  <!-- ================= HEADER ================= -->
+  <div class="header">
+    <h2>Tables Management</h2>
+
+    <button class="btn primary" (click)="openAddModal()">
+      + Add Table
+    </button>
+  </div>
+
+  <!-- ================= LOADING ================= -->
+  <div *ngIf="loading" class="state">
+    Loading tables...
+  </div>
+
+  <!-- ================= EMPTY STATE ================= -->
+  <div
+    *ngIf="!loading && tables.length === 0"
+    class="empty-state"
+  >
+    <h3>No tables created yet</h3>
+    <p>Create tables to manage seating and orders</p>
+
+    <button class="btn primary" (click)="openAddModal()">
+      Add your first table
+    </button>
+  </div>
+
+  <!-- ================= TABLE GRID ================= -->
+  <div class="table-grid" *ngIf="!loading && tables.length > 0">
+
+    <div class="table-card" *ngFor="let table of tables">
+
+      <!-- CARD HEADER -->
+      <div class="card-header">
+        <div class="title">
+          <h3>Table {{ table.tableNumber }}</h3>
+          <span class="capacity">{{ table.capacity }} seats</span>
+        </div>
+
+        <span
+          class="status-pill"
+          [ngClass]="table.status.toLowerCase()">
+          {{ table.status }}
+        </span>
+      </div>
+
+      <!-- CARD ACTIONS -->
+      <div class="card-actions">
+
+        <!-- PRIMARY ACTION -->
+        <button
+          *ngIf="table.status === TableStatus.AVAILABLE"
+          class="btn success"
+          (click)="openTable(table)">
+          Open Table
+        </button>
+
+        <button
+          *ngIf="table.status === TableStatus.OCCUPIED"
+          class="btn warn"
+          (click)="closeTable(table)">
+          Close Table
+        </button>
+
+        <!-- SECONDARY ACTIONS -->
+        <div class="actions-right">
+          <button
+            class="btn ghost"
+            (click)="openEditModal(table)">
+            Edit
+          </button>
+
+          <button
+            class="btn ghost danger"
+            (click)="removeTable(table)">
+            Remove
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= ADD / EDIT MODAL ================= -->
+<div class="modal-backdrop" *ngIf="modalOpen">
+
+  <div class="modal">
+
+    <h3>
+      {{ modalMode === 'add' ? 'Add Table' : 'Edit Table' }}
+    </h3>
+
+    <div class="form-group">
+      <label>Table Number</label>
+      <input
+        type="text"
+        placeholder="e.g. T1, A3"
+        [(ngModel)]="form.tableNumber"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Capacity</label>
+      <input
+        type="number"
+        min="1"
+        placeholder="Number of seats"
+        [(ngModel)]="form.capacity"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn view" (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button
+        class="btn primary"
+        [disabled]="!form.tableNumber || !form.capacity"
+        (click)="saveTable()"
+      >
+        {{ modalMode === 'add' ? 'Create Table' : 'Update Table' }}
+      </button>
+    </div>
+  </div>
+</div>
+<div class="tables-page">
+
+  <!-- ================= HEADER ================= -->
+  <div class="header">
+    <h2>Tables Management</h2>
+
+    <button class="btn primary" (click)="openAddModal()">
+      + Add Table
+    </button>
+  </div>
+
+  <!-- ================= LOADING ================= -->
+  <div *ngIf="loading" class="state">
+    Loading tables...
+  </div>
+
+  <!-- ================= EMPTY STATE ================= -->
+  <div
+    *ngIf="!loading && tables.length === 0"
+    class="empty-state"
+  >
+    <h3>No tables created yet</h3>
+    <p>Create tables to manage seating and orders</p>
+
+    <button class="btn primary" (click)="openAddModal()">
+      Add your first table
+    </button>
+  </div>
+
+  <!-- ================= TABLE GRID ================= -->
+  <div class="table-grid" *ngIf="!loading && tables.length > 0">
+
+    <div class="table-card" *ngFor="let table of tables">
+
+      <!-- CARD HEADER -->
+      <div class="card-header">
+        <div class="title">
+          <h3>Table {{ table.tableNumber }}</h3>
+          <span class="capacity">{{ table.capacity }} seats</span>
+        </div>
+
+<span
+  class="status-pill animate"
+  [ngClass]="table.status.toLowerCase()"
+>
+  {{ table.status }}
+</span>
+      </div>
+
+      <!-- CARD ACTIONS -->
+      <div class="card-actions">
+
+        <!-- PRIMARY ACTION -->
+        <button
+          *ngIf="table.status === TableStatus.AVAILABLE"
+          class="btn success"
+          (click)="openTable(table)">
+          Open Table
+        </button>
+
+        <button
+          *ngIf="table.status === TableStatus.OCCUPIED"
+          class="btn warn"
+          (click)="closeTable(table)">
+          Close Table
+        </button>
+
+        <!-- SECONDARY ACTIONS -->
+        <div class="actions-right">
+          <button
+            class="btn ghost"
+            (click)="openEditModal(table)">
+            Edit
+          </button>
+
+          <button
+            class="btn ghost danger"
+            (click)="removeTable(table)">
+            Remove
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= ADD / EDIT MODAL ================= -->
+<div class="modal-backdrop" *ngIf="modalOpen">
+
+  <div class="modal">
+
+    <h3>
+      {{ modalMode === 'add' ? 'Add Table' : 'Edit Table' }}
+    </h3>
+
+    <div class="form-group">
+      <label>Table Number</label>
+      <input
+        type="text"
+        placeholder="e.g. T1, A3"
+        [(ngModel)]="form.tableNumber"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Capacity</label>
+      <input
+        type="number"
+        min="1"
+        placeholder="Number of seats"
+        [(ngModel)]="form.capacity"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn view" (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button
+        class="btn primary"
+        [disabled]="!form.tableNumber || !form.capacity"
+        (click)="saveTable()"
+      >
+        {{ modalMode === 'add' ? 'Create Table' : 'Update Table' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div class="toast" *ngIf="toast" [ngClass]="toast.type">
+  {{ toast.message }}
+</div>
+

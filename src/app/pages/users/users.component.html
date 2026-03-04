@@ -1,0 +1,168 @@
+<div class="users-page">
+
+  <!-- ================= HEADER ================= -->
+  <div class="header">
+    <h2>Staff Management</h2>
+
+    <button class="btn primary" (click)="openAddModal()">
+      + Add Staff
+    </button>
+  </div>
+
+  <!-- ================= LOADING STATE ================= -->
+  <div *ngIf="loading" class="state">
+    Loading staff...
+  </div>
+
+  <!-- ================= USERS TABLE ================= -->
+  <div class="table-wrapper" *ngIf="!loading">
+
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          *ngFor="let user of users"
+          [class.inactive-user]="!user.isActive"
+        >
+          <td class="name">
+            {{ user.name }}
+          </td>
+
+          <td class="email">
+            {{ user.email }}
+          </td>
+
+          <td>
+            <span
+              class="role-pill"
+              [class.admin]="user.role === 'ADMIN'"
+              [class.staff]="user.role === 'STAFF'"
+            >
+              {{ user.role }}
+            </span>
+          </td>
+
+          <td>
+            <span
+              class="status-pill"
+              [class.active]="user.isActive"
+              [class.inactive]="!user.isActive"
+            >
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+
+          <td class="actions">
+            <button
+              class="btn ghost"
+              (click)="openEditModal(user)"
+            >
+              Edit
+            </button>
+
+            <button
+              class="btn warn"
+              *ngIf="user.isActive"
+              (click)="deactivateUser(user)"
+            >
+              Deactivate
+            </button>
+
+            <button
+              class="btn success"
+              *ngIf="!user.isActive"
+              (click)="activateUser(user)"
+            >
+              Activate
+            </button>
+          </td>
+        </tr>
+
+        <!-- EMPTY STATE -->
+        <tr *ngIf="users.length === 0">
+          <td colspan="5" class="empty-row">
+            No staff members found
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<!-- ================= ADD / EDIT MODAL ================= -->
+<div class="modal-backdrop" *ngIf="modalOpen">
+  <div class="modal">
+
+    <h3>
+      {{ modalMode === 'add' ? 'Add Staff Member' : 'Edit Staff Member' }}
+    </h3>
+
+    <div class="form-group">
+      <label>Name</label>
+      <input
+        type="text"
+        placeholder="Full name"
+        [(ngModel)]="form.name"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="email"
+        placeholder="Email address"
+        [(ngModel)]="form.email"
+      />
+    </div>
+
+    <div
+      class="form-group"
+      *ngIf="modalMode === 'add'"
+    >
+      <label>Password</label>
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="form.password"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Role</label>
+      <select [(ngModel)]="form.role">
+        <option [ngValue]="Role.ADMIN">ADMIN</option>
+        <option [ngValue]="Role.STAFF">STAFF</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn view" (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button
+        class="btn primary"
+        [disabled]="!form.name || !form.email"
+        (click)="saveUser()"
+      >
+        {{ modalMode === 'add' ? 'Create Staff' : 'Update Staff' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div class="toast" *ngIf="toast" [ngClass]="toast.type">
+  {{ toast.message }}
+</div>
