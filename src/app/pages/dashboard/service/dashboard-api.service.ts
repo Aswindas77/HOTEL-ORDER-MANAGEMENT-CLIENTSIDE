@@ -4,7 +4,7 @@ import { environment } from '../../../../environment/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardApiService {
-  private baseUrl = `${environment.host}/admin/dashboard`;
+  private baseUrl = `${environment.host}/api/admin/dashboard`;
 
   constructor(private http: HttpClient) {}
 

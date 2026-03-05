@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardApiService } from './service/dashboard-api.service';
 
@@ -22,7 +22,8 @@ export class DashboardComponent implements OnInit {
   };
 
   constructor(
-    private dashboardApi: DashboardApiService
+    private dashboardApi: DashboardApiService,
+    private cdr: ChangeDetectorRef
   ) {}
 
 
@@ -37,6 +38,7 @@ loadDashboard() {
     next: (res) => {
       this.summary = res;
       this.loading = false;
+      this.cdr.detectChanges(); 
     },
     error: (err) => {
       console.error('Dashboard API error', err);

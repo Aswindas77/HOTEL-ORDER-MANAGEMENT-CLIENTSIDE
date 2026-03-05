@@ -4,6 +4,19 @@ import { MenuApiService } from '../../services/menu-api-services';
 import { OrderApiService } from '../../services/order-api-services';
 import { ActivatedRoute } from '@angular/router';
 
+
+export type ToastType = 'success' | 'error' | 'info';
+
+export interface Toast {
+    id: number;
+    type: ToastType;
+    title: string;
+    message: string;
+    visible: boolean;
+    removing: boolean;
+}
+
+
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
 export interface MenuItem {
@@ -49,6 +62,51 @@ declare const THREE: any;
 })
 export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
+
+    toasts: Toast[] = [];
+    private toastCounter = 0;
+
+    showToast(type: ToastType, title: string, message: string, duration = 3800): void {
+
+        const id = ++this.toastCounter;
+
+        const toast: Toast = {
+            id,
+            type,
+            title,
+            message,
+            visible: false,
+            removing: false
+        };
+
+        this.toasts.push(toast);
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+            toast.visible = true;
+            this.cdr.markForCheck();
+        }, 20);
+
+        setTimeout(() => this.dismissToast(id), duration);
+    }
+
+    dismissToast(id: number): void {
+
+        const toast = this.toasts.find(t => t.id === id);
+        if (!toast) return;
+
+        toast.removing = true;
+        this.cdr.markForCheck();
+
+        setTimeout(() => {
+            this.toasts = this.toasts.filter(t => t.id !== id);
+            this.cdr.markForCheck();
+        }, 420);
+    }
+
+    trackToast(_: number, toast: Toast): number {
+        return toast.id;
+    }
     // ── State ────────────────────────────────────────────────────────────────
 
     categories: Category[] = [
@@ -143,7 +201,11 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tableToken = params['token']?.toLowerCase();
 
             if (!this.tableToken) {
-                alert('Invalid table access');
+                this.showToast(
+                    'error',
+                    'Access Denied',
+                    'Invalid table token. Please scan the QR code again.'
+                );
                 return;
             }
 
@@ -238,7 +300,7 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             next: (res) => {
                 console.log('Order created:', res);
 
-                alert('Order Placed Successfully');
+                alert('order created successfully')
 
                 this.cart = [];
                 this.closeCart();
@@ -246,7 +308,11 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Order creation failed:', err);
-                alert('Order Failed ');
+                this.showToast(
+                    'error',
+                    'Order Failed',
+                    'Something went wrong. Please try again.'
+                );
             }
         });
     }

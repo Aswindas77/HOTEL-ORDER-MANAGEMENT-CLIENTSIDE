@@ -1,20 +1,29 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   standalone: true,
   selector: 'app-admin-layout',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink,RouterLinkActive],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
 })
 export class AdminLayoutComponent {
 
 
-  onPageActivate() {
-    // 🔥 force change detection + lifecycle refresh
-    window.scrollTo(0, 0);
+  onPageActivate(component: any) {
+
+    // child component il load function undengil call cheyyum
+    if (component.loadMenus) {
+      component.loadMenus();
+    }
+
+    if (component.loadDashboard) {
+      component.loadDashboard();
+    }
+
+    window.scrollTo(0,0);
   }
 
   

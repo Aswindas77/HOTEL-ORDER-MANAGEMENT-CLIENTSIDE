@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { UserApiService } from './service/user-api.service';
 import { User } from '../../models/user.model';
 import { Role } from '../../enums/role.enum';
+
+import { finalize } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -33,21 +35,36 @@ export class UsersComponent implements OnInit {
 
   toast: { message: string; type: 'success' | 'error' } | null = null;
 
-  constructor(private userApi: UserApiService) {}
+  constructor(
+    private userApi: UserApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
+
+
   loadUsers() {
+
     this.loading = true;
-    this.userApi.getUsers().subscribe({
-      next: res => {
-        this.users = res;
-        this.loading = false;
-      },
-      error: () => this.loading = false,
-    });
+
+    this.userApi.getUsers()
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges(); 
+        })
+      )
+      .subscribe({
+        next: res => {
+          this.users = [...res];
+        },
+        error: () => {
+          this.users = [];
+        },
+      });
   }
 
   /* ---------- MODAL ---------- */
@@ -59,6 +76,7 @@ export class UsersComponent implements OnInit {
   }
 
   openEditModal(user: User) {
+
     this.modalMode = 'edit';
     this.selectedUser = user;
     this.modalOpen = true;
@@ -85,12 +103,14 @@ export class UsersComponent implements OnInit {
     };
   }
 
-  /* ---------- SAVE ---------- */
+
 
   saveUser() {
+
     if (!this.form.name || !this.form.email) return;
 
     if (this.modalMode === 'add') {
+
       this.userApi.createUser(this.form).subscribe({
         next: () => {
           this.showToast('User created successfully');
@@ -99,7 +119,9 @@ export class UsersComponent implements OnInit {
         },
         error: () => this.showToast('Failed to create user', 'error'),
       });
+
     } else {
+
       this.userApi.updateUser(this.selectedUser!._id, this.form).subscribe({
         next: () => {
           this.showToast('User updated successfully');
@@ -108,10 +130,14 @@ export class UsersComponent implements OnInit {
         },
         error: () => this.showToast('Failed to update user', 'error'),
       });
+
     }
   }
 
+
+
   removeUser(user: User) {
+
     if (!confirm(`Remove ${user.name}?`)) return;
 
     this.userApi.deleteUser(user._id).subscribe({
@@ -123,35 +149,45 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  /* ---------- TOAST ---------- */
 
-  showToast(message: string, type: 'success' | 'error' = 'success') {
-    this.toast = { message, type };
-    setTimeout(() => (this.toast = null), 3000);
+
+  deactivateUser(user: User): void {
+
+    this.userApi.updateUser(user._id, { isActive: false }).subscribe({
+      next: () => {
+        this.showToast(`${user.name} deactivated`, 'success');
+        this.loadUsers();
+      },
+      error: () => {
+        this.showToast('Failed to deactivate user', 'error');
+      },
+    });
+  }
+
+  activateUser(user: User): void {
+
+    this.userApi.updateUser(user._id, { isActive: true }).subscribe({
+      next: () => {
+        this.showToast(`${user.name} activated`, 'success');
+        this.loadUsers();
+      },
+      error: () => {
+        this.showToast('Failed to activate user', 'error');
+      },
+    });
   }
 
 
-deactivateUser(user: User): void {
-  this.userApi.updateUser(user._id, { isActive: false }).subscribe({
-    next: () => {
-      this.showToast(`${user.name} deactivated`, 'success');
-      this.loadUsers();
-    },
-    error: () => {
-      this.showToast('Failed to deactivate user', 'error');
-    },
-  });
-}
 
-activateUser(user: User): void {
-  this.userApi.updateUser(user._id, { isActive: true }).subscribe({
-    next: () => {
-      this.showToast(`${user.name} activated`, 'success');
-      this.loadUsers();
-    },
-    error: () => {
-      this.showToast('Failed to activate user', 'error');
-    },
-  });
-}
+  showToast(message: string, type: 'success' | 'error' = 'success') {
+
+    this.toast = { message, type };
+
+    setTimeout(() => {
+      this.toast = null;
+      this.cdr.detectChanges();
+    }, 3000);
+
+  }
+
 }

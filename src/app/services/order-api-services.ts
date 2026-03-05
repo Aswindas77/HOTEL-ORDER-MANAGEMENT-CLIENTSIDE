@@ -6,7 +6,7 @@ import { Order } from '../models/order.model';
 @Injectable({ providedIn: 'root' })
 export class OrderApiService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // ───────── CREATE ORDER ─────────
 
@@ -101,9 +101,27 @@ export class OrderApiService {
     limit?: number;
   }) {
 
-    const params = new HttpParams({
-      fromObject: { ...(filters ?? {}) }
-    });
+    let params = new HttpParams();
+
+    if (filters?.search) {
+      params = params.set('search', filters.search);
+    }
+
+    if (filters?.status) {
+      params = params.set('status', filters.status);
+    }
+
+    if (filters?.paymentStatus) {
+      params = params.set('paymentStatus', filters.paymentStatus);
+    }
+
+    if (filters?.page) {
+      params = params.set('page', String(filters.page));
+    }
+
+    if (filters?.limit) {
+      params = params.set('limit', String(filters.limit));
+    }
 
     return this.http.get<{
       total: number;
@@ -115,5 +133,4 @@ export class OrderApiService {
       { params }
     );
   }
-
 }

@@ -6,7 +6,7 @@ import { Table } from '../../../models/table.model';
 @Injectable({ providedIn: 'root' })
 export class TableApiService {
 
-  private baseUrl = `${environment.host}/tables`;
+  private baseUrl = `${environment.host}/api/tables`;
 
   constructor(private http: HttpClient) {}
 

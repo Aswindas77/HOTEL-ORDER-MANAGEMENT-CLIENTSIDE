@@ -6,7 +6,7 @@ import { Menu } from '../../../models/menu.model';
 @Injectable({ providedIn: 'root' })
 export class MenuApiService {
 
-  private readonly baseUrl = `${environment.host}/menu`;
+  private readonly baseUrl = `${environment.host}/api/menu`;
 
   constructor(private http: HttpClient) {}
 

@@ -349,3 +349,33 @@
 
   </div>
 </div>
+
+<div class="toast-stack" aria-live="polite">
+
+  <div
+    *ngFor="let toast of toasts; trackBy: trackToast"
+    class="lumiere-toast"
+    [class.lumiere-toast--visible]="toast.visible"
+    [class.lumiere-toast--removing]="toast.removing"
+    [class.lumiere-toast--success]="toast.type === 'success'"
+    [class.lumiere-toast--error]="toast.type === 'error'"
+    [class.lumiere-toast--info]="toast.type === 'info'"
+    (click)="dismissToast(toast.id)"
+  >
+
+    <div class="toast-accent"></div>
+
+    <div class="toast-icon">
+      <span *ngIf="toast.type === 'success'">✓</span>
+      <span *ngIf="toast.type === 'error'">✕</span>
+      <span *ngIf="toast.type === 'info'">ℹ</span>
+    </div>
+
+    <div class="toast-body">
+      <p class="toast-title">{{ toast.title }}</p>
+      <p class="toast-message">{{ toast.message }}</p>
+    </div>
+
+  </div>
+
+</div>

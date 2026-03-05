@@ -10,7 +10,7 @@ export class AuthApiService {
   // POST /auth/login
   login(payload: { email: string; password: string }) {
     return this.http.post(
-      `${environment.host}/auth/login`,
+      `${environment.host}api/auth/login`,
       payload
     );
   }
