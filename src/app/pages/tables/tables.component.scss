@@ -2,7 +2,7 @@
 .tables-page {
   padding: 24px;
   background: #f6f7fb;
-  min-height: 100vh;
+  min-height: calc(100vh - 70px);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -18,6 +18,54 @@
     font-weight: 600;
     color: #111827;
   }
+}
+
+
+/* ================= FILTER CARD ================= */
+.filter-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* ================= FILTER BAR ================= */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.filter-bar input,
+.filter-bar select {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  background: #ffffff;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-bar input {
+  min-width: 260px;
+  flex: 1;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
 }
 
 /* ================= STATES ================= */
@@ -49,7 +97,9 @@
 .table-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 22px;
+  margin-top: 20px;
+  align-items: stretch;
 }
 
 /* ================= TABLE CARD ================= */
@@ -61,8 +111,8 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -323,166 +373,54 @@
 }
 
 
-// .tables-page {
-//   padding: 28px;
-//   background: linear-gradient(180deg, #f7f8fc 0%, #f2f4f8 100%);
-//   min-height: 100vh;
-//   font-family: 'Inter', system-ui, sans-serif;
-// }
+/* ================= PAGINATION ================= */
 
-// /* ---------- HEADER ---------- */
-// .header {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   margin-bottom: 24px;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 34px;
+  padding-bottom: 20px;
 
-//   h2 {
-//     font-size: 22px;
-//     font-weight: 600;
-//     color: #111827;
-//   }
-// }
 
-// /* ---------- GRID ---------- */
-// .table-grid {
-//   display: grid;
-//   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-//   gap: 20px;
-// }
+  .btn {
+    min-width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
 
-// /* ---------- CARD ---------- */
-// .table-card {
-//   background: #ffffff;
-//   border-radius: 18px;
-//   padding: 18px;
-//   box-shadow:
-//     0 8px 24px rgba(0, 0, 0, 0.06),
-//     0 2px 6px rgba(0, 0, 0, 0.04);
-//   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  .page {
+    background: #f3f4f6;
+    color: #374151;
 
-//   &:hover {
-//     transform: translateY(-4px);
-//     box-shadow:
-//       0 14px 34px rgba(0, 0, 0, 0.1),
-//       0 4px 10px rgba(0, 0, 0, 0.05);
-//   }
-// }
+    &:hover {
+      background: #e5e7eb;
+    }
 
-// /* ---------- CARD HEADER ---------- */
-// .card-header {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   margin-bottom: 14px;
-// }
+    &.active {
+      background: #6366f1;
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(99, 102, 241, 0.35);
+    }
+  }
 
-// .title {
-//   h3 {
-//     font-size: 16px;
-//     font-weight: 600;
-//     color: #111827;
-//     margin: 0;
-//   }
+  .ghost {
+    background: transparent;
+    color: #6b7280;
 
-//   .capacity {
-//     font-size: 13px;
-//     color: #6b7280;
-//     margin-top: 2px;
-//     display: block;
-//   }
-// }
+    &:hover {
+      background: #f3f4f6;
+    }
 
-// /* ---------- STATUS PILL ---------- */
-// .status-pill {
-//   padding: 6px 12px;
-//   border-radius: 999px;
-//   font-size: 12px;
-//   font-weight: 600;
-//   letter-spacing: 0.3px;
-//   text-transform: uppercase;
-
-//   &.available {
-//     background: #dcfce7;
-//     color: #166534;
-//   }
-
-//   &.occupied {
-//     background: #fee2e2;
-//     color: #991b1b;
-//   }
-// }
-
-// /* ---------- ACTIONS ---------- */
-// .card-actions {
-//   display: flex;
-//   gap: 10px;
-//   margin-top: 10px;
-// }
-
-// /* ---------- BUTTONS ---------- */
-// .btn {
-//   height: 36px;
-//   padding: 0 16px;
-//   border-radius: 10px;
-//   font-size: 13px;
-//   font-weight: 500;
-//   border: none;
-//   cursor: pointer;
-//   transition: all 0.2s ease;
-
-//   &.success {
-//     background: linear-gradient(135deg, #22c55e, #16a34a);
-//     color: white;
-//   }
-
-//   &.warn {
-//     background: linear-gradient(135deg, #fb923c, #f97316);
-//     color: white;
-//   }
-
-//   &.ghost {
-//     background: transparent;
-//     border: 1px solid #e5e7eb;
-//   }
-
-//   &.danger {
-//     color: #dc2626;
-//     border-color: #fecaca;
-
-//     &:hover {
-//       background: #fee2e2;
-//     }
-//   }
-
-//   &:hover {
-//     transform: translateY(-1px);
-//   }
-
-//   &:active {
-//     transform: scale(0.96);
-//   }
-// }
-
-// /* ---------- EMPTY STATE ---------- */
-// .empty-state {
-//   margin-top: 100px;
-//   text-align: center;
-//   color: #6b7280;
-
-//   h3 {
-//     font-size: 18px;
-//     margin-bottom: 6px;
-//   }
-
-//   p {
-//     font-size: 14px;
-//     margin-bottom: 14px;
-//   }
-// }
-
-// /* ---------- PRIMARY BUTTON ---------- */
-// .btn.primary {
-//   background: linear-gradient(135deg, #6366f1, #4f46e5);
-//   color: white;
-// }
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}

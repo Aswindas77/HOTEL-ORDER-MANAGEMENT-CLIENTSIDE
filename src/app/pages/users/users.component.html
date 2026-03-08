@@ -9,13 +9,47 @@
     </button>
   </div>
 
+  <div class="filter-card">
+
+  <div class="filter-bar">
+
+    <input
+      type="text"
+      placeholder="Search staff..."
+      [(ngModel)]="search"
+    />
+
+    <select [(ngModel)]="selectedRole">
+      <option [ngValue]="null">All Roles</option>
+      <option [ngValue]="Role.ADMIN">ADMIN</option>
+      <option [ngValue]="Role.STAFF">STAFF</option>
+    </select>
+
+    <select [(ngModel)]="selectedStatus">
+      <option [ngValue]="null">All Status</option>
+      <option [ngValue]="true">Active</option>
+      <option [ngValue]="false">Inactive</option>
+    </select>
+
+    <button class="btn primary" (click)="applyFilters()">
+      Search
+    </button>
+
+    <button class="btn ghost" (click)="resetFilters()">
+      Clear
+    </button>
+
+  </div>
+
+</div>
+
   <!-- ================= LOADING STATE ================= -->
   <div *ngIf="loading" class="state">
     Loading staff...
   </div>
 
   <!-- ================= USERS TABLE ================= -->
-  <div class="table-wrapper" *ngIf="!loading">
+  <div class="table-wrapper" *ngIf="!loading && users.length > 0">
 
     <table class="users-table">
       <thead>
@@ -86,17 +120,42 @@
             </button>
           </td>
         </tr>
-
-        <!-- EMPTY STATE -->
-        <tr *ngIf="users.length === 0">
-          <td colspan="5" class="empty-row">
-            No staff members found
-          </td>
-        </tr>
-      </tbody>
+              </tbody>
     </table>
 
   </div>
+
+<!-- ================= PAGINATION ================= -->
+<div class="pagination" *ngIf="totalPages > 1">
+
+  <button
+    class="btn ghost"
+    (click)="prevPage()"
+    [disabled]="currentPage === 1">
+    Prev
+  </button>
+
+  <button
+    *ngFor="let p of [].constructor(totalPages); let i = index"
+    class="btn page"
+    [class.active]="currentPage === i + 1"
+    (click)="goToPage(i + 1)">
+    {{ i + 1 }}
+  </button>
+
+  <button
+    class="btn ghost"
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages">
+    Next
+  </button>
+
+</div>
+
+        <!-- EMPTY STATE -->
+<div class="state" *ngIf="!loading && users.length === 0">
+  No members found
+</div>
 </div>
 
 <!-- ================= ADD / EDIT MODAL ================= -->

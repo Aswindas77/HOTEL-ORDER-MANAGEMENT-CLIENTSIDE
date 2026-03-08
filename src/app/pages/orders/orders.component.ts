@@ -56,6 +56,25 @@ export class OrdersComponent implements OnInit {
   /* ================= INIT ================= */
   ngOnInit(): void {
 
+      const url = this.router.parseUrl(this.router.url);
+  const query = url.queryParams;
+
+  if (query['page']) {
+    this.currentPage = Number(query['page']);
+  }
+
+  if (query['search']) {
+    this.search = query['search'];
+  }
+
+  if (query['status']) {
+    this.selectedStatus = query['status'];
+  }
+
+  if (query['payment']) {
+    this.selectedPayment = query['payment'];
+  }
+
     this.router.events
       .pipe(
         filter(
@@ -71,6 +90,16 @@ export class OrdersComponent implements OnInit {
 
   /* ================= LOAD ORDERS ================= */
   loadOrders(): void {
+
+      this.router.navigate([], {
+    queryParams: {
+      page: this.currentPage,
+      search: this.search || null,
+      status: this.selectedStatus || null,
+      payment: this.selectedPayment || null
+    },
+    queryParamsHandling: 'merge'
+  });
 
     this.loading = true;
 
@@ -140,6 +169,23 @@ export class OrdersComponent implements OnInit {
 
     this.loadOrders();
   }
+
+  searchOrders() {
+
+  this.currentPage = 1;
+
+  this.router.navigate([], {
+    queryParams: {
+      page: 1,
+      search: this.search || null,
+      status: this.selectedStatus || null,
+      payment: this.selectedPayment || null
+    },
+    queryParamsHandling: 'merge'
+  });
+
+  this.loadOrders();
+}
 
   getNextStatuses(order: Order): OrderStatus[] {
     return this.validStatusTransitions[order.status] ?? [];

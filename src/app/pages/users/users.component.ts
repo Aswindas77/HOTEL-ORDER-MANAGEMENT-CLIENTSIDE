@@ -7,6 +7,7 @@ import { User } from '../../models/user.model';
 import { Role } from '../../enums/role.enum';
 
 import { finalize } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -18,6 +19,15 @@ import { finalize } from 'rxjs/operators';
 export class UsersComponent implements OnInit {
 
   users: User[] = [];
+  search = '';
+selectedRole: Role | null = null;
+selectedStatus: boolean | null = null;
+
+currentPage = 1;
+pageSize = 10;
+totalPages = 1;
+
+filteredUsers: User[] = [];
   loading = false;
 
   modalOpen = false;
@@ -37,11 +47,23 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private userApi: UserApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadUsers();
+
+      this.route.queryParams.subscribe(params => {
+
+    this.currentPage = params['page'] ? +params['page'] : 1;
+    this.search = params['search'] || '';
+    this.selectedRole = params['role'] || null;
+    this.selectedStatus =
+      params['status'] !== undefined ? params['status'] === 'true' : null;
+    
+      this.loadUsers();
+      });
   }
 
 
@@ -50,7 +72,13 @@ export class UsersComponent implements OnInit {
 
     this.loading = true;
 
-    this.userApi.getUsers()
+    this.userApi.getUsers(
+       this.currentPage,
+    this.pageSize,
+    this.search,
+    this.selectedRole || undefined,
+    this.selectedStatus === null ? undefined : this.selectedStatus
+    )
       .pipe(
         finalize(() => {
           this.loading = false;
@@ -59,14 +87,83 @@ export class UsersComponent implements OnInit {
       )
       .subscribe({
         next: res => {
-          this.users = [...res];
+      this.users = res.data;
+      this.filteredUsers = res.data;
+
+      this.totalPages = res.totalPages;
         },
         error: () => {
           this.users = [];
+          this.filteredUsers = [];
         },
       });
   }
+ 
+  applyFilters() {
 
+  this.currentPage = 1;
+
+  this.updateUrl();
+
+}
+
+resetFilters() {
+
+  this.search = '';
+  this.selectedRole = null;
+  this.selectedStatus = null;
+  this.currentPage = 1;
+
+  this.updateUrl();
+
+}
+
+
+goToPage(page: number) {
+
+  if (page < 1 || page > this.totalPages) return;
+
+  this.currentPage = page;
+
+  this.updateUrl();
+
+}
+
+nextPage() {
+
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updateUrl();
+  }
+
+}
+
+prevPage() {
+
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updateUrl();
+  }
+
+}
+
+updateUrl() {
+
+  this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams: {
+      page: this.currentPage,
+      search: this.search || null,
+      role: this.selectedRole || null,
+      status:
+        this.selectedStatus === null
+          ? null
+          : this.selectedStatus
+    },
+    queryParamsHandling: 'merge'
+  });
+
+}
   /* ---------- MODAL ---------- */
 
   openAddModal() {

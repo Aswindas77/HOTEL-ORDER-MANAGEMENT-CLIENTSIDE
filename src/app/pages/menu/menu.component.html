@@ -14,12 +14,53 @@
       [(ngModel)]="filters.search"
     />
 
-    <select [(ngModel)]="filters.category">
-      <option value="">All Categories</option>
-      <option *ngFor="let c of categories" [value]="c">
-        {{ c }}
-      </option>
-    </select>
+<div class="category-dropdown">
+
+  <button class="btn ghost"
+    (click)="showCategoryDropdown = !showCategoryDropdown">
+
+    {{ filters.category || 'All Categories' }} ▼
+
+  </button>
+
+  <div class="dropdown-menu" *ngIf="showCategoryDropdown">
+
+    <!-- All -->
+    <div class="dropdown-item"
+         (click)="selectCategory('')">
+      All Categories
+    </div>
+
+    <!-- Categories -->
+    <div class="dropdown-item category-row"
+         *ngFor="let c of categories">
+
+      <span (click)="selectCategory(c.name)">
+        {{ c.name }}
+      </span>
+
+      <div class="category-actions">
+
+        <span class="edit"
+              (click)="editCategory(c)">✏</span>
+
+        <span class="delete"
+              (click)="deleteCategory(c)">🗑</span>
+
+      </div>
+
+    </div>
+
+    <div class="dropdown-divider"></div>
+
+    <div class="dropdown-item create"
+         (click)="openCreateCategory()">
+      + Create Category
+    </div>
+
+  </div>
+
+</div>
 
     <select [(ngModel)]="filters.foodType">
       <option value="">All Food Types</option>
@@ -29,7 +70,7 @@
     </select>
 
     <div class="filter-actions">
-      <button class="btn primary" (click)="loadMenus()">Search</button>
+      <button class="btn primary" (click)="applyFilters()">Search</button>
       <button class="btn ghost" (click)="clearFilters()">Clear</button>
     </div>
 
@@ -103,21 +144,6 @@
         <strong>Description:</strong>
         <p>{{ menu.description || 'No description available' }}</p>
       </div>
-
-      <div *ngIf="menu.preparationTime">
-        <strong>Preparation Time:</strong>
-        {{ menu.preparationTime }} mins
-      </div>
-
-      <!-- <div *ngIf="menu.image">
-        <strong>Image:</strong>
-        <br>
-        <img
-          [src]="menu.image"
-          style="width:120px;border-radius:8px;margin-top:8px"
-        />
-      </div> -->
-
     </div>
 
   </td>
@@ -163,34 +189,56 @@
 
       <input placeholder="Name" [(ngModel)]="menuForm.name">
       <textarea placeholder="Description" [(ngModel)]="menuForm.description"></textarea>
+<div class="price-input">
+  <span class="currency">₹</span>
+  <input
+    type="text"
+    placeholder="Enter price"
+    [(ngModel)]="menuForm.price"
+  />
+</div>
 
-      <input type="number" placeholder="Price" [(ngModel)]="menuForm.price">
-      <input type="number" placeholder="Preparation Time (mins)" [(ngModel)]="menuForm.preparationTime">
+
+
+      <!-- <input type="number" placeholder="Price" [(ngModel)]="menuForm.price"> -->
 
       <select [(ngModel)]="menuForm.category">
         <option value="">Select Category</option>
-        <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+        <option *ngFor="let c of categories" [value]="c.name">{{ c.name }}</option>
       </select>
 
       <select [(ngModel)]="menuForm.foodType">
         <option value="">Select Food Type</option>
         <option *ngFor="let f of foodTypes" [value]="f">{{ f }}</option>
       </select>
-<input
-  placeholder="Image URL"
-  [(ngModel)]="menuForm.image"
-/>
 
-<img
-  *ngIf="menuForm.image"
-  [src]="menuForm.image"
-  alt="Preview"
-  style="width:120px; margin-top:10px; border-radius:8px"
-/>
       <div class="actions">
         <button class="btn primary" (click)="saveMenu()">Save</button>
         <button class="btn" (click)="closeModal()">Cancel</button>
       </div>
     </div>
   </div>
+
+
+<!-- CATEGORY MODAL -->
+<div class="modal" *ngIf="showCategoryModal">
+  <div class="modal-content">
+
+    <h3>{{ editingCategoryId ? 'Edit Category' : 'Create Category' }}</h3>
+
+    <input
+      type="text"
+      placeholder="Category Name"
+      [(ngModel)]="categoryName"
+    />
+
+    <div class="actions">
+      <button class="btn primary" (click)="saveCategory()">Save</button>
+      <button class="btn" (click)="closeCategoryModal()">Cancel</button>
+    </div>
+
+  </div>
 </div>
+</div>
+
+

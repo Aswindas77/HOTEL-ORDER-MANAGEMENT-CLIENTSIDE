@@ -11,7 +11,7 @@
 
     <input
       type="text"
-      placeholder="Search Order / Token"
+      placeholder="Search Order / Token / Menu Item"
       [(ngModel)]="search"
     />
 
@@ -30,7 +30,7 @@
     </select>
 
     <div class="filter-actions">
-      <button class="btn primary" (click)="loadOrders()">Search</button>
+      <button class="btn primary" (click)="searchOrders()">Search</button>
       <button class="btn ghost" (click)="resetFilters()">Clear</button>
     </div>
 
@@ -57,6 +57,9 @@
         <div class="order-number">
           <strong>{{ order.orderNumber }}</strong>
           <span class="token">Token #{{ order.tokenNumber }}</span>
+          <span class="items-count">
+  {{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}
+</span>
         </div>
         <div class="meta">
           <span class="date">
@@ -128,21 +131,21 @@
 
 <button
   *ngIf="order.status === OrderStatus.PENDING"
-  class="btn view"
+  class="btn preparing"
   (click)="changeStatus(order, OrderStatus.PREPARING)">
   Mark Preparing
 </button>
 
 <button
   *ngIf="order.status === OrderStatus.PREPARING"
-  class="btn view"
+  class="btn ready"
   (click)="changeStatus(order, OrderStatus.READY)">
   Mark Ready
 </button>
 
 <button
   *ngIf="order.status === OrderStatus.READY"
-  class="btn view"
+  class="btn served"
   (click)="changeStatus(order, OrderStatus.SERVED)">
   Mark Served
 </button>

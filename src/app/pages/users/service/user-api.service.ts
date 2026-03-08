@@ -9,9 +9,26 @@ export class UserApiService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers() {
-    return this.http.get<User[]>(this.baseUrl);
-  }
+getUsers(
+  page: number = 1,
+  limit: number = 10,
+  search?: string,
+  role?: string,
+  status?: boolean
+) {
+
+  let params: any = {
+    page,
+    limit
+  };
+
+  if (search) params.search = search;
+  if (role) params.role = role;
+  if (status !== null && status !== undefined) params.status = status;
+
+  return this.http.get<any>(this.baseUrl, { params });
+
+}
 
   createUser(payload: any) {
     return this.http.post(this.baseUrl, payload);

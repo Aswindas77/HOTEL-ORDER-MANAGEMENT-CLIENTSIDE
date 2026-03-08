@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environment/environment';
 import { Table } from '../../../models/table.model';
+import { TableStatus } from '../../../enums/table-status.enum';
 
 @Injectable({ providedIn: 'root' })
 export class TableApiService {
@@ -10,8 +11,32 @@ export class TableApiService {
 
   constructor(private http: HttpClient) {}
 
-  getTables() {
-    return this.http.get<Table[]>(this.baseUrl);
+  getTables(
+    page: number = 1,
+    limit: number = 12,
+    search?: string,
+    status?: TableStatus
+  ) {
+
+    let params = new HttpParams()
+      .set('page', page)
+      .set('limit', limit);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<{
+      data: Table[];
+      total: number;
+      page: number;
+      totalPages: number;
+    }>(this.baseUrl, { params });
+
   }
 
   createTable(payload: {

@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
+import { CategoryApiService } from './service/category-api.service';
 
 @Component({
   standalone: true,
@@ -18,21 +19,20 @@ export class MenuComponent implements OnInit {
 
   menus: any[] = [];
   loading = false;
+  
 
   showModal = false;
   editingMenuId: string | null = null;
-
-  categories = Object.values(MenuCategory);
+ 
+  categories: any[] = [];
   foodTypes = Object.values(FoodType);
 
   menuForm = {
     name: '',
     description: '',
-    price: 0,
+    price: '',
     category: '' as any,
     foodType: '' as any,
-    preparationTime: 0,
-    image: '',
     isAvailable: true,
   };
 
@@ -51,13 +51,42 @@ export class MenuComponent implements OnInit {
 
   expandedMenuId: string | null = null;
 
+  showCategoryDropdown = false;
+  showCategoryModal = false;
+categoryName = '';
+editingCategoryId: string | null = null;
+
   constructor(
     private menuApi: MenuApiService,
+    private categoryApi: CategoryApiService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+
+  const query = this.router.parseUrl(this.router.url).queryParams;
+
+  if (query['page']) {
+    this.currentPage = Number(query['page']);
+  }
+
+  if (query['category']) {
+    this.filters.category = query['category'];
+  }
+
+  if (query['foodType']) {
+    this.filters.foodType = query['foodType'];
+  }
+
+  if (query['search']) {
+    this.filters.search = query['search'];
+  }
+
+  if (query['expanded']) {
+    this.expandedMenuId = query['expanded'];
+  }
+    this.loadCategories(); 
     this.loadMenus();
   }
 
@@ -97,7 +126,9 @@ export class MenuComponent implements OnInit {
           this.menus = [...data];
 
           this.totalPages = Math.ceil(data.length / this.pageSize);
-          this.currentPage = 1;
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages || 1;
+  }
 
           this.updatePaginatedMenus();
 
@@ -111,6 +142,86 @@ export class MenuComponent implements OnInit {
       });
   }
 
+  loadCategories() {
+
+  this.categoryApi.getCategories().subscribe({
+
+    next: (res: any) => {
+
+      this.categories = res;
+
+    },
+
+    error: () => {
+
+      this.categories = [];
+
+    }
+
+  });
+
+}
+
+openCreateCategory() {
+
+  this.categoryName = '';
+  this.editingCategoryId = null;
+  this.showCategoryModal = true;
+
+}
+
+
+editCategory(category:any) {
+
+  const newName = prompt('Enter new name', category.name);
+
+  if (!newName) return;
+
+  this.categoryApi.updateCategory(category._id, newName)
+  .subscribe(() => {
+
+    this.loadCategories();
+
+  });
+
+}
+deleteCategory(category:any) {
+
+  if (!confirm('Delete category?')) return;
+
+  this.categoryApi.deleteCategory(category._id)
+    .subscribe(() => {
+
+      this.loadCategories(); // reload
+
+    });
+
+}
+selectCategory(category: string) {
+
+  this.filters.category = category;
+
+  this.showCategoryDropdown = false;
+
+}
+
+saveCategory() {
+
+  if (!this.categoryName.trim()) return;
+
+  this.categoryApi.createCategory(this.categoryName)
+    .subscribe(() => {
+
+      this.closeCategoryModal();
+
+      this.loadCategories(); // reload from DB
+
+    });
+
+}
+closeCategoryModal() {
+  this.showCategoryModal = false;
+}
   // ─────────────────────────────
   // OPEN ADD MENU
   // ─────────────────────────────
@@ -133,10 +244,8 @@ export class MenuComponent implements OnInit {
       name: menu.name,
       description: menu.description ?? '',
       price: menu.price,
-      category: menu.category,
+      category:menu.category?.name || menu.category,
       foodType: menu.foodType,
-      preparationTime: menu.preparationTime ?? 0,
-      image: menu.image ?? '',
       isAvailable: menu.isAvailable,
     };
 
@@ -159,10 +268,6 @@ export class MenuComponent implements OnInit {
       price: Number(this.menuForm.price),
       category: this.menuForm.category,
       foodType: this.menuForm.foodType,
-      preparationTime: this.menuForm.preparationTime
-        ? Number(this.menuForm.preparationTime)
-        : undefined,
-      image: this.menuForm.image,
       isAvailable: true,
     };
 
@@ -213,7 +318,6 @@ export class MenuComponent implements OnInit {
       alert('Failed to update status');
     }
   });
-
 }
 
   // ─────────────────────────────
@@ -224,11 +328,9 @@ export class MenuComponent implements OnInit {
     this.menuForm = {
       name: '',
       description: '',
-      price: 0,
+      price: '',
       category: '' as any,
       foodType: '' as any,
-      preparationTime: 0,
-      image: '',
       isAvailable: true,
     };
 
@@ -249,6 +351,22 @@ export class MenuComponent implements OnInit {
 
   }
 
+  applyFilters(): void {
+
+  this.router.navigate([], {
+    queryParams: {
+      page: this.currentPage,
+      search: this.filters.search || null,
+      category: this.filters.category || null,
+      foodType: this.filters.foodType || null
+    },
+    queryParamsHandling: 'merge'
+  });
+
+  this.loadMenus();
+
+}
+
   // ─────────────────────────────
   // PAGINATION
   // ─────────────────────────────
@@ -263,9 +381,14 @@ export class MenuComponent implements OnInit {
 
   goToPage(page: number): void {
 
-    if (page < 1 || page > this.totalPages) return;
+    // if (page < 1 || page > this.totalPages) return;
 
     this.currentPage = page;
+      // store page in URL
+  this.router.navigate([], {
+    queryParams: { page: this.currentPage },
+    queryParamsHandling: 'merge'
+  });
     this.updatePaginatedMenus();
 
   }
@@ -285,6 +408,13 @@ export class MenuComponent implements OnInit {
 
     this.expandedMenuId =
       this.expandedMenuId === menuId ? null : menuId;
+
+        this.router.navigate([], {
+    queryParams: {
+      expanded: this.expandedMenuId || null
+    },
+    queryParamsHandling: 'merge'
+  });
 
   }
 
