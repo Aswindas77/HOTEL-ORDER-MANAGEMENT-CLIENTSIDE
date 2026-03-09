@@ -13,8 +13,7 @@ export class AdminLayoutComponent {
 
 
   onPageActivate(component: any) {
-
-    // child component il load function undengil call cheyyum
+    
     if (component.loadMenus) {
       component.loadMenus();
     }

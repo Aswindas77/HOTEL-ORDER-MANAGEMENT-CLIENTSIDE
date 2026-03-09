@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { AuthApiService } from '../layout/admin-layout/service/auth-api.service';
+import { AuthApiService } from '../services/auth-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class AdminGuard implements CanActivate {
@@ -12,6 +12,7 @@ export class AdminGuard implements CanActivate {
   ) {}
 
   canActivate(): boolean {
+
     const token = this.authApi.getToken();
 
     if (!token) {
@@ -20,13 +21,13 @@ export class AdminGuard implements CanActivate {
     }
 
     try {
+
       const decoded: any = jwtDecode(token);
 
       if (decoded.role === 'ADMIN') {
         return true;
       }
 
-      // Logged in but not admin
       this.router.navigate(['/unauthorized']);
       return false;
 

@@ -8,8 +8,12 @@ import { UsersComponent } from './pages/users/users.component';
 import { TableViewComponent } from './pages/tableViewSide/tableView';
 import { ChefOrdersComponent } from './pages/chefViewSide/chef-view.component';
 
+import { AuthGuard } from './guards/auth.guard';
+import { LoginComponent } from './pages/auth/login.component';
 
 export const routes: Routes = [
+
+  { path: 'login', component: LoginComponent },
 
   { path: 'tableview', component: TableViewComponent },
   { path: 'chefView', component: ChefOrdersComponent },
@@ -17,6 +21,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'menu', component: MenuComponent },
