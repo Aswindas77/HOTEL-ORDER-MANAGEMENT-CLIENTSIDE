@@ -173,16 +173,9 @@ openCreateCategory() {
 
 editCategory(category:any) {
 
-  const newName = prompt('Enter new name', category.name);
-
-  if (!newName) return;
-
-  this.categoryApi.updateCategory(category._id, newName)
-  .subscribe(() => {
-
-    this.loadCategories();
-
-  });
+  this.editingCategoryId = category._id;
+  this.categoryName = category.name;
+  this.showCategoryModal = true;
 
 }
 deleteCategory(category:any) {
@@ -209,14 +202,27 @@ saveCategory() {
 
   if (!this.categoryName.trim()) return;
 
-  this.categoryApi.createCategory(this.categoryName)
-    .subscribe(() => {
+  if (this.editingCategoryId) {
 
-      this.closeCategoryModal();
+    this.categoryApi.updateCategory(this.editingCategoryId, this.categoryName)
+      .subscribe(() => {
 
-      this.loadCategories(); // reload from DB
+        this.loadCategories();
+        this.closeCategoryModal();
 
-    });
+      });
+
+  } else {
+
+    this.categoryApi.createCategory(this.categoryName)
+      .subscribe(() => {
+
+        this.loadCategories();
+        this.closeCategoryModal();
+
+      });
+
+  }
 
 }
 closeCategoryModal() {
