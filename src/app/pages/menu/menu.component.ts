@@ -225,9 +225,11 @@ saveCategory() {
   }
 
 }
+
 closeCategoryModal() {
   this.showCategoryModal = false;
 }
+
   // ─────────────────────────────
   // OPEN ADD MENU
   // ─────────────────────────────
@@ -236,7 +238,7 @@ closeCategoryModal() {
     this.editingMenuId = null;
     this.resetForm();
     this.showModal = true;
-
+    
   }
 
   // ─────────────────────────────

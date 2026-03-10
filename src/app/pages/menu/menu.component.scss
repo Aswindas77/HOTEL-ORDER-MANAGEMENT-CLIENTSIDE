@@ -649,48 +649,79 @@ td .btn.warn {
   position: relative;
 }
 
-.dropdown-menu{
-  position: absolute;
-  background: white;
-  border-radius: 10px;
-  width: 230px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  margin-top: 6px;
-  z-index: 100;
-}
-
-.dropdown-item{
-  padding: 10px 14px;
-  cursor: pointer;
+/* CATEGORY BUTTON LOOK LIKE SELECT */
+.category-dropdown .btn {
+  width: 180px;
+  height: 38px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
 }
 
-.dropdown-item:hover{
-  background:#f5f7fb;
+/* dropdown container */
+.dropdown-menu {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 180px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  padding: 6px 0;
+  z-index: 1000;
 }
 
-.category-actions span{
-  margin-left:10px;
-  cursor:pointer;
+/* dropdown item */
+.dropdown-item {
+  padding: 8px 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
 }
 
-.edit{
-  color:#3b82f6;
+/* hover like select dropdown */
+.dropdown-item:hover {
+  background: #f3f4f6;
 }
 
-.delete{
-  color:#ef4444;
+/* category row */
+.category-row span {
+  flex: 1;
 }
 
-.dropdown-divider{
-  height:1px;
-  background:#eee;
-  margin:6px 0;
+/* edit delete icons */
+.category-actions {
+  display: flex;
+  gap: 8px;
 }
 
-.create{
-  font-weight:600;
-  color:#2563eb;
+.category-actions .edit {
+  color: #3b82f6;
+  cursor: pointer;
+}
+
+.category-actions .delete {
+  color: #ef4444;
+  cursor: pointer;
+}
+
+/* divider */
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 6px 0;
+}
+
+/* create category */
+.dropdown-item.create {
+  color: #2563eb;
+  font-weight: 500;
 }
