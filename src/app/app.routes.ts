@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MenuComponent } from './pages/menu/menu.component';
@@ -10,10 +11,16 @@ import { ChefOrdersComponent } from './pages/chefViewSide/chef-view.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/auth/login.component';
+import { SuperAdminLayoutComponent } from './layout/super-admin-laoyout/sup-admin-layout';
+import { SuperAdminDashboardComponent } from './pages/super-admin/dashboard/dashboard';
+import { UserManagementComponent } from './pages/super-admin/user-management/user-management';
+import { MenuCardManagementComponent } from './pages/super-admin/menu-card-management/menu-card-management';
+import { PurchaseApprovalComponent } from './pages/super-admin/purchase-approval/purchase-approval';
+import { LoginGuard } from './guards/login.guard';
 
 export const routes: Routes = [
 
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
 
   { path: 'tableview', component: TableViewComponent },
   { path: 'chefView', component: ChefOrdersComponent },
@@ -31,6 +38,21 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
+
+  {
+  path: 'super-admin',
+  component: SuperAdminLayoutComponent,
+  canActivate: [AuthGuard],
+  children: [
+
+    { path: 'dashboard', component: SuperAdminDashboardComponent },
+    { path: 'user-management', component: UserManagementComponent },
+    { path: 'menu-cards', component: MenuCardManagementComponent },
+    { path: 'purchase-approvals', component: PurchaseApprovalComponent },
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+
+  ]
+},
 
   { path: '', redirectTo: 'tableview', pathMatch: 'full' },
   { path: '**', redirectTo: 'tableview' }
