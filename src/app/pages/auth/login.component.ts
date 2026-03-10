@@ -45,7 +45,6 @@ export class LoginComponent {
       next: (res: any) => {
 
         localStorage.setItem('token', res.accessToken);
-        localStorage.setItem('user', JSON.stringify(res.user));
 
         if (res.user.role === 'MANAGER') {
           this.router.navigate(['/admin/dashboard']);

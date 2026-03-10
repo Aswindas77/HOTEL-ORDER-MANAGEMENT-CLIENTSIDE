@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { UserApiService } from './service/user-api.service';
-import { User } from '../../models/user.model';
+import { User } from '../../models/user.model'; 
 import { Role } from '../../enums/role.enum';
 
 import { finalize } from 'rxjs/operators';
