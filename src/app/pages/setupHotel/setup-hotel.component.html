@@ -1,0 +1,43 @@
+<div class="setup-wrapper">
+
+  <div class="setup-card">
+
+    <h2>Setup Your Hotel</h2>
+    <p>Please enter your hotel details</p>
+
+    <form (ngSubmit)="createHotel()">
+
+      <div class="input-group">
+        <input
+          type="text"
+          placeholder="Hotel Name"
+          [(ngModel)]="hotelData.name"
+          name="name"
+          required>
+      </div>
+
+      <div class="input-group">
+        <input
+          type="email"
+          placeholder="Hotel Email"
+          [(ngModel)]="hotelData.email"
+          name="email">
+      </div>
+
+      <div class="input-group">
+        <input
+          type="text"
+          placeholder="Phone Number"
+          [(ngModel)]="hotelData.phone"
+          name="phone">
+      </div>
+
+      <button [disabled]="loading">
+        {{ loading ? 'Creating...' : 'Create Hotel' }}
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

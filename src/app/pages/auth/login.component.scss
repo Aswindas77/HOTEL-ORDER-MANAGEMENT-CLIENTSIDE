@@ -1,4 +1,5 @@
 .auth-wrapper{
+  position: relative;
   height:100vh;
   display:flex;
   align-items:center;
@@ -12,6 +13,7 @@
   background:rgba(255,255,255,0.95);
   border-radius:16px;
   box-shadow:0 20px 40px rgba(0,0,0,0.15);
+  backdrop-filter: blur(6px);
 }
 
 .auth-header{
@@ -21,11 +23,13 @@
   h2{
     margin:0;
     font-weight:600;
+    color:#333;
   }
 
   p{
     color:#777;
     font-size:14px;
+    margin-top:6px;
   }
 }
 
@@ -39,10 +43,12 @@
     border:1px solid #ddd;
     font-size:14px;
     transition:0.2s;
+    background:white;
 
     &:focus{
       border-color:#667eea;
       outline:none;
+      box-shadow:0 0 0 2px rgba(102,126,234,0.15);
     }
   }
 }
@@ -57,9 +63,15 @@
   font-weight:500;
   cursor:pointer;
   transition:0.2s;
+  font-size:14px;
 
   &:hover{
     background:#5a67d8;
+  }
+
+  &:disabled{
+    opacity:0.7;
+    cursor:not-allowed;
   }
 }
 
@@ -67,10 +79,23 @@
   margin-top:18px;
   text-align:center;
   font-size:14px;
+  color:#555;
 
   span{
     color:#667eea;
     cursor:pointer;
     font-weight:500;
+    margin-left:4px;
+
+    &:hover{
+      text-decoration:underline;
+    }
   }
+}
+
+.info-text{
+  margin-top:12px;
+  font-size:12px;
+  color:#777;
+  text-align:center;
 }
