@@ -8,6 +8,8 @@ import { TablesComponent } from './pages/tables/tables.component';
 import { UsersComponent } from './pages/users/users.component';
 import { TableViewComponent } from './pages/tableViewSide/tableView';
 import { ChefOrdersComponent } from './pages/chefViewSide/chef-view.component';
+import { HotelsComponent } from './pages/super-admin/hotel management/hotels.component';
+import { BranchRequestsComponent } from './pages/super-admin/branch-requests/branch-requests.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/auth/login.component';
@@ -56,6 +58,8 @@ export const routes: Routes = [
   children: [
 
     { path: 'dashboard', component: SuperAdminDashboardComponent },
+    { path:'hotels', component:HotelsComponent },
+    { path: 'branch-requests',component: BranchRequestsComponent},
     { path: 'user-management', component: UserManagementComponent },
     { path: 'menu-cards', component: MenuCardManagementComponent },
     { path: 'purchase-approvals', component: PurchaseApprovalComponent },

@@ -1,0 +1,165 @@
+<div class="branch-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h2>Branch Requests</h2>
+      <p>Manage activation requests from hotels</p>
+    </div>
+
+    <div class="request-count">
+      Total Requests: {{ requests.length }}
+    </div>
+  </div>
+
+
+  <!-- Table Card -->
+  <div class="card">
+
+    <table class="request-table">
+
+      <thead>
+        <tr>
+          <th>Hotel</th>
+          <th>Subscription Plan</th>
+          <th>Branch</th>
+          <th>Branch Phone</th>
+          <th>Status</th>
+          <th class="actions">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let req of requests">
+
+          <td class="hotel">
+            {{ req.hotelId?.name || '-' }}
+          </td>
+
+          <td>
+            {{ req.subscriptionId?.planType | titlecase }}
+          </td>
+          <td>
+            {{ req.branchId?.branchName || '-' }}
+          </td>
+
+          <td>
+            {{ req.branchId?.phone || '-' }}
+          </td>
+
+
+          <td>
+            <span *ngIf="req.status === 'pending'" class="badge pending">
+              Pending
+            </span>
+
+            <span *ngIf="req.status === 'approved'" class="badge approved">
+              Approved
+            </span>
+
+            <span *ngIf="req.status === 'rejected'" class="badge rejected">
+              Rejected
+            </span>
+          </td>
+
+<td class="actions">
+
+  <div class="action-buttons">
+
+    <button class="btn view" (click)="openDetails(req)">
+      View
+    </button>
+
+    <button
+      class="btn approve"
+      [disabled]="req.status === 'approved'"
+      (click)="approveRequest(req._id)">
+      Approve
+    </button>
+
+    <button
+      class="btn reject"
+      [disabled]="req.status === 'rejected'"
+      (click)="rejectRequest(req._id)">
+      Reject
+    </button>
+
+  </div>
+
+</td>
+
+        </tr>
+
+        <tr *ngIf="requests.length === 0">
+          <td colspan="4" class="empty">
+            No branch requests available
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+<div class="modal-backdrop" *ngIf="showDetailsModal">
+
+  <div class="modal premium-modal">
+
+    <div class="modal-header">
+      <h3>Branch Request Details</h3>
+      <button class="close" (click)="closeDetailsModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- HOTEL -->
+      <div class="detail-card">
+        <h4>🏨 Hotel Details</h4>
+
+        <div class="detail-grid">
+          <div><span>Name</span><p>{{ selectedRequest?.hotelId?.name }}</p></div>
+          <div><span>Email</span><p>{{ selectedRequest?.hotelId?.email }}</p></div>
+          <div><span>Phone</span><p>{{ selectedRequest?.hotelId?.phone }}</p></div>
+        </div>
+      </div>
+
+      <!-- BRANCH -->
+      <div class="detail-card">
+        <h4>🏢 Branch Details</h4>
+
+        <div class="detail-grid">
+          <div><span>Branch</span><p>{{ selectedRequest?.branchId?.branchName }}</p></div>
+          <div><span>City</span><p>{{ selectedRequest?.branchId?.city }}</p></div>
+          <div><span>Phone</span><p>{{ selectedRequest?.branchId?.phone }}</p></div>
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTION -->
+      <div class="detail-card">
+        <h4>💳 Subscription</h4>
+
+        <div class="detail-grid">
+          <div><span>Plan</span><p>{{ selectedRequest?.subscriptionId?.planType | titlecase }}</p></div>
+          <div><span>Branches Allowed</span><p>{{ selectedRequest?.subscriptionId?.branchCount }}</p></div>
+        </div>
+      </div>
+
+      <!-- STATUS -->
+      <div class="detail-card">
+        <h4>📊 Status</h4>
+
+        <span class="status-badge"
+          [ngClass]="selectedRequest?.status">
+          {{ selectedRequest?.status }}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
