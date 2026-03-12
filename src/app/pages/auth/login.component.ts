@@ -16,6 +16,10 @@ export class LoginComponent {
   isLoginMode = true;
   loading = false;
 
+  // UI state for password visibility toggles
+  showPwd    = false;
+  showRegPwd = false;
+
   loginData = {
     email: '',
     password: ''
@@ -34,6 +38,9 @@ export class LoginComponent {
 
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
+    // Reset visibility flags when switching modes
+    this.showPwd    = false;
+    this.showRegPwd = false;
   }
 
   login() {
@@ -68,14 +75,14 @@ export class LoginComponent {
 
           // BRANCH NOT CREATED
           if (onboarding.branchCount === 0) {
-            this.router.navigate(['/setup-branches']);
+            this.router.navigate(['/setup/branches']);
             this.loading = false;
             return;
           }
 
           // SUBSCRIPTION NOT CREATED
           if (!onboarding.subscriptionCreated) {
-            this.router.navigate(['/choose-plan']);
+            this.router.navigate(['/setup/plans']);
             this.loading = false;
             return;
           }
@@ -121,7 +128,7 @@ export class LoginComponent {
 
         localStorage.setItem('token', res.accessToken);
 
-        this.router.navigate(['/setup-hotel']);
+        this.router.navigate(['/setup']);
 
       },
 

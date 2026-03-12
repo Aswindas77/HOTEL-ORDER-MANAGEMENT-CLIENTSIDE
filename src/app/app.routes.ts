@@ -18,6 +18,7 @@ import { MenuCardManagementComponent } from './pages/super-admin/menu-card-manag
 import { PurchaseApprovalComponent } from './pages/super-admin/purchase-approval/purchase-approval';
 import { LoginGuard } from './guards/login.guard';
 import { SetupHotelComponent } from './pages/setupHotel/setup-hotel.component';
+import { SetupLayoutComponent } from './pages/setup-onboarding/setup-layout/setup-layout.component';
 
 export const routes: Routes = [
 
@@ -26,7 +27,12 @@ export const routes: Routes = [
   { path: 'tableview', component: TableViewComponent },
   { path: 'chefView', component: ChefOrdersComponent },
 
-  { path: 'setup-hotel', component: SetupHotelComponent, canActivate: [AuthGuard] },
+  {
+  path: 'setup',
+  component: SetupHotelComponent,
+  canActivate: [AuthGuard],
+  
+},
 
 
   {
