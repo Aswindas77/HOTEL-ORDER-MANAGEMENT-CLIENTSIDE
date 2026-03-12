@@ -1,0 +1,290 @@
+.branch-page {
+  padding: 24px;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+/* ================= HEADER ================= */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.page-header p {
+  font-size: 13px;
+  color: #777;
+}
+
+.request-count {
+  font-size: 14px;
+  color: #555;
+}
+
+/* ================= CARD ================= */
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ================= TABLE ================= */
+
+.request-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.request-table thead {
+  background: #f3f4f6;
+}
+
+.request-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 14px;
+  color: #444;
+  font-weight: 600;
+}
+
+.request-table td {
+  padding: 14px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+}
+
+.hotel {
+  font-weight: 500;
+}
+
+/* ================= BADGES ================= */
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.actions {
+  width: 220px;
+}
+
+.action-buttons{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn {
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+/* View button */
+
+.view{
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.view:hover{
+  background: #e5e7eb;
+}
+
+/* Approve button */
+
+.approve {
+  background: #16a34a;
+  color: white;
+}
+
+.approve:hover{
+  background: #15803d;
+}
+
+/* Reject button */
+
+.reject {
+  background: #dc2626;
+  color: white;
+}
+
+.reject:hover{
+  background: #b91c1c;
+}
+
+/* Disabled state */
+
+button:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================= EMPTY ROW ================= */
+
+.empty {
+  text-align: center;
+  padding: 18px;
+  color: #888;
+}
+
+/* ================= MODAL ================= */
+
+.modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal{
+  background: white;
+  width: 500px;
+  border-radius: 10px;
+  padding: 20px;
+  animation: modalFade .2s ease;
+}
+
+.modal-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.modal-header h3{
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.close{
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body p{
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.modal-body h4{
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.premium-modal{
+  width: 520px;
+  max-width: 90%;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modal-body{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.detail-card{
+  border:1px solid #eee;
+  border-radius:10px;
+  padding:16px;
+  background:#fafafa;
+}
+
+.detail-card h4{
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:12px;
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+
+.detail-grid span{
+  font-size:12px;
+  color:#777;
+}
+
+.detail-grid p{
+  font-size:14px;
+  font-weight:500;
+  margin:2px 0 0;
+}
+
+/* Status badge */
+
+.status-badge{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:500;
+}
+
+.status-badge.pending{
+  background:#fff3cd;
+  color:#856404;
+}
+
+.status-badge.approved{
+  background:#d4edda;
+  color:#155724;
+}
+
+.status-badge.rejected{
+  background:#f8d7da;
+  color:#721c24;
+}
+
+@keyframes modalFade{
+  from{
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to{
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
