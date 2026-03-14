@@ -14,11 +14,12 @@ import { BranchRequestsComponent } from './pages/super-admin/branch-requests/bra
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/auth/login.component';
 import { SuperAdminLayoutComponent } from './layout/super-admin-laoyout/sup-admin-layout';
-import { SuperAdminDashboardComponent } from './pages/super-admin/dashboard/dashboard';
 import { UserManagementComponent } from './pages/super-admin/user-management/user-management';
 import { MenuCardManagementComponent } from './pages/super-admin/menu-card-management/menu-card-management';
 import { PurchaseApprovalComponent } from './pages/super-admin/purchase-approval/purchase-approval';
 import { LoginGuard } from './guards/login.guard';
+import { AnalyticsComponent } from './pages/super-admin/analytics/analytics.component';
+import { SubscriptionExpiryComponent } from './pages/super-admin/subscription-expiry/subscription-expiry.component';
 
 export const routes: Routes = [
 
@@ -47,7 +48,11 @@ export const routes: Routes = [
   canActivate: [AuthGuard],
   children: [
 
-    { path: 'dashboard', component: SuperAdminDashboardComponent },
+    {
+  path: 'subscription-expiry',
+  component: SubscriptionExpiryComponent
+},
+    { path: 'analytics', component: AnalyticsComponent },
     { path:'hotels', component:HotelsComponent },
     { path: 'branch-requests',component: BranchRequestsComponent},
     { path: 'user-management', component: UserManagementComponent },

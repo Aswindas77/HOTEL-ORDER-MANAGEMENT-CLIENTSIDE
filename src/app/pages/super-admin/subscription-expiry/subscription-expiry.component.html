@@ -1,0 +1,65 @@
+<div class="expiry-page">
+
+  <div class="header">
+    <h2>Expiring Subscriptions</h2>
+  </div>
+
+  <div class="card">
+
+    <table class="expiry-table">
+
+      <thead>
+        <tr>
+          <th>Hotel</th>
+          <th>Branch</th>
+          <th>Branch Phone</th>
+          <th>Plan</th>
+          <th>Start Date</th>
+          <th>Expiry Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let sub of subscriptions">
+
+          <td>{{ sub.hotelId?.name }}</td>
+
+          <td>{{ sub.branchId?.branchName }}</td>
+
+            <td>
+    <a href="tel:{{sub.branchId?.phone}}">
+      {{ sub.branchId?.phone }}
+    </a>
+  </td>
+
+          <td>{{ sub.planType | titlecase }}</td>
+
+          <td>{{ sub.startDate | date }}</td>
+
+          <td>{{ sub.expiryDate | date }}</td>
+
+          <td>
+            <span class="badge warning">
+              Expiring Soon
+            </span>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="subscriptions.length === 0">
+          <td colspan="6" class="empty">
+            No expiring subscriptions
+          </td>
+        </tr>
+        
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
