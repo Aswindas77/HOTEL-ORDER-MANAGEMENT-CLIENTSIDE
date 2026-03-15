@@ -20,7 +20,7 @@ import { MenuCardManagementComponent } from './pages/super-admin/menu-card-manag
 import { PurchaseApprovalComponent } from './pages/super-admin/purchase-approval/purchase-approval';
 import { LoginGuard } from './guards/login.guard';
 import { SetupHotelComponent } from './pages/setupHotel/setup-hotel.component';
-import { SetupLayoutComponent } from './pages/setup-onboarding/setup-layout/setup-layout.component';
+import { ActivationPendingComponent } from './pages/activation-pending/activation-pending.component';
 
 export const routes: Routes = [
 
@@ -34,6 +34,11 @@ export const routes: Routes = [
   component: SetupHotelComponent,
   canActivate: [AuthGuard],
   
+},
+{
+  path: 'waiting-approval',
+  component: ActivationPendingComponent,
+  canActivate: [AuthGuard]
 },
 
 
@@ -68,7 +73,7 @@ export const routes: Routes = [
   ]
 },
 
-  { path: '', redirectTo: 'tableview', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'tableview' }
 
 ];

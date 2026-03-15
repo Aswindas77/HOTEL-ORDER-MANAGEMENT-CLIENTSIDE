@@ -10,16 +10,34 @@ export const LoginGuard: CanActivateFn = () => {
   if (authApi.isLoggedIn()) {
 
     const role = authApi.getUserRole();
+    const status = authApi.getActivationStatus(); 
 
-    if (role === 'MANAGER') {
-      router.navigate(['/admin/dashboard']);
-    }
-
+    // SUPER ADMIN
     if (role === 'ADMIN') {
       router.navigate(['/super-admin/dashboard']);
+      return false;
     }
 
-    return false;
+    // MANAGER FLOW
+    if (role === 'MANAGER') {
+
+      if (status === 'pending') {
+        router.navigate(['/waiting-approval']);
+        return false;
+      }
+
+      if (status === 'approved') {
+        router.navigate(['/admin/dashboard']);
+        return false;
+      }
+
+      if (status === 'rejected') {
+        router.navigate(['/setup']);
+        return false;
+      }
+
+    }
+
   }
 
   return true;

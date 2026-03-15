@@ -64,25 +64,25 @@ export class LoginComponent {
         // MANAGER LOGIN
         if (res.user.role === 'MANAGER') {
 
-          const onboarding = res.onboarding;
+          const onboarding = res?.onboarding || {};
 
           // HOTEL NOT CREATED
           if (!onboarding.hotelCreated) {
-            this.router.navigate(['/setup-hotel']);
+            this.router.navigate(['/setup']);
             this.loading = false;
             return;
           }
 
           // BRANCH NOT CREATED
           if (onboarding.branchCount === 0) {
-            this.router.navigate(['/setup/branches']);
+            this.router.navigate(['/setup']);
             this.loading = false;
             return;
           }
 
           // SUBSCRIPTION NOT CREATED
           if (!onboarding.subscriptionCreated) {
-            this.router.navigate(['/setup/plans']);
+            this.router.navigate(['/setup']);
             this.loading = false;
             return;
           }
