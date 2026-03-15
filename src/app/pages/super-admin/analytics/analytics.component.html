@@ -1,0 +1,79 @@
+<div class="analytics-page">
+
+  <h1 class="page-title">Analytics Dashboard</h1>
+
+  <!-- STATS CARDS -->
+  <div class="stats-grid">
+
+    <div class="stat-card hotels">
+      <div class="stat-value">{{data?.hotels}}</div>
+      <div class="stat-label">Total Hotels</div>
+    </div>
+
+    <div class="stat-card branches">
+      <div class="stat-value">{{data?.branches}}</div>
+      <div class="stat-label">Total Branches</div>
+    </div>
+
+    <div class="stat-card users">
+      <div class="stat-value">{{data?.users}}</div>
+      <div class="stat-label">Total Users</div>
+    </div>
+
+  </div>
+
+
+  <!-- ACTIVATION REQUESTS -->
+  <div class="analytics-section">
+
+    <h2>Activation Requests</h2>
+
+    <div class="stats-grid small">
+
+      <div class="stat-card pending">
+        <div class="stat-value">{{data?.activationRequests?.pending}}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+
+      <div class="stat-card approved">
+        <div class="stat-value">{{data?.activationRequests?.approved}}</div>
+        <div class="stat-label">Approved</div>
+      </div>
+
+      <div class="stat-card rejected">
+        <div class="stat-value">{{data?.activationRequests?.rejected}}</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SUBSCRIPTIONS -->
+  <div class="analytics-section">
+
+    <h2>Subscription Plans</h2>
+
+    <div class="stats-grid small">
+
+      <div class="stat-card premium">
+        <div class="stat-value">{{data?.subscriptions?.premium}}</div>
+        <div class="stat-label">Premium</div>
+      </div>
+
+      <div class="stat-card standard">
+        <div class="stat-value">{{data?.subscriptions?.standard}}</div>
+        <div class="stat-label">Standard</div>
+      </div>
+
+      <div class="stat-card classic">
+        <div class="stat-value">{{data?.subscriptions?.classic}}</div>
+        <div class="stat-label">Classic</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

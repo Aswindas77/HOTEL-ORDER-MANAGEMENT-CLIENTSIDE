@@ -1,0 +1,69 @@
+.expiry-page {
+  padding: 24px;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.expiry-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.expiry-table th {
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  background: #f3f4f6;
+}
+
+.expiry-table td {
+  padding: 12px;
+  border-top: 1px solid #eee;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.empty {
+  text-align: center;
+  padding: 16px;
+  color: #888;
+}
+
+.badge.warning{
+  background:#fff3cd;
+  color:#856404;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+a{
+  color:#2563eb;
+  text-decoration:none;
+  font-weight:500;
+}
