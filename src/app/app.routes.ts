@@ -18,6 +18,8 @@ import { UserManagementComponent } from './pages/super-admin/user-management/use
 import { MenuCardManagementComponent } from './pages/super-admin/menu-card-management/menu-card-management';
 import { PurchaseApprovalComponent } from './pages/super-admin/purchase-approval/purchase-approval';
 import { LoginGuard } from './guards/login.guard';
+import { SetupHotelComponent } from './pages/setupHotel/setup-hotel.component';
+import { ActivationPendingComponent } from './pages/activation-pending/activation-pending.component';
 import { AnalyticsComponent } from './pages/super-admin/analytics/analytics.component';
 import { SubscriptionExpiryComponent } from './pages/super-admin/subscription-expiry/subscription-expiry.component';
 
@@ -27,6 +29,19 @@ export const routes: Routes = [
 
   { path: 'tableview', component: TableViewComponent },
   { path: 'chefView', component: ChefOrdersComponent },
+
+  {
+  path: 'setup',
+  component: SetupHotelComponent,
+  canActivate: [AuthGuard],
+  
+},
+{
+  path: 'waiting-approval',
+  component: ActivationPendingComponent,
+  canActivate: [AuthGuard]
+},
+
 
   {
     path: 'admin',
@@ -63,7 +78,7 @@ export const routes: Routes = [
   ]
 },
 
-  { path: '', redirectTo: 'tableview', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'tableview' }
 
 ];

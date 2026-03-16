@@ -44,4 +44,15 @@ export class AuthApiService {
     return decoded.role;
   }
 
+  getActivationStatus(): string | null {
+
+  const token = this.getToken();
+  if (!token) return null;
+
+  const decoded: any = jwtDecode(token);
+
+  return decoded.activationStatus;
+
+}
+
 }

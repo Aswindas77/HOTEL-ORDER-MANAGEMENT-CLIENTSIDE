@@ -1,91 +1,192 @@
-<div class="auth-wrapper">
+<div class="auth-shell">
 
-  <div class="auth-card">
+  <!-- Ambient background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-    <div class="auth-header">
-      <h2 *ngIf="isLoginMode">Welcome Back</h2>
-      <h2 *ngIf="!isLoginMode">Create Account</h2>
+  <!-- Grain overlay -->
+  <div class="grain"></div>
 
-      <p *ngIf="isLoginMode">Login to your hotel dashboard</p>
-      <p *ngIf="!isLoginMode">Register your hotel manager account</p>
-    </div>
+  <div class="wrap">
 
-    <!-- LOGIN FORM -->
+    <!-- Card -->
+    <div class="card">
 
-    <form *ngIf="isLoginMode" (ngSubmit)="login()">
-
-      <div class="input-group">
-        <input
-          type="email"
-          placeholder="Email"
-          [(ngModel)]="loginData.email"
-          name="email"
-          required>
+      <!-- Logo mark -->
+      <div class="icon-wrap">
+        <div class="icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M3 9L12 3L21 9V20C21 20.55 20.55 21 20 21H15V15H9V21H4C3.45 21 3 20.55 3 20V9Z"
+              stroke="url(#goldGrad)" stroke-width="1.6" stroke-linejoin="round" fill="none" />
+            <defs>
+              <linearGradient id="goldGrad" x1="3" y1="3" x2="21" y2="21">
+                <stop offset="0%" stop-color="#C9A84C" />
+                <stop offset="100%" stop-color="#8B6914" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
       </div>
 
-      <div class="input-group">
-        <input
-          type="password"
-          placeholder="Password"
-          [(ngModel)]="loginData.password"
-          name="password"
-          required>
+      <!-- Header -->
+      <div class="hdr">
+        <h1>{{ isLoginMode ? 'Welcome Back' : 'Create Account' }}</h1>
+        <p>{{ isLoginMode ? 'Sign in to your hotel dashboard' : 'Register your hotel manager account' }}</p>
       </div>
 
-      <button class="primary-btn" [disabled]="loading">
-        {{ loading ? 'Please wait...' : 'Login' }}
-      </button>
-
-      <p class="switch-text">
-        Don't have an account?
-        <span (click)="toggleMode()">Register</span>
-      </p>
-
-    </form>
-
-
-    <!-- REGISTER FORM -->
-
-    <form *ngIf="!isLoginMode" (ngSubmit)="register()">
-
-      <div class="input-group">
-        <input
-          type="text"
-          placeholder="Name"
-          [(ngModel)]="registerData.name"
-          name="name"
-          required>
+      <!-- Toggle pill -->
+      <div class="pill" role="tablist">
+        <button class="pt" [class.on]="isLoginMode" (click)="isLoginMode = true" role="tab">Sign In</button>
+        <button class="pt" [class.on]="!isLoginMode" (click)="isLoginMode = false" role="tab">Register</button>
       </div>
 
-      <div class="input-group">
-        <input
-          type="email"
-          placeholder="Email"
-          [(ngModel)]="registerData.email"
-          name="email"
-          required>
-      </div>
+      <!-- ── LOGIN FORM ── -->
+      <form *ngIf="isLoginMode" (ngSubmit)="login()" #loginForm="ngForm" class="form" autocomplete="off">
 
-      <div class="input-group">
-        <input
-          type="password"
-          placeholder="Password"
-          [(ngModel)]="registerData.password"
-          name="password"
-          required>
-      </div>
+        <div class="field">
+          <span class="ficon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 8l9 6 9-6" />
+            </svg>
+          </span>
+          <input type="email" placeholder="Email address" [(ngModel)]="loginData.email" name="email" required email
+            autocomplete="email" />
+        </div>
 
-      <button class="primary-btn" [disabled]="loading">
-        {{ loading ? 'Creating...' : 'Register' }}
-      </button>
+        <div class="field">
+          <span class="ficon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+          </span>
+          <input [type]="showPwd ? 'text' : 'password'" placeholder="Password" [(ngModel)]="loginData.password"
+            name="password" required minlength="6" autocomplete="current-password" />
+          <button type="button" class="eyebtn" (click)="showPwd = !showPwd"
+            [attr.aria-label]="showPwd ? 'Hide password' : 'Show password'">
+            <svg *ngIf="!showPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg *ngIf="showPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          </button>
+        </div>
 
-      <p class="switch-text">
-        Already have an account?
-        <span (click)="toggleMode()">Login</span>
-      </p>
+        <!-- <div class="forgot">
+          <a>Forgot password?</a>
+        </div> -->
 
-    </form>
+        <button class="btn" type="submit" [disabled]="loading || !loginForm.valid">
+          <span class="btn-bg"></span>
+          <span class="btn-line"></span>
+          <span class="btn-inner">
+            <span class="btn-label" *ngIf="!loading">Sign In</span>
+            <span class="dots" *ngIf="loading">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+          </span>
+          <span class="btn-shimmer"></span>
+        </button>
+
+        <div class="divider">
+          <span class="dline"></span>
+          <span class="dlabel">or continue with</span>
+          <span class="dline"></span>
+        </div>
+
+
+
+        <div class="switch">
+          Don't have an account? <span (click)="toggleMode()">Create one</span>
+        </div>
+
+      </form>
+
+      <!-- ── REGISTER FORM ── -->
+      <form *ngIf="!isLoginMode" (ngSubmit)="register()" #registerForm="ngForm" class="form" autocomplete="off">
+
+        <div class="field">
+          <span class="ficon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </span>
+          <input type="text" placeholder="Full name" [(ngModel)]="registerData.name" name="name" required
+            autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <span class="ficon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 8l9 6 9-6" />
+            </svg>
+          </span>
+          <input type="email" placeholder="Email address" [(ngModel)]="registerData.email" name="email" required email
+            autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <span class="ficon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+          </span>
+          <input [type]="showRegPwd ? 'text' : 'password'" placeholder="Password (min 6 chars)"
+            [(ngModel)]="registerData.password" name="password" required minlength="6" autocomplete="new-password" />
+          <button type="button" class="eyebtn" (click)="showRegPwd = !showRegPwd">
+            <svg *ngIf="!showRegPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg *ngIf="showRegPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          </button>
+        </div>
+
+        <button class="btn" type="submit" [disabled]="loading || !registerForm.valid">
+          <span class="btn-bg"></span>
+          <span class="btn-line"></span>
+          <span class="btn-inner">
+            <span class="btn-label" *ngIf="!loading">Create Account</span>
+            <span class="dots" *ngIf="loading">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+          </span>
+          <span class="btn-shimmer"></span>
+        </button>
+
+        <div class="divider">
+          <span class="dline"></span>
+          <span class="dlabel">or continue with</span>
+          <span class="dline"></span>
+        </div>
+
+        <div class="switch">
+          Already have an account? <span (click)="toggleMode()">Sign in</span>
+        </div>
+
+      </form>
+
+    </div><!-- /card -->
+
+    <!-- Footer -->
+    <p class="footer-note">Secured with 256-bit encryption &nbsp;·&nbsp; Hotel Management Suite</p>
 
   </div>
-
 </div>

@@ -1,0 +1,41 @@
+<div class="setup-wrapper">
+
+  <div class="setup-card">
+
+    <!-- Progress Steps -->
+    <div class="steps">
+
+      <div class="step" routerLink="/setup/hotel" routerLinkActive="active">
+        <span>1</span>
+        <p>Hotel</p>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="step" routerLink="/setup/branches" routerLinkActive="active">
+        <span>2</span>
+        <p>Branch</p>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="step" routerLink="/setup/plans" routerLinkActive="active">
+        <span>3</span>
+        <p>Plan</p>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="step" routerLink="/setup/menu" routerLinkActive="active">
+        <span>4</span>
+        <p>Menu</p>
+      </div>
+
+    </div>
+
+    <!-- Step Content -->
+    <router-outlet></router-outlet>
+
+  </div>
+
+</div>
