@@ -1,207 +1,307 @@
-<div class="orders-page">
+<div class="or-page">
 
-  <!-- ================= HEADER ================= -->
-  <div class="orders-header">
-    <h2>Orders Management</h2>
-    </div>
+  <!-- ══ HEADER ══ -->
+  <h1 class="or-title">Orders <em>Management</em></h1>
+  <p class="or-sub">Real-time order tracking and status management</p>
 
-<!-- FILTER TOOLBAR -->
-<div class="filter-card">
-  <div class="filter-bar">
 
-    <input
-      type="text"
-      placeholder="Search Order / Token / Menu Item"
-      [(ngModel)]="search"
-    />
+  <!-- ══ FILTER CARD ══ -->
+  <div class="or-filter-card">
+    <div class="or-filter-row">
 
-    <select [(ngModel)]="selectedStatus">
-      <option [ngValue]="null">All Status</option>
-      <option *ngFor="let s of statuses" [value]="s">
-        {{ s }}
-      </option>
-    </select>
-
-    <select [(ngModel)]="selectedPayment">
-      <option [ngValue]="null">All Payments</option>
-      <option *ngFor="let p of payments" [value]="p">
-        {{ p }}
-      </option>
-    </select>
-
-    <div class="filter-actions">
-      <button class="btn primary" (click)="searchOrders()">Search</button>
-      <button class="btn ghost" (click)="resetFilters()">Clear</button>
-    </div>
-
-    </div>
-  </div>
-
-  <!-- ================= LOADING ================= -->
-  <div *ngIf="loading" class="state loading">
-    Loading orders...
-  </div>
-
-  <!-- ================= EMPTY STATE ================= -->
-  <div *ngIf="!loading && orders.length === 0" class="state empty">
-    No orders found
-  </div>
-
-  <!-- ================= ORDERS LIST ================= -->
-   <div class="orders-list">
-  <div class="order-card" *ngFor="let order of orders">
-
-    <!-- ORDER SUMMARY ROW -->
-    <div class="order-row">
-      <div class="left">
-        <div class="order-number">
-          <strong>{{ order.orderNumber }}</strong>
-          <span class="token">Token #{{ order.tokenNumber }}</span>
-          <span class="items-count">
-  {{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}
-</span>
-        </div>
-        <div class="meta">
-          <span class="date">
-            {{ order.createdAt | date:'dd MMM yyyy, hh:mm a' }}
-          </span>
-        </div>
+      <div class="or-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#9A8E7E" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#9A8E7E" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Search order / token / menu item..."
+               [(ngModel)]="search" (keyup.enter)="searchOrders()"/>
       </div>
 
-      <div class="right">
-        <span
-          class="badge status"
-          [ngClass]="order.status.toLowerCase()">
-          {{ order.status }}
-        </span>
+      <select class="or-filter-select" [(ngModel)]="selectedStatus">
+        <option [ngValue]="null">All Status</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
 
-        <span
-          class="badge payment"
-          [ngClass]="order.paymentStatus.toLowerCase()">
-          {{ order.paymentStatus }}
-        </span>
+      <select class="or-filter-select" [(ngModel)]="selectedPayment">
+        <option [ngValue]="null">All Payments</option>
+        <option *ngFor="let p of payments" [value]="p">{{ p }}</option>
+      </select>
 
-        <span class="amount">
-          ₹{{ order.grandTotal }}
-        </span>
+      <div class="or-filter-divider"></div>
 
-        <button
-          class="btn view"
-          (click)="toggleExpand(order._id)">
-          {{ expandedOrderId === order._id ? 'Hide' : 'View' }}
-        </button>
-      </div>
+      <button class="or-btn-primary or-btn-sm" (click)="searchOrders()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#fff" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Search
+      </button>
+      <button class="or-btn-ghost or-btn-sm" (click)="resetFilters()">Clear</button>
+
+    </div>
+  </div>
+
+  <!-- ══ TABLE CARD ══ -->
+  <div class="or-table-card">
+    <!-- <div class="or-tc-head">
+      <span class="or-tc-title">Orders</span>
+      <span class="or-tc-meta">
+        Showing {{ orders.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}–{{ Math.min(currentPage * pageSize, totalOrders) }}
+        of {{ totalOrders }} orders
+      </span>
+    </div> -->
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="or-state-row">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="rgba(201,168,76,0.3)" stroke-width="2"/>
+        <path d="M12 3a9 9 0 019 9" stroke="#C9A84C" stroke-width="2" stroke-linecap="round">
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+        </path>
+      </svg>
+      Loading orders...
     </div>
 
-    <!-- ================= ORDER DETAILS ================= -->
-    <div class="details" *ngIf="expandedOrderId === order._id">
+    <!-- Empty -->
+    <div *ngIf="!loading && orders.length === 0" class="or-state-row">
+      <svg width="32" height="32" viewBox="0 0 20 20" fill="none">
+        <rect x="3" y="2" width="14" height="16" rx="2" stroke="#9A8E7E" stroke-width="1.5"/>
+        <path d="M7 8h6M7 12h4" stroke="#9A8E7E" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      No orders found
+    </div>
 
-      <!-- ITEMS -->
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Total</th>
+    <!-- Table -->
+    <table *ngIf="!loading && orders.length > 0" class="or-orders-table">
+      <thead>
+        <tr>
+          <th class="or-th-num">#</th>
+          <th>Order</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Amount</th>
+          <th style="width:80px">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let order of orders; let i = index">
+
+          <!-- ── MAIN ROW ── -->
+          <tr class="or-main-row"
+              [class.or-row-expanded]="expandedOrderId === order._id"
+              (click)="toggleExpand(order._id)">
+
+            <!-- Row number -->
+            <td class="or-col-num" [class.or-num-gold]="i === 0">
+              {{ (currentPage - 1) * pageSize + i + 1 }}
+            </td>
+
+            <!-- Order info -->
+            <td>
+              <div class="or-order-info">
+                <div class="or-order-num">{{ order.orderNumber }}</div>
+                <div class="or-order-meta">
+                  <span class="or-token">Token #{{ order.tokenNumber }}</span>
+                  <span class="or-items-count">
+                    {{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}
+                  </span>
+                  <span class="or-date">{{ order.createdAt | date:'dd MMM yyyy, hh:mm a' }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Status badge -->
+            <td>
+              <span class="or-sbadge" [class]="getStatusClass(order.status)">
+                {{ order.status }}
+              </span>
+            </td>
+
+            <!-- Payment badge -->
+            <td>
+              <span class="or-sbadge" [class]="getPaymentClass(order.paymentStatus)">
+                {{ order.paymentStatus }}
+              </span>
+            </td>
+
+            <!-- Amount -->
+            <td class="or-col-amount">₹{{ order.grandTotal | number }}</td>
+
+            <!-- View button -->
+            <td>
+              <button class="or-btn-view"
+                      [class.is-active]="expandedOrderId === order._id"
+                      (click)="$event.stopPropagation(); toggleExpand(order._id)">
+                {{ expandedOrderId === order._id ? 'Hide' : 'View' }}
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of order.items">
-            <td>{{ item.name }}</td>
-            <td>x{{ item.quantity }}</td>
-            <td>₹{{ item.total }}</td>
+
+          <!-- ── EXPANDED DETAIL ROW ── -->
+          <tr *ngIf="expandedOrderId === order._id" class="or-expand-row">
+            <td colspan="6">
+              <div class="or-expand-inner">
+
+                <!-- Status stepper -->
+                <div class="or-stepper">
+                  <ng-container *ngFor="let step of stepperSteps; let si = index; let last = last">
+                    <div class="or-step"
+                         [class.is-done]="isStepDone(order.status, step)"
+                         [class.is-current]="order.status === step">
+                      <span class="or-step-dot"></span>{{ step }}
+                    </div>
+                    <div class="or-step-line" *ngIf="!last"></div>
+                  </ng-container>
+                </div>
+
+                <div class="or-detail-grid">
+
+                  <!-- Items table -->
+                  <div>
+                    <table class="or-items-table">
+                      <thead>
+                        <tr>
+                          <th>Item</th>
+                          <th>Qty</th>
+                          <th>Unit</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of order.items">
+                          <td><div class="or-item-name">{{ item.name }}</div></td>
+                          <td>× {{ item.quantity }}</td>
+                          <td class="or-item-unit">₹{{ item.price }}</td>
+                          <td><span class="or-item-total">₹{{ item.total | number }}</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <!-- Action strip -->
+                    <div class="or-action-strip">
+                      <span class="or-act-label">Next Step:</span>
+
+                      <button *ngIf="order.status === OrderStatus.PENDING"
+                              class="or-btn-act preparing"
+                              (click)="changeStatus(order, OrderStatus.PREPARING)">
+                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="6.5" stroke="#534AB7" stroke-width="1.4"/>
+                          <path d="M8 5v3l2 1.5" stroke="#534AB7" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                        Mark Preparing
+                      </button>
+
+                      <button *ngIf="order.status === OrderStatus.PREPARING"
+                              class="or-btn-act ready"
+                              (click)="changeStatus(order, OrderStatus.READY)">
+                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="6.5" stroke="#2962A0" stroke-width="1.4"/>
+                          <path d="M5 8h6M9 6l2 2-2 2" stroke="#2962A0" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Mark Ready
+                      </button>
+
+                      <button *ngIf="order.status === OrderStatus.READY"
+                              class="or-btn-act served"
+                              (click)="changeStatus(order, OrderStatus.SERVED)">
+                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="6.5" stroke="#3a7d44" stroke-width="1.4"/>
+                          <path d="M5 8l2 2 4-4" stroke="#3a7d44" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Mark Served
+                      </button>
+
+                      <button *ngIf="order.status === OrderStatus.SERVED"
+                              class="or-btn-act completed"
+                              (click)="changeStatus(order, OrderStatus.COMPLETED)">
+                        Mark Completed
+                      </button>
+
+                      <button *ngIf="order.paymentStatus === 'UNPAID' && order.status === 'SERVED'"
+                              class="or-btn-act paid"
+                              (click)="markPaid(order)">
+                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                          <rect x="1.5" y="4" width="13" height="9" rx="2" stroke="#3a7d44" stroke-width="1.4"/>
+                          <path d="M1.5 7h13" stroke="#3a7d44" stroke-width="1.4"/>
+                        </svg>
+                        Mark Paid
+                      </button>
+
+                      <button *ngIf="order.paymentStatus === 'PAID'"
+                              class="or-btn-act unpaid"
+                              (click)="markUnpaid(order)">
+                        Mark Unpaid
+                      </button>
+
+                      <span *ngIf="order.status === OrderStatus.COMPLETED && order.paymentStatus === 'PAID'"
+                            class="or-done-label">
+                        ✓ Order fully completed
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Summary card -->
+                  <div class="or-sum-card">
+                    <div class="or-sum-title">Order Summary</div>
+                    <div class="or-sum-row">
+                      <span class="or-sl">Order No.</span>
+                      <span class="or-sv">{{ order.orderNumber }}</span>
+                    </div>
+                    <div class="or-sum-row">
+                      <span class="or-sl">Token</span>
+                      <span class="or-sv">#{{ order.tokenNumber }}</span>
+                    </div>
+                    <div class="or-sum-row" *ngIf="order.tableNumber">
+                      <span class="or-sl">Table</span>
+                      <span class="or-sv">T-{{ order.tableNumber }}</span>
+                    </div>
+                    <div class="or-sum-row">
+                      <span class="or-sl">Items</span>
+                      <span class="or-sv">{{ order.items.length }}</span>
+                    </div>
+                    <div class="or-sum-row">
+                      <span class="or-sl">Status</span>
+                      <span class="or-sbadge sm" [class]="getStatusClass(order.status)">
+                        {{ order.status }}
+                      </span>
+                    </div>
+                    <div class="or-sum-row">
+                      <span class="or-sl">Payment</span>
+                      <span class="or-sbadge sm" [class]="getPaymentClass(order.paymentStatus)">
+                        {{ order.paymentStatus }}
+                      </span>
+                    </div>
+                    <div class="or-sum-divider"></div>
+                    <div class="or-sum-row">
+                      <span class="or-sl">Grand Total</span>
+                      <span class="or-grand-total">₹{{ order.grandTotal | number }}</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </td>
           </tr>
-        </tbody>
-      </table>
 
-      <!-- ACTIONS -->
-<div class="actions">
-  <div class="status-action">
-    <label>Status</label>
-
-    <!-- Current Status Badge -->
-    <span
-      class="badge status"
-      [ngClass]="order.status.toLowerCase()"
-    >
-      {{ order.status }}
-    </span>
-
-    <!-- ACTION BUTTONS -->
-
-<button
-  *ngIf="order.status === OrderStatus.PENDING"
-  class="btn preparing"
-  (click)="changeStatus(order, OrderStatus.PREPARING)">
-  Mark Preparing
-</button>
-
-<button
-  *ngIf="order.status === OrderStatus.PREPARING"
-  class="btn ready"
-  (click)="changeStatus(order, OrderStatus.READY)">
-  Mark Ready
-</button>
-
-<button
-  *ngIf="order.status === OrderStatus.READY"
-  class="btn served"
-  (click)="changeStatus(order, OrderStatus.SERVED)">
-  Mark Served
-</button>
-
-<button
-  *ngIf="order.status === OrderStatus.SERVED"
-  class="btn success"
-  (click)="changeStatus(order, OrderStatus.COMPLETED)">
-  Mark Completed
-</button>
+        </ng-container>
+      </tbody>
+    </table>
   </div>
 
-        <div class="payment-action">
-<button
-  *ngIf="order.paymentStatus === 'UNPAID' && order.status === 'SERVED'"
-  class="btn success"
-  (click)="markPaid(order)">
-  Mark Paid
-</button>
-
-          <button
-            *ngIf="order.paymentStatus === 'PAID'"
-            class="btn warn"
-            (click)="markUnpaid(order)">
-            Mark Unpaid
-          </button>
-        </div>
-      </div>
-
-    </div>
+  <!-- ══ PAGINATION ══ -->
+  <div class="or-pagination" *ngIf="totalPages > 1">
+    <button class="or-pg-btn or-pg-nav" [disabled]="currentPage === 1" (click)="prevPage()">
+      ← Prev
+    </button>
+    <button class="or-pg-btn" *ngFor="let p of pageNumbers"
+            [class.is-active]="currentPage === p" (click)="goToPage(p)">
+      {{ p }}
+    </button>
+    <button class="or-pg-btn or-pg-nav" [disabled]="currentPage === totalPages" (click)="nextPage()">
+      Next →
+    </button>
   </div>
-</div>
-
-    <!-- PAGINATION -->
-<div class="pagination" *ngIf="totalPages > 1">
-
-  <button
-    class="btn ghost"
-    [disabled]="currentPage === 1"
-    (click)="prevPage()">
-    Prev
-  </button>
-
-  <button
-    *ngFor="let p of [].constructor(totalPages); let i = index"
-    class="btn page"
-    [class.active]="currentPage === i + 1"
-    (click)="goToPage(i + 1)">
-    {{ i + 1 }}
-  </button>
-
-  <button
-    class="btn ghost"
-    [disabled]="currentPage === totalPages"
-    (click)="nextPage()">
-    Next
-  </button>
 
 </div>

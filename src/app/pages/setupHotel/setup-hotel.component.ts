@@ -1,13 +1,14 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
-
 import { HotelApiService } from '../../services/hotel-api.service';
 import { BranchApiService } from '../../services/branch-api.service';
 import { SubscriptionApiService } from '../../services/subscription-api.service';
 import { ActivationRequestApiService } from '../../services/activation-request-api.service';
+import { AuthApiService } from '../../services/auth-api.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-setup-hotel',
@@ -16,9 +17,10 @@ import { ActivationRequestApiService } from '../../services/activation-request-a
   templateUrl: './setup-hotel.component.html',
   styleUrls: ['./setup-hotel.component.scss']
 })
-export class SetupHotelComponent {
+export class SetupHotelComponent implements OnInit {
 
   step = 1;
+  savedStep = 1;
   loading = false;
 
   hotelId: string = '';
@@ -52,22 +54,44 @@ export class SetupHotelComponent {
     private branchApi: BranchApiService,
     private subscriptionApi: SubscriptionApiService,
     private activationApi: ActivationRequestApiService,
+    private authApi: AuthApiService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
-  nextStep() {
-    this.step++;
+  /* =============================
+     LOAD CURRENT STEP
+  ============================= */
+
+  ngOnInit() {
+
+    const token = this.authApi.getToken();
+    if (!token) return;
+
+    const decoded: any = jwtDecode(token);
+
+    this.step = decoded.setupStep || 1;
+    this.savedStep = this.step;
+
+    this.hotelId = decoded.hotelId || '';
+    this.branchId = decoded.branchId || ''
+    this.subscriptionId = decoded.subscriptionId || ''
+
   }
+  /* =============================
+     NAVIGATION
+  ============================= */
 
   prevStep() {
-    if (this.step > 1) {
+
+    if (this.step > this.savedStep) {
       this.step--;
     }
+
   }
 
   /* =============================
-      STEP 1 : CREATE HOTEL
+     STEP 1 : CREATE HOTEL
   ============================= */
 
   createHotel() {
@@ -99,7 +123,10 @@ export class SetupHotelComponent {
             return;
           }
 
-          this.nextStep();
+          this.authApi.updateSetupStep(2, this.hotelId).subscribe();
+
+          this.step = 2;
+          this.savedStep = 2;
 
         },
 
@@ -115,7 +142,7 @@ export class SetupHotelComponent {
   }
 
   /* =============================
-      STEP 2 : CREATE BRANCH
+     STEP 2 : CREATE BRANCH
   ============================= */
 
   createBranch() {
@@ -159,7 +186,10 @@ export class SetupHotelComponent {
             return;
           }
 
-          this.nextStep();
+          this.authApi.updateSetupStep(3).subscribe();
+
+          this.step = 3;
+          this.savedStep = 3;
 
         },
 
@@ -175,7 +205,7 @@ export class SetupHotelComponent {
   }
 
   /* =============================
-      STEP 3 : SELECT PLAN
+     STEP 3 : SELECT PLAN
   ============================= */
 
   selectPlan(plan: string) {
@@ -217,7 +247,10 @@ export class SetupHotelComponent {
             return;
           }
 
-          this.nextStep();
+          this.authApi.updateSetupStep(4).subscribe();
+
+          this.step = 4;
+          this.savedStep = 4;
 
         },
 
@@ -233,7 +266,7 @@ export class SetupHotelComponent {
   }
 
   /* =============================
-      STEP 4 : FINISH SETUP
+     STEP 4 : FINISH SETUP
   ============================= */
 
   finishSetup() {
@@ -263,6 +296,8 @@ export class SetupHotelComponent {
       .subscribe({
 
         next: () => {
+
+          this.authApi.updateSetupStep(5).subscribe();
 
           alert('Activation request sent to admin');
 

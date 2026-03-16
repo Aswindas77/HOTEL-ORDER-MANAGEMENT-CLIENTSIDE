@@ -1,244 +1,369 @@
-<div class="menu-page">
+<div class="mn-page">
 
-  <div class="header">
-    <h2>Menu Management</h2>
-    <button class="btn primary" (click)="openAddMenu()">+ Add Menu</button>
-  </div>
-<!-- FILTER TOOLBAR -->
-<div class="filter-card">
-  <div class="filter-bar">
-
-    <input
-      type="text"
-      placeholder="Search menu..."
-      [(ngModel)]="filters.search"
-    />
-
-<div class="category-dropdown">
-
-  <button class="btn ghost"
-    (click)="showCategoryDropdown = !showCategoryDropdown">
-
-    {{ filters.category || 'All Categories' }} ▼
-
-  </button>
-
-  <div class="dropdown-menu" *ngIf="showCategoryDropdown">
-
-    <!-- All -->
-    <div class="dropdown-item"
-         (click)="selectCategory('')">
-      All Categories
+  <!-- ══ HEADER ══ -->
+  <div class="mn-header">
+    <div>
+      <h1 class="mn-title">Menu <em>Management</em></h1>
+      <p class="mn-sub">Total {{ menus.length }}  menu items</p>
     </div>
+    <div class="mn-header-right">
+      <button class="mn-btn-primary" (click)="openAddMenu()">+ Add Menu Item</button>
+    </div>
+  </div>
 
-    <!-- Categories -->
-    <div class="dropdown-item category-row"
-         *ngFor="let c of categories">
 
-      <span (click)="selectCategory(c.name)">
-        {{ c.name }}
-      </span>
+  <!-- ══ FILTER CARD ══ -->
+  <div class="mn-filter-card">
+    <div class="mn-filter-row">
 
-      <div class="category-actions">
-
-        <span class="edit"
-              (click)="editCategory(c)">✏</span>
-
-        <span class="delete"
-              (click)="deleteCategory(c)">🗑</span>
-
+      <!-- Search -->
+      <div class="mn-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#9A8E7E" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#9A8E7E" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search menu items..."
+          [(ngModel)]="filters.search"
+          (keyup.enter)="applyFilters()"
+        />
       </div>
 
-    </div>
+      <!-- Category dropdown -->
+      <div class="mn-cat-drop" (clickOutside)="showCategoryDropdown = false">
+        <button
+          class="mn-cat-btn"
+          [class.is-open]="showCategoryDropdown"
+          (click)="showCategoryDropdown = !showCategoryDropdown">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1" stroke="#7A6E60" stroke-width="1.4"/>
+            <rect x="9" y="1" width="6" height="6" rx="1" stroke="#7A6E60" stroke-width="1.4"/>
+            <rect x="1" y="9" width="6" height="6" rx="1" stroke="#7A6E60" stroke-width="1.4"/>
+            <rect x="9" y="9" width="6" height="6" rx="1" stroke="#7A6E60" stroke-width="1.4"/>
+          </svg>
+          {{ filters.category || 'All Categories' }}
+          <svg class="mn-chev" [class.is-up]="showCategoryDropdown"
+               viewBox="0 0 12 12" fill="none">
+            <path d="M2 4l4 4 4-4" stroke="#7A6E60"
+                  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
 
-    <div class="dropdown-divider"></div>
-
-    <div class="dropdown-item create"
-         (click)="openCreateCategory()">
-      + Create Category
-    </div>
-
-  </div>
-
-</div>
-
-    <select [(ngModel)]="filters.foodType">
-      <option value="">All Food Types</option>
-      <option *ngFor="let f of foodTypes" [value]="f">
-        {{ f }}
-      </option>
-    </select>
-
-    <div class="filter-actions">
-      <button class="btn primary" (click)="applyFilters()">Search</button>
-      <button class="btn ghost" (click)="clearFilters()">Clear</button>
-    </div>
-
-  </div>
-</div>
-
-
-  <div *ngIf="loading" class="state">Loading menus...</div>
-  <div *ngIf="!loading && menus.length === 0" class="state">No menu items found.</div>
- <div class="table-card">
-<table *ngIf="!loading && menus.length > 0">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Food Type</th>
-        <th>Price</th>
-        <th>Status</th>
-        <th width="160">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-
- <ng-container *ngFor="let menu of paginatedMenus">
- <tr [class.disabled-row]="!menu.isAvailable">
-        <td>{{ menu.name }}</td>
-        <td>{{ menu.category }}</td>
-        <td>{{ menu.foodType }}</td>
-        <td>₹{{ menu.price }}</td>
-        <td>
-  <span
-    class="status-badge"
-    [class.active]="menu.isAvailable"
-    [class.inactive]="!menu.isAvailable"
-  >
-    {{ menu.isAvailable ? 'Available' : 'Unavailable' }}
-          </span>
-        </td>
-<td class="actions-cell">
-  
-  <button
-  class="btn ghost"
-  (click)="toggleExpand(menu._id)">
-  {{ expandedMenuId === menu._id ? 'Hide' : 'View' }}
-</button>
-
-<button
-  class="btn ghost"
-  (click)="openEditMenu(menu)"
-  [disabled]="!menu.isAvailable"
->
-  Edit
-</button>
-
-  <button
-    class="btn"
-    [class.disable]="menu.isAvailable"
-    [class.enable]="!menu.isAvailable"
-    (click)="toggleAvailability(menu)"
-  >
-    {{ menu.isAvailable ? 'Disable' : 'Enable' }}
-  </button>
-</td>
-      </tr>
-<tr *ngIf="expandedMenuId === menu._id" class="expand-row">
-  <td colspan="6">
-
-    <div class="expand-content">
-
-      <div class="description">
-        <strong>Description:</strong>
-        <p>{{ menu.description || 'No description available' }}</p>
+        <div class="mn-cat-menu" *ngIf="showCategoryDropdown">
+          <div class="mn-cat-item"
+               [class.is-active]="!filters.category"
+               (click)="selectCategory('')">
+            All Categories
+          </div>
+          <div class="mn-cat-item"
+               *ngFor="let c of categories"
+               [class.is-active]="filters.category === c.name"
+               (click)="selectCategory(c.name)">
+            <span>{{ c.name }}</span>
+            <div class="mn-cat-actions">
+              <div class="mn-cat-act edit"
+                   (click)="$event.stopPropagation(); editCategory(c)"
+                   title="Edit">
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                  <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5Z"
+                        stroke="#2962A0" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="mn-cat-act del"
+                   (click)="$event.stopPropagation(); deleteCategory(c)"
+                   title="Delete">
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 2l10 10M12 2L2 12" stroke="#c0392b"
+                        stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="mn-cat-divider"></div>
+          <div class="mn-cat-item mn-cat-create" (click)="openCreateCategory()">
+            + Create Category
+          </div>
+        </div>
       </div>
-    </div>
 
-  </td>
-</tr>
-  </ng-container>
-
-    </tbody>
-  </table>
-</div>
- 
-
-<!-- PAGINATION -->
-<div class="pagination" *ngIf="totalPages > 1">
-
-  <button
-    class="btn ghost"
-    [disabled]="currentPage === 1"
-    (click)="prevPage()">
-    Prev
-  </button>
-
-  <button
-    *ngFor="let p of [].constructor(totalPages); let i = index"
-    class="btn page"
-    [class.active]="currentPage === i + 1"
-    (click)="goToPage(i + 1)">
-    {{ i + 1 }}
-  </button>
-
-  <button
-    class="btn ghost"
-    [disabled]="currentPage === totalPages"
-    (click)="nextPage()">
-    Next
-  </button>
-
-</div>
-
-  <!-- MODAL -->
-  <div class="modal" *ngIf="showModal">
-    <div class="modal-content">
-      <h3>{{ editingMenuId ? 'Edit Menu' : 'Add Menu' }}</h3>
-
-      <input placeholder="Name" [(ngModel)]="menuForm.name">
-      <textarea placeholder="Description" [(ngModel)]="menuForm.description"></textarea>
-<div class="price-input">
-  <span class="currency">₹</span>
-  <input
-    type="text"
-    placeholder="Enter price"
-    [(ngModel)]="menuForm.price"
-  />
-</div>
-
-
-
-      <!-- <input type="number" placeholder="Price" [(ngModel)]="menuForm.price"> -->
-
-      <select [(ngModel)]="menuForm.category">
-        <option value="">Select Category</option>
-        <option *ngFor="let c of categories" [value]="c.name">{{ c.name }}</option>
-      </select>
-
-      <select [(ngModel)]="menuForm.foodType">
-        <option value="">Select Food Type</option>
+      <!-- Food type -->
+      <select class="mn-filter-select" [(ngModel)]="filters.foodType">
+        <option value="">All Food Types</option>
         <option *ngFor="let f of foodTypes" [value]="f">{{ f }}</option>
       </select>
 
-      <div class="actions">
-        <button class="btn primary" (click)="saveMenu()">Save</button>
-        <button class="btn" (click)="closeModal()">Cancel</button>
+      <div class="mn-filter-divider"></div>
+
+      <button class="mn-btn-primary mn-btn-sm" (click)="applyFilters()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#fff" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Search
+      </button>
+      <button class="mn-btn-ghost mn-btn-sm" (click)="clearFilters()">Clear</button>
+    </div>
+  </div>
+
+  <!-- ══ TABLE CARD ══ -->
+  <div class="mn-table-card">
+    <div class="mn-tc-head">
+      <span class="mn-tc-title">Menu Items</span>
+      <span class="mn-tc-meta">
+        Showing {{ paginatedMenus.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}–{{ Math.min(currentPage * pageSize, menus.length) }}
+        of {{ menus.length }} items
+      </span>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="mn-state-row">
+      <div class="mn-state-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="rgba(201,168,76,0.3)" stroke-width="2"/>
+          <path d="M12 3a9 9 0 019 9" stroke="#C9A84C" stroke-width="2" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+          </path>
+        </svg>
+      </div>
+      <div>Loading menu items...</div>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && menus.length === 0" class="mn-state-row">
+      <div class="mn-state-icon">
+        <svg width="36" height="36" viewBox="0 0 20 20" fill="none">
+          <path d="M4 4h12M4 10h12M4 16h8" stroke="#9A8E7E" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>No menu items found</div>
+      <div class="mn-state-sub">Try adjusting your filters or add a new item</div>
+    </div>
+
+    <!-- Table -->
+    <table *ngIf="!loading && menus.length > 0">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Food Type</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th style="width:210px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let menu of paginatedMenus">
+
+          <!-- Main row -->
+          <tr [class.mn-row-disabled]="!menu.isAvailable">
+            <td>
+              <div class="mn-name-cell">
+                <div class="mn-food-dot"
+                     [class.veg]="menu.foodType === 'Veg'"
+                     [class.non]="menu.foodType !== 'Veg'">
+                </div>
+                <div>
+                  <div class="mn-name-text">{{ menu.name }}</div>
+                  <div class="mn-name-sub">
+                    {{ (menu.description || '') | slice:0:42 }}{{ (menu.description?.length ?? 0) > 42 ? '…' : '' }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="mn-cat-pill">
+                {{ menu.category?.name || menu.category }}
+              </span>
+            </td>
+            <td>
+              <span class="mn-ft-pill" [class.veg]="menu.foodType === 'Veg'"
+                    [class.non]="menu.foodType !== 'Veg'">
+                {{ menu.foodType }}
+              </span>
+            </td>
+            <td>
+              <span class="mn-price">₹{{ menu.price }}</span>
+            </td>
+            <td>
+              <span class="mn-status-pill"
+                    [class.avail]="menu.isAvailable"
+                    [class.unavail]="!menu.isAvailable">
+                {{ menu.isAvailable ? 'Available' : 'Unavailable' }}
+              </span>
+            </td>
+            <td>
+              <div class="mn-actions-cell">
+                <button class="mn-btn-action view"
+                        (click)="toggleExpand(menu._id)">
+                  {{ expandedMenuId === menu._id ? 'Hide' : 'View' }}
+                </button>
+                <button class="mn-btn-action edit"
+                        (click)="openEditMenu(menu)"
+                        [disabled]="!menu.isAvailable">
+                  Edit
+                </button>
+                <button class="mn-btn-action"
+                        [class.disable]="menu.isAvailable"
+                        [class.enable]="!menu.isAvailable"
+                        (click)="toggleAvailability(menu)">
+                  {{ menu.isAvailable ? 'Disable' : 'Enable' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Expanded detail row -->
+          <tr *ngIf="expandedMenuId === menu._id" class="mn-expand-row">
+            <td colspan="6">
+              <div class="mn-expand-inner">
+                <div class="mn-exp-section">
+                  <div class="mn-exp-label">Description</div>
+                  <div class="mn-exp-text">
+                    {{ menu.description || 'No description available' }}
+                  </div>
+                  <div class="mn-exp-meta">
+                    <div class="mn-exp-meta-item">
+                      <div class="mn-exp-meta-label">Category</div>
+                      <div class="mn-exp-meta-val">{{ menu.category?.name || menu.category }}</div>
+                    </div>
+                    <div class="mn-exp-meta-item">
+                      <div class="mn-exp-meta-label">Food Type</div>
+                      <div class="mn-exp-meta-val">{{ menu.foodType }}</div>
+                    </div>
+                    <div class="mn-exp-meta-item">
+                      <div class="mn-exp-meta-label">Price</div>
+                      <div class="mn-exp-meta-val mn-gold">₹{{ menu.price }}</div>
+                    </div>
+                    <div class="mn-exp-meta-item">
+                      <div class="mn-exp-meta-label">Status</div>
+                      <div class="mn-exp-meta-val" [class.mn-green]="menu.isAvailable"
+                           [class.mn-red]="!menu.isAvailable">
+                        {{ menu.isAvailable ? '✓ Available' : '✗ Unavailable' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ PAGINATION ══ -->
+  <div class="mn-pagination" *ngIf="totalPages > 1">
+    <button class="mn-pg-btn mn-pg-nav"
+            [disabled]="currentPage === 1"
+            (click)="prevPage()">
+      ← Prev
+    </button>
+
+    <button class="mn-pg-btn"
+            *ngFor="let p of pageNumbers"
+            [class.is-active]="currentPage === p"
+            (click)="goToPage(p)">
+      {{ p }}
+    </button>
+
+    <button class="mn-pg-btn mn-pg-nav"
+            [disabled]="currentPage === totalPages"
+            (click)="nextPage()">
+      Next →
+    </button>
+  </div>
+
+</div>
+
+<!-- ══ ADD / EDIT MENU MODAL ══ -->
+<div class="mn-modal-overlay" *ngIf="showModal" (click)="onOverlayClick($event, 'menu')">
+  <div class="mn-modal-box">
+    <div class="mn-modal-head">
+      <span class="mn-modal-title">
+        {{ editingMenuId ? 'Edit Menu Item' : 'Add Menu Item' }}
+      </span>
+      <div class="mn-modal-close" (click)="closeModal()">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="#7A6E60" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
       </div>
     </div>
-  </div>
+    <div class="mn-modal-body">
 
+      <div class="mn-field">
+        <div class="mn-field-label">Item Name</div>
+        <input class="mn-input" placeholder="e.g. Dal Makhani"
+               [(ngModel)]="menuForm.name"/>
+      </div>
 
-<!-- CATEGORY MODAL -->
-<div class="modal" *ngIf="showCategoryModal">
-  <div class="modal-content">
+      <div class="mn-field">
+        <div class="mn-field-label">Description</div>
+        <textarea class="mn-input mn-textarea"
+                  placeholder="Short description of the dish..."
+                  [(ngModel)]="menuForm.description"></textarea>
+      </div>
 
-    <h3>{{ editingCategoryId ? 'Edit Category' : 'Create Category' }}</h3>
+      <div class="mn-modal-row">
+        <div class="mn-field">
+          <div class="mn-field-label">Price</div>
+          <div class="mn-price-wrap">
+            <span class="mn-price-prefix">₹</span>
+            <input class="mn-input mn-price-input"
+                   type="number" placeholder="0.00"
+                   [(ngModel)]="menuForm.price"/>
+          </div>
+        </div>
+        <div class="mn-field">
+          <div class="mn-field-label">Category</div>
+          <select class="mn-input mn-select" [(ngModel)]="menuForm.category">
+            <option value="">Select Category</option>
+            <option *ngFor="let c of categories" [value]="c.name">{{ c.name }}</option>
+          </select>
+        </div>
+      </div>
 
-    <input
-      type="text"
-      placeholder="Category Name"
-      [(ngModel)]="categoryName"
-    />
+      <div class="mn-field">
+        <div class="mn-field-label">Food Type</div>
+        <select class="mn-input mn-select" [(ngModel)]="menuForm.foodType">
+          <option value="">Select Food Type</option>
+          <option *ngFor="let f of foodTypes" [value]="f">{{ f }}</option>
+        </select>
+      </div>
 
-    <div class="actions">
-      <button class="btn primary" (click)="saveCategory()">Save</button>
-      <button class="btn" (click)="closeCategoryModal()">Cancel</button>
     </div>
-
+    <div class="mn-modal-footer">
+      <button class="mn-btn-ghost" (click)="closeModal()">Cancel</button>
+      <button class="mn-btn-primary" (click)="saveMenu()">Save Item</button>
+    </div>
   </div>
 </div>
+
+<!-- ══ CATEGORY MODAL ══ -->
+<div class="mn-modal-overlay" *ngIf="showCategoryModal"
+     (click)="onOverlayClick($event, 'category')">
+  <div class="mn-modal-box mn-modal-sm">
+    <div class="mn-modal-head">
+      <span class="mn-modal-title">
+        {{ editingCategoryId ? 'Edit Category' : 'Create Category' }}
+      </span>
+      <div class="mn-modal-close" (click)="closeCategoryModal()">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="#7A6E60" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="mn-modal-body">
+      <div class="mn-field">
+        <div class="mn-field-label">Category Name</div>
+        <input class="mn-input" placeholder="e.g. Starters"
+               [(ngModel)]="categoryName"/>
+      </div>
+    </div>
+    <div class="mn-modal-footer">
+      <button class="mn-btn-ghost" (click)="closeCategoryModal()">Cancel</button>
+      <button class="mn-btn-primary" (click)="saveCategory()">Save Category</button>
+    </div>
+  </div>
 </div>
-
-

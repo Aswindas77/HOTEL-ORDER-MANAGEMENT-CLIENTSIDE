@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MenuComponent } from './pages/menu/menu.component';
@@ -10,7 +9,6 @@ import { TableViewComponent } from './pages/tableViewSide/tableView';
 import { ChefOrdersComponent } from './pages/chefViewSide/chef-view.component';
 import { HotelsComponent } from './pages/super-admin/hotel management/hotels.component';
 import { BranchRequestsComponent } from './pages/super-admin/branch-requests/branch-requests.component';
-
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/auth/login.component';
 import { SuperAdminLayoutComponent } from './layout/super-admin-laoyout/sup-admin-layout';

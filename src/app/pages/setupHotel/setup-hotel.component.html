@@ -8,7 +8,7 @@
 
   <!-- ── Side Nav Arrow: BACK ── -->
   <button class="side-arrow side-arrow--left"
-    [class.visible]="step > 1"
+    [class.visible]="step > savedStep"
     (click)="prevStep()"
     aria-label="Go back">
     <span class="arrow-ring">
@@ -20,7 +20,7 @@
   </button>
 
   <!-- ── Side Nav Arrow: NEXT (shown only on step 2 for manual skip hint) ── -->
-  <button class="side-arrow side-arrow--right"
+  <!-- <button class="side-arrow side-arrow--right"
     [class.visible]="step === 2"
     (click)="createBranch()"
     aria-label="Continue">
@@ -30,7 +30,7 @@
         <path d="M9 18l6-6-6-6"/>
       </svg>
     </span>
-  </button>
+  </button> -->
 
   <!-- ── Main content ── -->
   <div class="shell">
@@ -46,10 +46,10 @@
 
         <div class="node-wrap" *ngFor="let s of stepsMeta; let i = index">
           <div class="node"
-            [class.done]="step > i + 1"
+            [class.done]="savedStep > i + 1"
             [class.active]="step === i + 1">
             <span class="node-num" *ngIf="step <= i + 1">{{ i + 1 }}</span>
-            <svg *ngIf="step > i + 1" class="node-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg *ngIf="savedStep > i + 1" class="node-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
             <div class="node-pulse" *ngIf="step === i + 1"></div>

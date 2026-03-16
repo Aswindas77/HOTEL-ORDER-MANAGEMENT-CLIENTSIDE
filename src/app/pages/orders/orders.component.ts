@@ -1,12 +1,17 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  ViewEncapsulation,
+} from '@angular/core';
+import { CommonModule }          from '@angular/common';
+import { FormsModule }           from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, finalize } from 'rxjs/operators';
+import { filter, finalize }      from 'rxjs/operators';
 
-import { Order } from '../../models/order.model';
-import { OrderStatus } from '../../enums/order-status.enum';
-import { PaymentStatus } from '../../enums/payment-status.enum';
+import { Order }          from '../../models/order.model';
+import { OrderStatus }    from '../../enums/order-status.enum';
+import { PaymentStatus }  from '../../enums/payment-status.enum';
 import { OrderApiService } from '../../services/order-api-services';
 
 @Component({
@@ -14,73 +19,87 @@ import { OrderApiService } from '../../services/order-api-services';
   selector: 'app-orders',
   imports: [CommonModule, FormsModule],
   templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.scss'],
+  styleUrls:   ['./orders.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class OrdersComponent implements OnInit {
 
-  /* ================= DATA ================= */
-  orders: Order[] = [];
-  loading = false;
-  OrderStatus = OrderStatus;
+  // ── Expose to template ────────────────────────────────────────
+  readonly Math          = Math;
+  readonly OrderStatus   = OrderStatus;
+  readonly PaymentStatus = PaymentStatus;
 
-  /* ================= FILTERS ================= */
-  search = '';
-  selectedStatus: OrderStatus | null = null;
+  // ── Data ─────────────────────────────────────────────────────
+  orders:  Order[] = [];
+  loading  = false;
+
+  // ── Filters ───────────────────────────────────────────────────
+  search          = '';
+  selectedStatus:  OrderStatus   | null = null;
   selectedPayment: PaymentStatus | null = null;
 
   statuses = Object.values(OrderStatus);
   payments = Object.values(PaymentStatus);
 
-  /* ================= PAGINATION ================= */
-  currentPage = 1;
-  pageSize = 5;
-  totalPages = 1;
+  // ── Pagination ────────────────────────────────────────────────
+  currentPage  = 1;
+  pageSize     = 5;
+  totalPages   = 1;
+  totalOrders  = 0;          // total count from API for header label
 
-  /* ================= UI ================= */
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  // ── UI ────────────────────────────────────────────────────────
   expandedOrderId: string | null = null;
 
+  // Stepper step labels in flow order
+  readonly stepperSteps: string[] = [
+    OrderStatus.PENDING,
+    OrderStatus.PREPARING,
+    OrderStatus.READY,
+    OrderStatus.SERVED,
+    OrderStatus.COMPLETED,
+  ];
+
+  // ── Stat card computed values ─────────────────────────────────
+  get totalOrderCount(): number { return this.orders.length; }
+  get pendingCount():    number { return this.orders.filter(o => o.status === OrderStatus.PENDING).length; }
+  get preparingCount():  number { return this.orders.filter(o => o.status === OrderStatus.PREPARING).length; }
+  get servedCount():     number { return this.orders.filter(o => o.status === OrderStatus.SERVED).length; }
+  get unpaidCount():     number { return this.orders.filter(o => o.paymentStatus === 'UNPAID').length; }
+
+  // ── Valid status transitions ───────────────────────────────────
   validStatusTransitions: Record<string, OrderStatus[]> = {
-    PENDING: [OrderStatus.PREPARING],
+    PENDING:   [OrderStatus.PREPARING],
     PREPARING: [OrderStatus.READY, OrderStatus.PENDING],
-    READY: [OrderStatus.SERVED, OrderStatus.PREPARING],
-    SERVED: [OrderStatus.COMPLETED, OrderStatus.READY],
+    READY:     [OrderStatus.SERVED, OrderStatus.PREPARING],
+    SERVED:    [OrderStatus.COMPLETED, OrderStatus.READY],
     COMPLETED: [],
   };
 
   constructor(
     private orderApi: OrderApiService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private router:   Router,
+    private cdr:      ChangeDetectorRef,
   ) {}
 
-  /* ================= INIT ================= */
+  // ── Lifecycle ─────────────────────────────────────────────────
+
   ngOnInit(): void {
+    const query = this.router.parseUrl(this.router.url).queryParams;
 
-      const url = this.router.parseUrl(this.router.url);
-  const query = url.queryParams;
+    if (query['page'])    this.currentPage     = Number(query['page']);
+    if (query['search'])  this.search          = query['search'];
+    if (query['status'])  this.selectedStatus  = query['status'];
+    if (query['payment']) this.selectedPayment = query['payment'];
 
-  if (query['page']) {
-    this.currentPage = Number(query['page']);
-  }
-
-  if (query['search']) {
-    this.search = query['search'];
-  }
-
-  if (query['status']) {
-    this.selectedStatus = query['status'];
-  }
-
-  if (query['payment']) {
-    this.selectedPayment = query['payment'];
-  }
-
+    // Reload whenever navigating back to /orders
     this.router.events
       .pipe(
-        filter(
-          (event): event is NavigationEnd =>
-            event instanceof NavigationEnd &&
-            event.urlAfterRedirects.includes('/orders')
+        filter((e): e is NavigationEnd =>
+          e instanceof NavigationEnd && e.urlAfterRedirects.includes('/orders')
         )
       )
       .subscribe(() => this.loadOrders());
@@ -88,126 +107,140 @@ export class OrdersComponent implements OnInit {
     this.loadOrders();
   }
 
-  /* ================= LOAD ORDERS ================= */
-  loadOrders(): void {
+  // ── Load orders ───────────────────────────────────────────────
 
-      this.router.navigate([], {
-    queryParams: {
-      page: this.currentPage,
-      search: this.search || null,
-      status: this.selectedStatus || null,
-      payment: this.selectedPayment || null
-    },
-    queryParamsHandling: 'merge'
-  });
+  loadOrders(): void {
+    this.router.navigate([], {
+      queryParams: {
+        page:    this.currentPage,
+        search:  this.search          || null,
+        status:  this.selectedStatus  || null,
+        payment: this.selectedPayment || null,
+      },
+      queryParamsHandling: 'merge',
+    });
 
     this.loading = true;
 
     this.orderApi.getOrders({
-      search: this.search || undefined,
-      status: this.selectedStatus ?? undefined,
+      search:        this.search          || undefined,
+      status:        this.selectedStatus  ?? undefined,
       paymentStatus: this.selectedPayment ?? undefined,
-      page: this.currentPage,
-      limit: this.pageSize
+      page:          this.currentPage,
+      limit:         this.pageSize,
     })
-    .pipe(
-      finalize(() => {
-        this.loading = false;
-        this.cdr.detectChanges(); // force UI refresh
-      })
-    )
+    .pipe(finalize(() => {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }))
     .subscribe({
       next: (res) => {
-
-        console.log("ORDERS RESPONSE:", res);
-
-        this.orders = res?.data ?? [];
-        this.totalPages = res?.totalPages ?? 1;
-
-        this.cdr.detectChanges(); // refresh UI immediately
+        this.orders      = res?.data       ?? [];
+        this.totalPages  = res?.totalPages ?? 1;
+        this.totalOrders = res?.total      ?? this.orders.length;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-
-        console.error("Orders API error:", err);
+        console.error('Orders API error:', err);
         this.orders = [];
-
         this.cdr.detectChanges();
-      }
+      },
     });
-
   }
 
-  /* ================= ACTIONS ================= */
+  // ── Row expand / collapse ─────────────────────────────────────
 
-  toggleExpand(orderId: string) {
-    this.expandedOrderId =
-      this.expandedOrderId === orderId ? null : orderId;
+  toggleExpand(orderId: string): void {
+    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
   }
 
-  changeStatus(order: Order, status: OrderStatus) {
+  // ── Status / payment actions ──────────────────────────────────
+
+  changeStatus(order: Order, status: OrderStatus): void {
     this.orderApi.updateOrderStatus(order._id, status)
       .subscribe(() => this.loadOrders());
   }
 
-  markPaid(order: Order) {
+  markPaid(order: Order): void {
     this.orderApi.markAsPaid(order._id)
       .subscribe(() => this.loadOrders());
   }
 
-  markUnpaid(order: Order) {
+  markUnpaid(order: Order): void {
     this.orderApi.markAsUnpaid(order._id)
       .subscribe(() => this.loadOrders());
   }
-
-  /* ================= RESET ================= */
-
-  resetFilters() {
-    this.search = '';
-    this.selectedStatus = null;
-    this.selectedPayment = null;
-    this.currentPage = 1;
-
-    this.loadOrders();
-  }
-
-  searchOrders() {
-
-  this.currentPage = 1;
-
-  this.router.navigate([], {
-    queryParams: {
-      page: 1,
-      search: this.search || null,
-      status: this.selectedStatus || null,
-      payment: this.selectedPayment || null
-    },
-    queryParamsHandling: 'merge'
-  });
-
-  this.loadOrders();
-}
 
   getNextStatuses(order: Order): OrderStatus[] {
     return this.validStatusTransitions[order.status] ?? [];
   }
 
-  /* ================= PAGINATION ================= */
+  // ── Stepper helpers ───────────────────────────────────────────
 
-  goToPage(page: number) {
+  /** True when `step` comes before `currentStatus` in the flow */
+  isStepDone(currentStatus: string, step: string): boolean {
+    const curr = this.stepperSteps.indexOf(currentStatus as OrderStatus);
+    const idx  = this.stepperSteps.indexOf(step as OrderStatus);
+    return idx < curr;
+  }
+
+  // ── Badge CSS class helpers ───────────────────────────────────
+
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      PENDING:   'or-pending',
+      PREPARING: 'or-preparing',
+      READY:     'or-ready',
+      SERVED:    'or-served',
+      COMPLETED: 'or-completed',
+    };
+    return map[status] ?? '';
+  }
+
+  getPaymentClass(paymentStatus: string): string {
+    return paymentStatus === 'PAID' ? 'or-paid' : 'or-unpaid';
+  }
+
+  // ── Filters ───────────────────────────────────────────────────
+
+  searchOrders(): void {
+    this.currentPage = 1;
+    this.router.navigate([], {
+      queryParams: {
+        page:    1,
+        search:  this.search          || null,
+        status:  this.selectedStatus  || null,
+        payment: this.selectedPayment || null,
+      },
+      queryParamsHandling: 'merge',
+    });
+    this.loadOrders();
+  }
+
+  resetFilters(): void {
+    this.search          = '';
+    this.selectedStatus  = null;
+    this.selectedPayment = null;
+    this.currentPage     = 1;
+    this.loadOrders();
+  }
+
+  // ── Pagination ────────────────────────────────────────────────
+
+  goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
-
     this.currentPage = page;
     this.loadOrders();
   }
 
-  nextPage() {
+  nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.loadOrders();
     }
   }
 
-  prevPage() {
+  prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.loadOrders();

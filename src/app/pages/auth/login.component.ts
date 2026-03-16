@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthApiService } from '../../services/auth-api.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
@@ -16,8 +17,8 @@ export class LoginComponent {
   isLoginMode = true;
   loading = false;
 
-  // UI state for password visibility toggles
-  showPwd    = false;
+ 
+  showPwd = false;
   showRegPwd = false;
 
   loginData = {
@@ -38,8 +39,7 @@ export class LoginComponent {
 
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
-    // Reset visibility flags when switching modes
-    this.showPwd    = false;
+    this.showPwd = false;
     this.showRegPwd = false;
   }
 
@@ -51,51 +51,33 @@ export class LoginComponent {
 
       next: (res: any) => {
 
-        // save JWT token
         localStorage.setItem('token', res.accessToken);
 
-        // ADMIN LOGIN
+
         if (res.user.role === 'ADMIN') {
           this.router.navigate(['/super-admin']);
           this.loading = false;
           return;
         }
 
-        // MANAGER LOGIN
         if (res.user.role === 'MANAGER') {
 
-          const onboarding = res?.onboarding || {};
+          const decoded: any = jwtDecode(res.accessToken);
+          const step = decoded.setupStep || 1;
 
-          // HOTEL NOT CREATED
-          if (!onboarding.hotelCreated) {
+          if (step <= 4) {
             this.router.navigate(['/setup']);
             this.loading = false;
             return;
           }
 
-          // BRANCH NOT CREATED
-          if (onboarding.branchCount === 0) {
-            this.router.navigate(['/setup']);
-            this.loading = false;
-            return;
-          }
-
-          // SUBSCRIPTION NOT CREATED
-          if (!onboarding.subscriptionCreated) {
-            this.router.navigate(['/setup']);
-            this.loading = false;
-            return;
-          }
-
-          // WAITING FOR ADMIN APPROVAL
-          if (onboarding.activationStatus === 'pending') {
+          if (step === 5) {
             this.router.navigate(['/waiting-approval']);
             this.loading = false;
             return;
           }
 
-          // APPROVED → DASHBOARD
-          if (onboarding.activationStatus === 'approved') {
+          if (step === 6) {
             this.router.navigate(['/admin/dashboard']);
             this.loading = false;
             return;

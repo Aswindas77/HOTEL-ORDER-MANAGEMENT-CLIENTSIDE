@@ -1,11 +1,8 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Arial, sans-serif;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, 
+body { 
+  --al-sand:#F5EFE6; --al-gold:#C9A84C; --al-gold2:#B8922E; --al-gold3:#A07820;
+  --al-border:rgba(201,168,76,0.26); --al-gb:rgba(201,168,76,0.16);
+  --al-dark:#1A1612; --al-dark2:#2A2318; --al-muted:#7A6E60;
+  --al-muted2:#9A8E7E; --al-white:#FFFDF9;
 }

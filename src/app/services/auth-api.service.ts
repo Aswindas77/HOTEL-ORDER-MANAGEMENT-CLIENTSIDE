@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(payload: any) {
     return this.http.post(`${environment.host}/api/auth/login`, payload);
@@ -46,13 +46,31 @@ export class AuthApiService {
 
   getActivationStatus(): string | null {
 
-  const token = this.getToken();
-  if (!token) return null;
+    const token = this.getToken();
+    if (!token) return null;
 
-  const decoded: any = jwtDecode(token);
+    const decoded: any = jwtDecode(token);
 
-  return decoded.activationStatus;
+    return decoded.activationStatus;
 
-}
+  }
+
+  getProfile() {
+    return this.http.get(`${environment.host}/api/auth/me`);
+  }
+
+  updateSetupStep(step: number, hotelId?: string) {
+
+    const payload: any = {
+      setupStep: step
+    };
+
+    if (hotelId) {
+      payload.hotelId = hotelId;
+    }
+
+    return this.http.patch(`${environment.host}/api/auth/setup-step`, payload);
+
+  }
 
 }

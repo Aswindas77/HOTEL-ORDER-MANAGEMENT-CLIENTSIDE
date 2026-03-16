@@ -1,207 +1,228 @@
-<div class="tables-page">
+<div class="tb-page">
 
-  <!-- ================= HEADER ================= -->
-  <div class="header">
-    <h2>Tables Management</h2>
-
-    <button class="btn primary" (click)="openAddModal()">
-      + Add Table
+  <!-- ══ HEADER ══ -->
+  <div class="tb-header-row">
+    <div>
+      <div class="tb-eyebrow">Hotel Admin</div>
+      <h1 class="tb-title">Tables <em>Management</em></h1>
+      <p class="tb-sub">Manage seating, capacity and table status</p>
+    </div>
+    <button class="tb-btn-primary" (click)="openAddModal()">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      Add Table
     </button>
   </div>
 
-  <div class="filter-card">
 
-  <div class="filter-bar">
+  <!-- ══ FILTER CARD ══ -->
+  <div class="tb-filter-card">
+    <div class="tb-filter-row">
 
-    <input
-      type="text"
-      placeholder="Search table..."
-      [(ngModel)]="search"
-    />
+      <div class="tb-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#9A8E7E" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#9A8E7E" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Search table number..."
+               [(ngModel)]="search" (keyup.enter)="applyFilters()"/>
+      </div>
 
-    <select [(ngModel)]="selectedStatus">
-      <option [ngValue]="null">All Status</option>
-      <option *ngFor="let s of statuses" [value]="s">
-        {{ s }}
-      </option>
-    </select>
+      <select class="tb-filter-select" [(ngModel)]="selectedStatus">
+        <option [ngValue]="null">All Status</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
 
-    <div class="filter-actions">
-      <button class="btn primary" (click)="applyFilters()">
+      <div class="tb-filter-divider"></div>
+
+      <button class="tb-btn-primary tb-btn-sm" (click)="applyFilters()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#fff" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
         Search
       </button>
-
-      <button
-        class="btn ghost"
-        (click)="search=''; selectedStatus=null; applyFilters()">
+      <button class="tb-btn-ghost tb-btn-sm"
+              (click)="search=''; selectedStatus=null; applyFilters()">
         Clear
       </button>
-    </div>
 
+    </div>
   </div>
 
-</div>
-
-<div
-  *ngIf="!loading && tables.length > 0 && filteredTables.length === 0"
-  class="empty-state"
->
-  <h3>No tables found</h3>
-  <p>No tables match your search or filter.</p>
-</div>
-
-  <!-- ================= LOADING ================= -->
-  <div *ngIf="loading" class="state">
+  <!-- ══ LOADING ══ -->
+  <div *ngIf="loading" class="tb-state-row">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="rgba(201,168,76,0.3)" stroke-width="2"/>
+      <path d="M12 3a9 9 0 019 9" stroke="#C9A84C" stroke-width="2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate"
+          from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+      </path>
+    </svg>
     Loading tables...
   </div>
 
-  <!-- ================= EMPTY STATE ================= -->
-  <div
-    *ngIf="!loading && tables.length === 0"
-    class="empty-state"
-  >
-    <h3>No tables created yet</h3>
-    <p>Create tables to manage seating and orders</p>
-
-    <button class="btn primary" (click)="openAddModal()">
+  <!-- ══ EMPTY — no tables at all ══ -->
+  <div *ngIf="!loading && tables.length === 0" class="tb-empty">
+    <div class="tb-empty-icon">
+      <svg width="42" height="42" viewBox="0 0 20 20" fill="none">
+        <rect x="2" y="7" width="16" height="2" rx="1" stroke="#9A8E7E" stroke-width="1.4"/>
+        <path d="M5 9v5M15 9v5" stroke="#9A8E7E" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="tb-empty-title">No tables created yet</div>
+    <div class="tb-empty-sub">Create tables to manage seating and orders</div>
+    <button class="tb-btn-primary" style="margin-top:8px" (click)="openAddModal()">
       Add your first table
     </button>
   </div>
 
-  <!-- ================= TABLE GRID ================= -->
-  <div class="table-grid" *ngIf="!loading && filteredTables.length > 0">
+  <!-- ══ EMPTY — filter no match ══ -->
+  <div *ngIf="!loading && tables.length > 0 && filteredTables.length === 0"
+       class="tb-empty">
+    <div class="tb-empty-icon">
+      <svg width="38" height="38" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8" stroke="#9A8E7E" stroke-width="1.4"/>
+        <path d="M7 13l6-6M13 13L7 7" stroke="#9A8E7E" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="tb-empty-title">No tables found</div>
+    <div class="tb-empty-sub">No tables match your search or filter</div>
+  </div>
 
-    <div class="table-card" *ngFor="let table of paginatedTables">
+  <!-- ══ TABLE GRID ══ -->
+  <div class="tb-grid" *ngIf="!loading && filteredTables.length > 0">
 
+    <div class="tb-card" *ngFor="let table of paginatedTables">
 
-
-      <!-- CARD HEADER -->
-      <div class="card-header">
-        <div class="title">
-          <h3>Table {{ table.tableNumber }}</h3>
-          <span class="capacity">{{ table.capacity }} seats</span>
-        </div>
-
-        <span
-          class="status-pill"
-          [ngClass]="table.status.toLowerCase()">
-          {{ table.status }}
-        </span>
+      <!-- Colour band (top border) -->
+      <div class="tb-card-band"
+           [class.available]="table.status === TableStatus.AVAILABLE"
+           [class.occupied]="table.status === TableStatus.OCCUPIED">
       </div>
 
-      <!-- CARD ACTIONS -->
-      <div class="card-actions">
+      <!-- Card body -->
+      <div class="tb-card-body">
+        <div class="tb-card-top">
+          <div>
+            <div class="tb-card-num-label">Table No.</div>
+            <div class="tb-card-num">{{ table.tableNumber }}</div>
+          </div>
+          <span class="tb-status-pill" [class]="getStatusClass(table.status)">
+            {{ table.status }}
+          </span>
+        </div>
 
-        <!-- PRIMARY ACTION -->
-        <button
-          *ngIf="table.status === TableStatus.AVAILABLE"
-          class="btn success"
-          (click)="openTable(table)">
+        <div class="tb-card-cap">
+          <div class="tb-cap-icon">
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="7" r="3.5" stroke="#B8922E" stroke-width="1.5"/>
+              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#B8922E" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="tb-cap-label">Capacity:</span>
+          <span class="tb-cap-val">{{ table.capacity }} seats</span>
+        </div>
+      </div>
+
+      <!-- Card footer -->
+      <div class="tb-card-footer">
+        <button *ngIf="table.status === TableStatus.AVAILABLE"
+                class="tb-btn-open"
+                (click)="openTable(table)">
           Open Table
         </button>
-
-        <button
-          *ngIf="table.status === TableStatus.OCCUPIED"
-          class="btn warn"
-          (click)="closeTable(table)">
+        <button *ngIf="table.status !== TableStatus.AVAILABLE"
+                class="tb-btn-close"
+                (click)="closeTable(table)">
           Close Table
         </button>
 
-        <!-- SECONDARY ACTIONS -->
-        <div class="actions-right">
-          <button
-            class="btn ghost"
-            (click)="openEditModal(table)">
-            Edit
-          </button>
+        <div class="tb-card-sec-actions">
+          <button class="tb-btn-edit" (click)="openEditModal(table)">Edit</button>
+          <button class="tb-btn-del" (click)="removeTable(table)">Remove</button>
+        </div>
+      </div>
 
-          <button
-            class="btn ghost danger"
-            (click)="removeTable(table)">
-            Remove
-          </button>
+    </div>
+  </div>
+
+  <!-- ══ PAGINATION ══ -->
+  <div class="tb-pagination" *ngIf="totalPages > 1">
+    <button class="tb-pg-btn tb-pg-nav"
+            [disabled]="currentPage === 1"
+            (click)="prevPage()">
+      ← Prev
+    </button>
+    <button class="tb-pg-btn"
+            *ngFor="let p of pageNumbers"
+            [class.is-active]="currentPage === p"
+            (click)="goToPage(p)">
+      {{ p }}
+    </button>
+    <button class="tb-pg-btn tb-pg-nav"
+            [disabled]="currentPage === totalPages"
+            (click)="nextPage()">
+      Next →
+    </button>
+  </div>
+
+</div>
+
+<!-- ══ ADD / EDIT MODAL ══ -->
+<div class="tb-modal-overlay" *ngIf="modalOpen"
+     (click)="onOverlayClick($event)">
+  <div class="tb-modal-box">
+    <div class="tb-modal-head">
+      <span class="tb-modal-title">
+        {{ modalMode === 'add' ? 'Add Table' : 'Edit Table' }}
+      </span>
+      <div class="tb-modal-close" (click)="closeModal()">
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="#7A6E60" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="tb-modal-body">
+      <div class="tb-modal-row">
+
+        <div class="tb-field">
+          <div class="tb-field-label">Table Number</div>
+          <input class="tb-input" type="text"
+                 placeholder="e.g. T-01, A3"
+                 [(ngModel)]="form.tableNumber"/>
+        </div>
+
+        <div class="tb-field">
+          <div class="tb-field-label">Capacity</div>
+          <input class="tb-input" type="number" min="1"
+                 placeholder="Number of seats"
+                 [(ngModel)]="form.capacity"/>
         </div>
 
       </div>
     </div>
-
-  </div>
-</div>
-
-
-      <!-- ================= PAGINATION ================= -->
-<div class="pagination" *ngIf="totalPages > 1">
-
-  <button
-    class="btn ghost"
-    [disabled]="currentPage === 1"
-    (click)="prevPage()">
-    Prev
-  </button>
-
-  <button
-    *ngFor="let p of [].constructor(totalPages); let i = index"
-    class="btn page"
-    [class.active]="currentPage === i + 1"
-    (click)="goToPage(i + 1)">
-    {{ i + 1 }}
-  </button>
-
-  <button
-    class="btn ghost"
-    [disabled]="currentPage === totalPages"
-    (click)="nextPage()">
-    Next
-  </button>
-
-</div>
-
-<!-- ================= ADD / EDIT MODAL ================= -->
-<div class="modal-backdrop" *ngIf="modalOpen">
-
-  <div class="modal">
-
-    <h3>
-      {{ modalMode === 'add' ? 'Add Table' : 'Edit Table' }}
-    </h3>
-
-    <div class="form-group">
-      <label>Table Number</label>
-      <input
-        type="text"
-        placeholder="e.g. T1, A3"
-        [(ngModel)]="form.tableNumber"
-      />
-    </div>
-
-    <div class="form-group">
-      <label>Capacity</label>
-      <input
-        type="number"
-        min="1"
-        placeholder="Number of seats"
-        [(ngModel)]="form.capacity"
-      />
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn view" (click)="closeModal()">
-        Cancel
-      </button>
-
-      <button
-        class="btn primary"
-        [disabled]="!form.tableNumber || !form.capacity"
-        (click)="saveTable()"
-      >
+    <div class="tb-modal-footer">
+      <button class="tb-btn-ghost" (click)="closeModal()">Cancel</button>
+      <button class="tb-btn-primary"
+              [disabled]="!form.tableNumber || !form.capacity"
+              (click)="saveTable()">
         {{ modalMode === 'add' ? 'Create Table' : 'Update Table' }}
       </button>
     </div>
-       </div>
+  </div>
 </div>
 
-<!-- ================= TOAST ================= -->
-<div class="toast" *ngIf="toast" [ngClass]="toast.type">
+<!-- ══ TOAST ══ -->
+<div class="tb-toast" *ngIf="toast" [class]="'tb-toast ' + toast.type">
+  <svg *ngIf="toast.type === 'success'" width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="6.5" stroke="#fff" stroke-width="1.4"/>
+    <path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <svg *ngIf="toast.type === 'error'" width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="6.5" stroke="#fff" stroke-width="1.4"/>
+    <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>
   {{ toast.message }}
 </div>
-
