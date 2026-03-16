@@ -29,11 +29,11 @@
 
           <td>{{ sub.branchId?.branchName }}</td>
 
-            <td>
-    <a href="tel:{{sub.branchId?.phone}}">
-      {{ sub.branchId?.phone }}
-    </a>
-  </td>
+          <td>
+            <a href="tel:{{sub.branchId?.phone}}">
+              {{ sub.branchId?.phone }}
+            </a>
+          </td>
 
           <td>{{ sub.planType | titlecase }}</td>
 
@@ -41,24 +41,190 @@
 
           <td>{{ sub.expiryDate | date }}</td>
 
-          <td>
-            <span class="badge warning">
-              Expiring Soon
+          <td class="status-cell">
+
+            <span class="badge expired" *ngIf="getStatus(sub.expiryDate) === 'expired'">
+              Expired
             </span>
+
+            <span class="badge critical" *ngIf="getStatus(sub.expiryDate) === 'critical'">
+              Critical • {{ getDaysLeft(sub.expiryDate) }}d
+            </span>
+
+            <span class="badge warning" *ngIf="getStatus(sub.expiryDate) === 'expiring'">
+              Expiring Soon • {{ getDaysLeft(sub.expiryDate) }}d
+            </span>
+
+            <span class="badge upcoming" *ngIf="getStatus(sub.expiryDate) === 'upcoming'">
+              Upcoming • {{ getDaysLeft(sub.expiryDate) }}d
+            </span>
+
+          </td>
+
+          <!-- ✅ ACTION BUTTONS MUST BE HERE -->
+          <td class="actions">
+
+            <!-- Call -->
+            <a class="btn call tooltip" [href]="'tel:' + sub.branchId?.phone">
+
+              <span class="tooltip-text">Call Branch</span>
+
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                <path
+                  d="M6.6 10.8a15.3 15.3 0 006.6 6.6l2.2-2.2a1 1 0 011-.24c1.1.36 2.3.56 3.6.56a1 1 0 011 1v3.5a1 1 0 01-1 1C10.3 21 3 13.7 3 4a1 1 0 011-1H7.5a1 1 0 011 1c0 1.3.2 2.5.56 3.6a1 1 0 01-.24 1l-2.27 2.2z" />
+              </svg>
+
+            </a>
+
+
+            <!-- WhatsApp -->
+            <a class="btn whatsapp tooltip" target="_blank" [href]="'https://wa.me/' + sub.branchId?.phone">
+
+              <span class="tooltip-text">WhatsApp</span>
+
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                <path
+                  d="M20.5 3.5A11.8 11.8 0 0012 .5C5.6.5.5 5.6.5 12c0 2.1.6 4.1 1.7 5.8L.5 23.5l5.9-1.5A11.5 11.5 0 0012 23.5c6.4 0 11.5-5.1 11.5-11.5 0-3.1-1.2-6-3.5-8.5zM12 21c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.5.9.9-3.4-.2-.4A9 9 0 013 12a9 9 0 119 9zm5-6.7c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-1 .9-.2 0-.4 0-.7-.2-.3-.1-1.2-.5-2.2-1.6-.8-.9-1.3-2-1.5-2.3-.2-.3 0-.5.1-.7.1-.1.3-.3.4-.4.1-.2.2-.3.3-.5.1-.2 0-.4 0-.6 0-.1-.7-1.7-.9-2.3-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.1 3.1 1.3 3.3c.2.3 2.3 3.5 5.5 4.9.8.3 1.4.5 1.9.6.8.3 1.6.3 2.2.2.7-.1 1.7-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.1-.3-.2-.6-.3z" />
+              </svg>
+
+            </a>
+
+
+            <!-- View -->
+            <button class="btn view tooltip" (click)="openDetails(sub)">
+              <span class="tooltip-text">View Details</span>
+              👁
+            </button>
+
+
+            <!-- Reminder -->
+            <button class="btn reminder tooltip" (click)="sendReminder(sub)">
+              <span class="tooltip-text">Send Reminder</span>
+              🔔
+            </button>
+
           </td>
 
         </tr>
 
         <tr *ngIf="subscriptions.length === 0">
-          <td colspan="6" class="empty">
+          <td colspan="8" class="empty">
             No expiring subscriptions
           </td>
         </tr>
-        
+
+
 
       </tbody>
 
     </table>
+
+  </div>
+
+  <!-- DETAILS MODAL -->
+  <div class="modal-backdrop" *ngIf="selectedSub">
+
+    <div class="modal large">
+
+      <div class="modal-header">
+        <h2>Subscription Details</h2>
+        <button class="close" (click)="closeModal()">✖</button>
+      </div>
+
+
+      <!-- HOTEL DETAILS -->
+      <div class="detail-card">
+
+        <h3>🏨 Hotel Details</h3>
+
+        <div class="grid">
+
+          <div>
+            <label>Name</label>
+            <p>{{selectedSub.hotelId?.name}}</p>
+          </div>
+
+          <div>
+            <label>Email</label>
+            <p>{{selectedSub.hotelId?.email}}</p>
+          </div>
+
+          <div>
+            <label>Phone</label>
+            <p>{{selectedSub.hotelId?.phone}}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- BRANCH DETAILS -->
+      <div class="detail-card">
+
+        <h3>🏢 Branch Details</h3>
+
+        <div class="grid">
+
+          <div>
+            <label>Branch</label>
+            <p>{{selectedSub.branchId?.branchName}}</p>
+          </div>
+
+          <div>
+            <label>City</label>
+            <p>{{selectedSub.branchId?.city}}</p>
+          </div>
+
+          <div>
+            <label>Phone</label>
+            <p>{{selectedSub.branchId?.phone}}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUBSCRIPTION -->
+      <div class="detail-card">
+
+        <h3>💳 Subscription</h3>
+
+        <div class="grid">
+
+          <div>
+            <label>Plan</label>
+            <p>{{selectedSub.planType | titlecase}}</p>
+          </div>
+
+          <div>
+            <label>Branches Allowed</label>
+            <p>{{selectedSub.branchCount}}</p>
+          </div>
+
+          <div>
+            <label>Total Price</label>
+            <p>₹{{selectedSub.totalPrice}}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- STATUS -->
+      <div class="detail-card">
+
+        <h3>📊 Status</h3>
+
+        <span class="status warning">
+          Expiring Soon
+        </span>
+
+      </div>
+
+    </div>
 
   </div>
 
