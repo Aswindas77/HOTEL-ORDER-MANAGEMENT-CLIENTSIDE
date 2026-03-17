@@ -281,7 +281,7 @@ saveCategory(): void {
   clearFilters(): void {
     this.filters = { search: '', category: '', foodType: '' };
     this.currentPage = 1;
-    this.loadMenus();
+    this.applyFilters();
   }
 
   // ── Pagination ────────────────────────────────────────────────
