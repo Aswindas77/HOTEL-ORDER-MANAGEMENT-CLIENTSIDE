@@ -1,13 +1,42 @@
-<div class="expiry-page">
+<div class="se-page">
 
-  <div class="header">
-    <h2>Expiring Subscriptions</h2>
+  <!-- ── Page Header ── -->
+  <div class="se-header">
+    <div class="se-header-left">
+      <div class="se-breadcrumb">Super Admin · Platform</div>
+      <h2 class="se-title">Subscription Expiry</h2>
+      <p class="se-subtitle">Monitor and manage expiring hotel subscriptions</p>
+    </div>
+
+    <div class="se-header-right">
+      <div class="se-stat-chip">
+        <div class="se-stat-dot red"></div>
+        <strong>{{ expiredCount }}</strong> Expired
+      </div>
+      <div class="se-stat-chip">
+        <div class="se-stat-dot amber"></div>
+        <strong>{{ criticalCount }}</strong> Critical
+      </div>
+      <div class="se-stat-chip">
+        <div class="se-stat-dot orange"></div>
+        <strong>{{ expiringCount }}</strong> Expiring Soon
+      </div>
+      <div class="se-stat-chip">
+        <div class="se-stat-dot blue"></div>
+        <strong>{{ upcomingCount }}</strong> Upcoming
+      </div>
+    </div>
   </div>
 
-  <div class="card">
+  <!-- ── Table ── -->
+  <div class="se-table-wrap">
 
-    <table class="expiry-table">
+    <div class="se-table-topbar">
+      <span class="se-table-label">All Expiring Subscriptions</span>
+      <span class="se-table-count">{{ subscriptions.length }} records</span>
+    </div>
 
+    <table class="se-table">
       <thead>
         <tr>
           <th>Hotel</th>
@@ -23,209 +52,286 @@
 
       <tbody>
 
-        <tr *ngFor="let sub of subscriptions">
+        <tr *ngFor="let sub of subscriptions" class="se-row">
 
-          <td>{{ sub.hotelId?.name }}</td>
-
-          <td>{{ sub.branchId?.branchName }}</td>
-
+          <!-- Hotel -->
           <td>
-            <a href="tel:{{sub.branchId?.phone}}">
+            <div class="se-hotel-cell">
+              <div class="se-hotel-avatar">{{ sub.hotelId?.name?.charAt(0) }}</div>
+              <span class="se-hotel-name">{{ sub.hotelId?.name }}</span>
+            </div>
+          </td>
+
+          <!-- Branch -->
+          <td class="se-muted">{{ sub.branchId?.branchName }}</td>
+
+          <!-- Phone -->
+          <td>
+            <a class="se-phone-link" [href]="'tel:' + sub.branchId?.phone">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                <path d="M3 2h2.5l1 3-1.5 1a8 8 0 004 4l1-1.5 3 1V13a1 1 0 01-1 1C6.5 14 2 9.5 2 4a1 1 0 011-1Z"
+                      stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+              </svg>
               {{ sub.branchId?.phone }}
             </a>
           </td>
 
-          <td>{{ sub.planType | titlecase }}</td>
-
-          <td>{{ sub.startDate | date }}</td>
-
-          <td>{{ sub.expiryDate | date }}</td>
-
-          <td class="status-cell">
-
-            <span class="badge expired" *ngIf="getStatus(sub.expiryDate) === 'expired'">
-              Expired
-            </span>
-
-            <span class="badge critical" *ngIf="getStatus(sub.expiryDate) === 'critical'">
-              Critical • {{ getDaysLeft(sub.expiryDate) }}d
-            </span>
-
-            <span class="badge warning" *ngIf="getStatus(sub.expiryDate) === 'expiring'">
-              Expiring Soon • {{ getDaysLeft(sub.expiryDate) }}d
-            </span>
-
-            <span class="badge upcoming" *ngIf="getStatus(sub.expiryDate) === 'upcoming'">
-              Upcoming • {{ getDaysLeft(sub.expiryDate) }}d
-            </span>
-
+          <!-- Plan -->
+          <td>
+            <span class="se-plan-chip">{{ sub.planType | titlecase }}</span>
           </td>
 
-          <!-- ✅ ACTION BUTTONS MUST BE HERE -->
-          <td class="actions">
+          <!-- Start Date -->
+          <td class="se-muted">{{ sub.startDate | date:'dd MMM yyyy' }}</td>
 
-            <!-- Call -->
-            <a class="btn call tooltip" [href]="'tel:' + sub.branchId?.phone">
+          <!-- Expiry Date -->
+          <td class="se-date-cell" [class.se-date-danger]="getStatus(sub.expiryDate) === 'expired' || getStatus(sub.expiryDate) === 'critical'">
+            {{ sub.expiryDate | date:'dd MMM yyyy' }}
+          </td>
 
-              <span class="tooltip-text">Call Branch</span>
+          <!-- Status Badge -->
+          <td class="se-status-cell">
+            <span class="se-badge" [ngClass]="getStatus(sub.expiryDate)">
+              <span class="se-badge-dot"></span>
 
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                <path
-                  d="M6.6 10.8a15.3 15.3 0 006.6 6.6l2.2-2.2a1 1 0 011-.24c1.1.36 2.3.56 3.6.56a1 1 0 011 1v3.5a1 1 0 01-1 1C10.3 21 3 13.7 3 4a1 1 0 011-1H7.5a1 1 0 011 1c0 1.3.2 2.5.56 3.6a1 1 0 01-.24 1l-2.27 2.2z" />
-              </svg>
+              <ng-container *ngIf="getStatus(sub.expiryDate) === 'expired'">Expired</ng-container>
+              <ng-container *ngIf="getStatus(sub.expiryDate) === 'critical'">Critical · {{ getDaysLeft(sub.expiryDate) }}d</ng-container>
+              <ng-container *ngIf="getStatus(sub.expiryDate) === 'expiring'">Expiring · {{ getDaysLeft(sub.expiryDate) }}d</ng-container>
+              <ng-container *ngIf="getStatus(sub.expiryDate) === 'upcoming'">Upcoming · {{ getDaysLeft(sub.expiryDate) }}d</ng-container>
+            </span>
+          </td>
 
-            </a>
+          <!-- Actions -->
+          <td>
+            <div class="se-actions">
 
+              <!-- Call -->
+              <a class="se-action-ico call" [href]="'tel:' + sub.branchId?.phone" title="Call Branch">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 2h2.5l1 3-1.5 1a8 8 0 004 4l1-1.5 3 1V13a1 1 0 01-1 1C6.5 14 2 9.5 2 4a1 1 0 011-1Z"
+                        stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                </svg>
+                <span class="se-ico-tip">Call Branch</span>
+              </a>
 
-            <!-- WhatsApp -->
-            <a class="btn whatsapp tooltip" target="_blank" [href]="'https://wa.me/' + sub.branchId?.phone">
+              <!-- WhatsApp -->
+              <a class="se-action-ico whatsapp" target="_blank" [href]="'https://wa.me/' + sub.branchId?.phone" title="WhatsApp">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M20.5 3.5A11.8 11.8 0 0012 .5C5.6.5.5 5.6.5 12c0 2.1.6 4.1 1.7 5.8L.5 23.5l5.9-1.5A11.5 11.5 0 0012 23.5c6.4 0 11.5-5.1 11.5-11.5 0-3.1-1.2-6-3.5-8.5z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M9 8.5c-.3-.7-.6-.7-.9-.7H7.5c-.2 0-.6.1-.9.4C6.3 8.5 5.5 9.3 5.5 10.9s1.1 3.1 1.3 3.3c.2.2 2.1 3.4 5.3 4.7.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4 0-.1-.2-.2-.5-.3-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.2-.8.9-1 1.1-.2.2-.4.2-.7.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.9-1.6-2.2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4-.1-.5L9 8.5z"
+                        stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                </svg>
+                <span class="se-ico-tip">WhatsApp</span>
+              </a>
 
-              <span class="tooltip-text">WhatsApp</span>
+              <!-- View Details -->
+              <button class="se-action-ico view" (click)="openDetails(sub)" title="View Details">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5Z" stroke="currentColor" stroke-width="1.4"/>
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
+                </svg>
+                <span class="se-ico-tip">View Details</span>
+              </button>
 
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                <path
-                  d="M20.5 3.5A11.8 11.8 0 0012 .5C5.6.5.5 5.6.5 12c0 2.1.6 4.1 1.7 5.8L.5 23.5l5.9-1.5A11.5 11.5 0 0012 23.5c6.4 0 11.5-5.1 11.5-11.5 0-3.1-1.2-6-3.5-8.5zM12 21c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.5.9.9-3.4-.2-.4A9 9 0 013 12a9 9 0 119 9zm5-6.7c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-1 .9-.2 0-.4 0-.7-.2-.3-.1-1.2-.5-2.2-1.6-.8-.9-1.3-2-1.5-2.3-.2-.3 0-.5.1-.7.1-.1.3-.3.4-.4.1-.2.2-.3.3-.5.1-.2 0-.4 0-.6 0-.1-.7-1.7-.9-2.3-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.1 3.1 1.3 3.3c.2.3 2.3 3.5 5.5 4.9.8.3 1.4.5 1.9.6.8.3 1.6.3 2.2.2.7-.1 1.7-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.1-.3-.2-.6-.3z" />
-              </svg>
+              <!-- Send Reminder -->
+              <button class="se-action-ico reminder" (click)="sendReminder(sub)" title="Send Reminder">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2C5.8 2 4 3.8 4 6v1.5L2.5 9.5v.5h11v-.5L12 7.5V6c0-2.2-1.8-4-4-4Z"
+                        stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M6.5 10v.5a1.5 1.5 0 003 0V10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <span class="se-ico-tip">Send Reminder</span>
+              </button>
 
-            </a>
-
-
-            <!-- View -->
-            <button class="btn view tooltip" (click)="openDetails(sub)">
-              <span class="tooltip-text">View Details</span>
-              👁
-            </button>
-
-
-            <!-- Reminder -->
-            <button class="btn reminder tooltip" (click)="sendReminder(sub)">
-              <span class="tooltip-text">Send Reminder</span>
-              🔔
-            </button>
-
+            </div>
           </td>
 
         </tr>
 
         <tr *ngIf="subscriptions.length === 0">
-          <td colspan="8" class="empty">
-            No expiring subscriptions
+          <td colspan="8" class="se-empty">
+            <div class="se-empty-inner">
+              <div class="se-empty-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="#C9A84C" stroke-width="1.5"/>
+                  <path d="M12 7v5l3 3" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="se-empty-text">No expiring subscriptions</span>
+              <span class="se-empty-sub">All subscriptions are in good standing</span>
+            </div>
           </td>
         </tr>
 
-
-
       </tbody>
-
     </table>
-
   </div>
 
-  <!-- DETAILS MODAL -->
-  <div class="modal-backdrop" *ngIf="selectedSub">
 
-    <div class="modal large">
+  <!-- ══════════════════════════════════════════════════════
+       DETAILS MODAL
+  ══════════════════════════════════════════════════════ -->
+  <div class="sem-overlay" *ngIf="selectedSub" (click)="closeModal()">
+    <div class="sem-modal" (click)="$event.stopPropagation()">
 
-      <div class="modal-header">
-        <h2>Subscription Details</h2>
-        <button class="close" (click)="closeModal()">✖</button>
+      <!-- Gold rule -->
+      <div class="sem-gold-bar"></div>
+
+      <!-- Modal Header -->
+      <div class="sem-header">
+        <div class="sem-header-left">
+          <div class="sem-eyebrow">Subscription Details</div>
+          <h3 class="sem-title">{{ selectedSub.hotelId?.name }}</h3>
+        </div>
+        <div class="sem-header-right">
+          <span class="se-badge lg" [ngClass]="getStatus(selectedSub.expiryDate)">
+            <span class="se-badge-dot"></span>
+            <ng-container *ngIf="getStatus(selectedSub.expiryDate) === 'expired'">Expired</ng-container>
+            <ng-container *ngIf="getStatus(selectedSub.expiryDate) === 'critical'">Critical</ng-container>
+            <ng-container *ngIf="getStatus(selectedSub.expiryDate) === 'expiring'">Expiring Soon</ng-container>
+            <ng-container *ngIf="getStatus(selectedSub.expiryDate) === 'upcoming'">Upcoming</ng-container>
+          </span>
+          <button class="sem-close-btn" (click)="closeModal()">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
+      <!-- Modal Body -->
+      <div class="sem-body">
 
-      <!-- HOTEL DETAILS -->
-      <div class="detail-card">
+        <!-- Hotel Details -->
+        <div class="sem-section-label">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="7" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Hotel Details
+        </div>
 
-        <h3>🏨 Hotel Details</h3>
-
-        <div class="grid">
-
-          <div>
-            <label>Name</label>
-            <p>{{selectedSub.hotelId?.name}}</p>
+        <div class="sem-info-grid c3">
+          <div class="sem-info-item">
+            <span class="sem-info-label">Hotel Name</span>
+            <span class="sem-info-value">{{ selectedSub.hotelId?.name || '—' }}</span>
           </div>
-
-          <div>
-            <label>Email</label>
-            <p>{{selectedSub.hotelId?.email}}</p>
+          <div class="sem-info-item">
+            <span class="sem-info-label">Email</span>
+            <span class="sem-info-value">{{ selectedSub.hotelId?.email || '—' }}</span>
           </div>
-
-          <div>
-            <label>Phone</label>
-            <p>{{selectedSub.hotelId?.phone}}</p>
+          <div class="sem-info-item">
+            <span class="sem-info-label">Phone</span>
+            <span class="sem-info-value">{{ selectedSub.hotelId?.phone || '—' }}</span>
           </div>
+        </div>
 
+        <!-- Branch Details -->
+        <div class="sem-section-label">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2v4M4 6h8M5 10h6M6 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="8" cy="2" r="1.5" fill="currentColor"/>
+          </svg>
+          Branch Details
+        </div>
+
+        <div class="sem-info-grid c3">
+          <div class="sem-info-item">
+            <span class="sem-info-label">Branch Name</span>
+            <span class="sem-info-value">{{ selectedSub.branchId?.branchName || '—' }}</span>
+          </div>
+          <div class="sem-info-item">
+            <span class="sem-info-label">City</span>
+            <span class="sem-info-value">{{ selectedSub.branchId?.city || '—' }}</span>
+          </div>
+          <div class="sem-info-item">
+            <span class="sem-info-label">Phone</span>
+            <span class="sem-info-value">{{ selectedSub.branchId?.phone || '—' }}</span>
+          </div>
+        </div>
+
+        <!-- Subscription -->
+        <div class="sem-section-label">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="4" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M2 8h12" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M5 11h2M10 11h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Subscription
+        </div>
+
+        <div class="sem-info-grid c3">
+          <div class="sem-info-item">
+            <span class="sem-info-label">Plan Type</span>
+            <span class="sem-info-value">
+              <span class="se-plan-chip">{{ selectedSub.planType | titlecase }}</span>
+            </span>
+          </div>
+          <div class="sem-info-item">
+            <span class="sem-info-label">Branches Allowed</span>
+            <span class="sem-info-value sem-big">{{ selectedSub.branchCount }}</span>
+          </div>
+          <div class="sem-info-item">
+            <span class="sem-info-label">Total Price</span>
+            <span class="sem-info-value sem-big gold">₹{{ selectedSub.totalPrice }}</span>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="sem-section-label">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M2 7h12M5 2v2M11 2v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Dates
+        </div>
+
+        <div class="sem-info-grid c2">
+          <div class="sem-info-item">
+            <span class="sem-info-label">Start Date</span>
+            <span class="sem-info-value">{{ selectedSub.startDate | date:'dd MMM yyyy' }}</span>
+          </div>
+          <div class="sem-info-item">
+            <span class="sem-info-label">Expiry Date</span>
+            <span class="sem-info-value" [class.sem-danger]="getStatus(selectedSub.expiryDate) === 'expired' || getStatus(selectedSub.expiryDate) === 'critical'">
+              {{ selectedSub.expiryDate | date:'dd MMM yyyy' }}
+            </span>
+          </div>
         </div>
 
       </div>
 
-
-      <!-- BRANCH DETAILS -->
-      <div class="detail-card">
-
-        <h3>🏢 Branch Details</h3>
-
-        <div class="grid">
-
-          <div>
-            <label>Branch</label>
-            <p>{{selectedSub.branchId?.branchName}}</p>
-          </div>
-
-          <div>
-            <label>City</label>
-            <p>{{selectedSub.branchId?.city}}</p>
-          </div>
-
-          <div>
-            <label>Phone</label>
-            <p>{{selectedSub.branchId?.phone}}</p>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- SUBSCRIPTION -->
-      <div class="detail-card">
-
-        <h3>💳 Subscription</h3>
-
-        <div class="grid">
-
-          <div>
-            <label>Plan</label>
-            <p>{{selectedSub.planType | titlecase}}</p>
-          </div>
-
-          <div>
-            <label>Branches Allowed</label>
-            <p>{{selectedSub.branchCount}}</p>
-          </div>
-
-          <div>
-            <label>Total Price</label>
-            <p>₹{{selectedSub.totalPrice}}</p>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- STATUS -->
-      <div class="detail-card">
-
-        <h3>📊 Status</h3>
-
-        <span class="status warning">
-          Expiring Soon
+      <!-- Modal Footer -->
+      <div class="sem-footer">
+        <span class="sem-footer-note">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6" stroke="#8A8A8A" stroke-width="1.3"/>
+            <path d="M8 5v3l2 2" stroke="#8A8A8A" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          {{ getDaysLeft(selectedSub.expiryDate) > 0 ? getDaysLeft(selectedSub.expiryDate) + ' days remaining' : 'Subscription expired' }}
         </span>
-
+        <div class="sem-footer-actions">
+          <a class="sem-call-btn" [href]="'tel:' + selectedSub.branchId?.phone">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <path d="M3 2h2.5l1 3-1.5 1a8 8 0 004 4l1-1.5 3 1V13a1 1 0 01-1 1C6.5 14 2 9.5 2 4a1 1 0 011-1Z"
+                    stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+            Call
+          </a>
+          <button class="sem-reminder-btn" (click)="sendReminder(selectedSub)">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2C5.8 2 4 3.8 4 6v1.5L2.5 9.5v.5h11v-.5L12 7.5V6c0-2.2-1.8-4-4-4Z"
+                    stroke="currentColor" stroke-width="1.4"/>
+              <path d="M6.5 10v.5a1.5 1.5 0 003 0V10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            Send Reminder
+          </button>
+          <button class="se-btn-ghost" (click)="closeModal()">Close</button>
+        </div>
       </div>
 
     </div>
-
   </div>
 
 </div>

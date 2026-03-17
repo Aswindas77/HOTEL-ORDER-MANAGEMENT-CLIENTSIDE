@@ -29,6 +29,15 @@ export class BranchRequestsComponent implements OnInit {
   search = '';
   status = '';
 
+  // ── NEW: computed counts for the header stat chips ──
+  get pendingCount(): number {
+    return this.requests.filter(r => r.status === 'pending').length;
+  }
+
+  get approvedCount(): number {
+    return this.requests.filter(r => r.status === 'approved').length;
+  }
+
   constructor(
     private requestApi: BranchRequestApiService,
     private cdr: ChangeDetectorRef
@@ -38,10 +47,7 @@ export class BranchRequestsComponent implements OnInit {
     this.loadRequests();
   }
 
-  /* ================= LOAD REQUESTS ================= */
-
   loadRequests() {
-
     this.loading = true;
 
     this.requestApi.getRequests(
@@ -58,46 +64,29 @@ export class BranchRequestsComponent implements OnInit {
     )
     .subscribe({
       next: (res: any) => {
-
         this.requests = res.data;
         this.total = res.total;
         this.totalPages = res.totalPages;
-
       },
       error: (err) => {
         console.error('Error loading requests', err);
       }
     });
-
   }
-
-  /* ================= APPROVE ================= */
 
   approveRequest(id: string) {
     this.requestApi.approveRequest(id).subscribe({
-      next: () => {
-        this.loadRequests();
-      },
-      error: (err) => {
-        console.error('Approve failed', err);
-      }
+      next: () => this.loadRequests(),
+      error: (err) => console.error('Approve failed', err)
     });
   }
-
-  /* ================= REJECT ================= */
 
   rejectRequest(id: string) {
     this.requestApi.rejectRequest(id).subscribe({
-      next: () => {
-        this.loadRequests();
-      },
-      error: (err) => {
-        console.error('Reject failed', err);
-      }
+      next: () => this.loadRequests(),
+      error: (err) => console.error('Reject failed', err)
     });
   }
-
-  /* ================= DETAILS MODAL ================= */
 
   openDetails(req: any) {
     this.selectedRequest = req;
@@ -106,9 +95,8 @@ export class BranchRequestsComponent implements OnInit {
 
   closeDetailsModal() {
     this.showDetailsModal = false;
+    this.selectedRequest = null;  // ← also clear selection on close
   }
-
-  /* ================= PAGINATION ================= */
 
   nextPage() {
     if (this.page < this.totalPages) {
@@ -129,14 +117,10 @@ export class BranchRequestsComponent implements OnInit {
     this.loadRequests();
   }
 
-  /* ================= SEARCH ================= */
-
   searchRequests() {
     this.page = 1;
     this.loadRequests();
   }
-
-  /* ================= CLEAR FILTER ================= */
 
   clearFilters() {
     this.search = '';
@@ -144,5 +128,4 @@ export class BranchRequestsComponent implements OnInit {
     this.page = 1;
     this.loadRequests();
   }
-
 }

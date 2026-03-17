@@ -48,13 +48,11 @@ export const routes: Routes = [
   canActivate: [AuthGuard],
   children: [
 
-    // ✅ EXISTING REAL
+
     { path: 'dashboard', component: DashboardComponent },
     { path: 'users', component: UsersComponent },
 
-    // ======================
-    // 🔥 MENU
-    // ======================
+
     {
       path: 'menu',
       children: [
@@ -66,9 +64,7 @@ export const routes: Routes = [
       ]
     },
 
-    // ======================
-    // 🔥 ORDERS
-    // ======================
+ 
     {
       path: 'orders',
       children: [
@@ -80,9 +76,7 @@ export const routes: Routes = [
       ]
     },
 
-    // ======================
-    // 🔥 TABLES
-    // ======================
+  
     {
       path: 'tables',
       children: [
@@ -126,74 +120,64 @@ export const routes: Routes = [
   children: [
 
    
-    { path: 'subscription-expiry', component: SubscriptionExpiryComponent },
     { path: 'analytics', component: AnalyticsComponent },
-    { path: 'hotels', component: HotelsComponent },
     { path: 'branch-requests', component: BranchRequestsComponent },
-    { path: 'user-management', component: UserManagementComponent },
     { path: 'purchase-approvals', component: PurchaseApprovalComponent },
+    { path: 'subscription-expiry', component: SubscriptionExpiryComponent },
 
-    
-    { 
-      path: 'menu-cards', 
+  
+    {
+      path: 'hotels',
+      children: [
+        { path: '', component: HotelsComponent },
+        { path: 'onboard', component: ComingSoonComponent, data: { title: 'Onboard Hotel' } },
+        { path: 'performance', component: ComingSoonComponent, data: { title: 'Hotel Performance' } }
+      ]
+    },
+
+    {
+      path: 'user-management',
+      children: [
+        { path: '', component: UserManagementComponent },
+        { path: 'roles', component: UserManagementComponent, data: { title: 'Roles & Permissions' } },
+        { path: 'invite', component: ComingSoonComponent, data: { title: 'Invite User' } }
+      ]
+    },
+
+
+    {
+      path: 'profile',
       component: ComingSoonComponent,
-      data: { title: 'Menu Cards' }
+      data: { title: 'My Profile' }
+    },
+
+    {
+      path: 'menu-cards',
+      component: ComingSoonComponent,
+      data: { title: 'Plans & Subscription' }
     },
 
     {
       path: 'reports',
       children: [
-        { 
-          path: '', 
-          component: ComingSoonComponent,
-          data: { title: 'Platform Overview' }
-        },
-        { 
-          path: 'revenue', 
-          component: ComingSoonComponent,
-          data: { title: 'Revenue Analytics' }
-        },
-        { 
-          path: 'benchmarks', 
-          component: ComingSoonComponent,
-          data: { title: 'Hotel Benchmarks' }
-        },
-        { 
-          path: 'export', 
-          component: ComingSoonComponent,
-          data: { title: 'Export Reports' }
-        }
+        { path: '', component: ComingSoonComponent, data: { title: 'Platform Overview' } },
+        { path: 'revenue', component: ComingSoonComponent, data: { title: 'Revenue Analytics' } },
+        { path: 'benchmarks', component: ComingSoonComponent, data: { title: 'Hotel Benchmarks' } },
+        { path: 'export', component: ComingSoonComponent, data: { title: 'Export Reports' } }
       ]
     },
 
-    
     {
       path: 'settings',
       children: [
-        { 
-          path: '', 
-          component: ComingSoonComponent,
-          data: { title: 'General Settings' }
-        },
-        { 
-          path: 'billing', 
-          component: ComingSoonComponent,
-          data: { title: 'Billing & Subscription' }
-        },
-        { 
-          path: 'integrations', 
-          component: ComingSoonComponent,
-          data: { title: 'Integrations' }
-        },
-        { 
-          path: 'audit', 
-          component: ComingSoonComponent,
-          data: { title: 'Audit Logs' }
-        }
+        { path: '', component: ComingSoonComponent, data: { title: 'General Settings' } },
+        { path: 'billing', component: ComingSoonComponent, data: { title: 'Billing & Subscription' } },
+        { path: 'integrations', component: ComingSoonComponent, data: { title: 'Integrations' } },
+        { path: 'audit', component: ComingSoonComponent, data: { title: 'Audit Logs' } }
       ]
     },
 
-    
+
     { path: '', redirectTo: 'analytics', pathMatch: 'full' }
 
   ]
