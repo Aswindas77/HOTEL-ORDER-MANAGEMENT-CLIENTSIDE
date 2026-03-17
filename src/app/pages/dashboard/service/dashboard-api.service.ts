@@ -60,4 +60,10 @@ getTopItems() {
     revenue: number;
   }[]>(`${this.baseUrl}/top-items`);
 }
+
+getMenuBreakdown() {
+  return this.http.get(`${this.baseUrl}/menu-breakdown`);
+}
+
+
 }

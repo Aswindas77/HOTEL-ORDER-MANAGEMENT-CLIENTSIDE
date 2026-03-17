@@ -8,6 +8,7 @@ import { MenuApiService } from './service/menu-api.service';
 import { CategoryApiService } from './service/category-api.service';
 import { FoodType } from '../../enums/food-type.enum';
 
+
 @Component({
   standalone: true,
   selector: 'app-menu',
@@ -29,11 +30,13 @@ export class MenuComponent implements OnInit {
   showModal = false;
   editingMenuId: string | null = null;
   showCategoryModal = false;
-  showCategoryDropdown = false;
+  showFilterCategoryDropdown = false;
+  showModalCategoryDropdown = false;
 
 
   categories: any[] = [];
   categoryName = '';
+  categorySearch = '';
   editingCategoryId: string | null = null;
 
   foodTypes = Object.values(FoodType);
@@ -137,14 +140,15 @@ export class MenuComponent implements OnInit {
     this.categoryName = '';
     this.editingCategoryId = null;
     this.showCategoryModal = true;
-    this.showCategoryDropdown = false;
+    this.showModalCategoryDropdown = false;
   }
 
   editCategory(category: any): void {
     this.editingCategoryId = category._id;
     this.categoryName = category.name;
     this.showCategoryModal = true;
-    this.showCategoryDropdown = false;
+    this.showFilterCategoryDropdown = false;
+    this.showModalCategoryDropdown = false;
   }
 
   deleteCategory(category: any): void {
@@ -155,21 +159,29 @@ export class MenuComponent implements OnInit {
 
   selectCategory(name: string): void {
     this.filters.category = name;
-    this.showCategoryDropdown = false;
+    this.showFilterCategoryDropdown = false;
+    this.applyFilters();
   }
 
-  saveCategory(): void {
-    if (!this.categoryName.trim()) return;
+saveCategory(): void {
+  if (!this.categoryName.trim()) return;
 
-    const action$ = this.editingCategoryId
-      ? this.categoryApi.updateCategory(this.editingCategoryId, this.categoryName)
-      : this.categoryApi.createCategory(this.categoryName);
+  const name = this.categoryName.trim();
 
-    action$.subscribe(() => {
-      this.loadCategories();
-      this.closeCategoryModal();
-    });
-  }
+  const action$ = this.editingCategoryId
+    ? this.categoryApi.updateCategory(this.editingCategoryId, name)
+    : this.categoryApi.createCategory(name);
+
+  action$.subscribe(() => {
+    this.loadCategories();
+
+    // ✅ auto select in modal
+    this.menuForm.category = name;
+
+    this.closeCategoryModal();
+    this.showModalCategoryDropdown = false;
+  });
+}
 
   closeCategoryModal(): void {
     this.showCategoryModal = false;
@@ -222,6 +234,14 @@ export class MenuComponent implements OnInit {
       },
     });
   }
+
+  get filteredCategories(): any[] {
+  if (!this.categorySearch.trim()) return this.categories;
+
+  return this.categories.filter(c =>
+    c.name.toLowerCase().includes(this.categorySearch.toLowerCase())
+  );
+}
 
   // ── Toggle availability ───────────────────────────────────────
 
@@ -304,21 +324,26 @@ export class MenuComponent implements OnInit {
 
   // ── Close category dropdown when clicking outside ─────────────
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (!(event.target as HTMLElement).closest('.mn-cat-drop')) {
-      this.showCategoryDropdown = false;
-    }
+onDocumentClick(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+
+  // ✅ Allow clicks inside dropdown
+  if (target.closest('.mn-cat-drop') || target.closest('.mn-cat-menu')) {
+    return;
   }
+
+  this.showFilterCategoryDropdown = false;
+  this.showModalCategoryDropdown = false;
+}
 
   // ── Keyboard: close modals on Escape ─────────────────────────
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.showModal) this.closeModal();
-    if (this.showCategoryModal) this.closeCategoryModal();
-    this.showCategoryDropdown = false;
-  }
+  // @HostListener('document:keydown.escape')
+  // onEscape(): void {
+  //   if (this.showModal) this.closeModal();
+  //   if (this.showCategoryModal) this.closeCategoryModal();
+  //   this.showModalCategoryDropdown = false;
+  // }
 
   // ── Reset form ────────────────────────────────────────────────
 

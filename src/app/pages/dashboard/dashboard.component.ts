@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DashboardApiService } from './service/dashboard-api.service';
 import { FormsModule } from '@angular/forms';
+import { Chart } from 'chart.js/auto';
 
-declare const Chart: any;
 
 @Component({
   standalone: true,
@@ -45,22 +45,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  chartPeriod: 'week' | 'month' ='week';
+  chartPeriod: 'week' | 'month' = 'week';
 
   startDate: string = '';
   endDate: string = '';
 
   orderAnalytics: any;
-  recentOrders:any[] = [];
+  recentOrders: any[] = [];
 
-tableStatus = {
-  available: 0,
-  occupied: 0
-};
+  tableStatus = {
+    available: 0,
+    occupied: 0
+  };
 
-tableList:any[] = [];
+  tableList: any[] = [];
 
-topItems: any[] = [];
+  topItems: any[] = [];
+
+  menuCategories: any[] = [];
 
 
   getTableClass(t: { status: string }): string {
@@ -68,13 +70,6 @@ topItems: any[] = [];
     return `db-tc ${map[t.status] ?? 'free'}`;
   }
 
-  // ── Menu categories (static — wire to API) ───────────────────
-  menuCategories = [
-    { name: 'Mains', pct: 38, count: 56, color: '#C9A84C' },
-    { name: 'Starters', pct: 24, count: 36, color: '#3a7d44' },
-    { name: 'Beverages', pct: 20, count: 30, color: '#2962A0' },
-    { name: 'Desserts', pct: 18, count: 26, color: '#534AB7' },
-  ];
 
   // ── Charts ───────────────────────────────────────────────────
   private ordersChart: any;
@@ -94,6 +89,7 @@ topItems: any[] = [];
     this.loadTableStatus();
     this.loadRecentOrders();
     this.loadTopItems();
+    this.loadMenuBreakdown();
   }
 
   ngAfterViewInit(): void {
@@ -115,15 +111,11 @@ topItems: any[] = [];
         this.loading = false;
 
         this.loadOrderAnalytics();
-
-        this.cdr.detectChanges();
-
-        setTimeout(() => this.initCharts(), 150);
       },
       error: (err) => {
         console.error('Dashboard API error', err);
         this.loading = false;
-        this.cdr.detectChanges();
+
       },
     });
   }
@@ -135,72 +127,96 @@ topItems: any[] = [];
       .subscribe((res: any) => {
 
         this.orderAnalytics = res;
+        this.cdr.detectChanges();
+        this.initOrdersChart();
 
-        setTimeout(() => {
-          this.initOrdersChart();
-        }, 100);
 
       });
 
   }
 
-loadTableStatus() {
+  loadTableStatus() {
 
-  this.dashboardApi.getTableStatus()
-    .subscribe((res:any) => {
+    this.dashboardApi.getTableStatus()
+      .subscribe((res: any) => {
 
-      this.tableStatus.available = res.available;
-      this.tableStatus.occupied = res.occupied;
+        this.tableStatus.available = res.available;
+        this.tableStatus.occupied = res.occupied;
 
-      this.tableList = res.tables;
+        this.tableList = res.tables;
 
-    });
+      });
 
-}
+  }
 
 
-loadRecentOrders() {
+  loadRecentOrders() {
 
-  this.dashboardApi.getRecentOrders()
-    .subscribe((res:any) => {
+    this.dashboardApi.getRecentOrders()
+      .subscribe((res: any) => {
 
-      this.recentOrders = res;
+        this.recentOrders = res;
 
-    });
+      });
 
-}
+  }
 
-getTimeAgo(date: string): string {
+  getTimeAgo(date: string): string {
 
-  const now = new Date().getTime();
-  const orderTime = new Date(date).getTime();
+    const now = new Date().getTime();
+    const orderTime = new Date(date).getTime();
 
-  const diff = now - orderTime;
+    const diff = now - orderTime;
 
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
 
-  if (minutes < 1) return 'Just now';
+    if (minutes < 1) return 'Just now';
 
-  if (minutes < 60) return minutes + ' min ago';
+    if (minutes < 60) return minutes + ' min ago';
 
-  if (hours < 24) return hours + ' hour ago';
+    if (hours < 24) return hours + ' hour ago';
 
-  return days + ' day ago';
+    return days + ' day ago';
 
-}
+  }
 
-loadTopItems() {
+  loadTopItems() {
 
-  this.dashboardApi.getTopItems()
-    .subscribe((res:any) => {
+    this.dashboardApi.getTopItems()
+      .subscribe((res: any) => {
 
-      this.topItems = res;
+        this.topItems = res;
 
-    });
+      });
 
-}
+  }
+
+  loadMenuBreakdown() {
+
+    this.dashboardApi.getMenuBreakdown()
+      .subscribe((res: any) => {
+
+        this.menuCategories = res.map((item: any, index: number) => ({
+          ...item,
+          color: this.getColor(index)
+        }));
+
+        // 🔥 VERY IMPORTANT
+        this.cdr.detectChanges();
+        this.initMenuChart();
+
+      });
+
+  }
+
+  getColor(index: number): string {
+    const hue = (index * 137.508) % 360;
+    return `hsl(${hue}, 65%, 55%)`;
+  }
+
+
 
   private initCharts(): void {
     if (typeof Chart === 'undefined') return;
@@ -274,17 +290,20 @@ loadTopItems() {
     const canvas = document.getElementById('db-menu-chart') as HTMLCanvasElement;
     if (!canvas) return;
 
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
     this.menuChart?.destroy();
 
-    this.menuChart = new Chart(canvas, {
+    this.menuChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: this.menuCategories.map(c => c.name),
         datasets: [{
-          data: this.menuCategories.map(c => c.pct),
+          data: this.menuCategories.map(c => c.count),
           backgroundColor: this.menuCategories.map(c => c.color),
           borderWidth: 0,
-          hoverOffset: 4,
+          // hoverOffset: 4,
         }],
       },
       options: {
@@ -295,7 +314,7 @@ loadTopItems() {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (ctx: any) => ` ${ctx.label}: ${ctx.parsed}%`,
+              label: (ctx: any) => ` ${ctx.label}: ${ctx.parsed} items`
             },
           },
         },
@@ -328,22 +347,23 @@ loadTopItems() {
     this.router.navigate(['/admin/orders/new']);
   }
 
-applyCustomFilter(): void {
+  applyCustomFilter(): void {
 
-  if (!this.startDate || !this.endDate) {
-    alert('Please select start and end date');
-    return;
+    if (!this.startDate || !this.endDate) {
+      alert('Please select start and end date');
+      return;
+    }
+
+    this.dashboardApi
+      .getOrderAnalytics(undefined, this.startDate, this.endDate)
+      .subscribe((res: any) => {
+
+        this.orderAnalytics = res;
+        this.cdr.detectChanges();
+
+        this.initOrdersChart();
+
+      });
+
   }
-
-  this.dashboardApi
-    .getOrderAnalytics(undefined, this.startDate, this.endDate)
-    .subscribe((res: any) => {
-
-      this.orderAnalytics = res;
-
-      this.initOrdersChart();
-
-    });
-
-}
 }
