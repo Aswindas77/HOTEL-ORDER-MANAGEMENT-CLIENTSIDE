@@ -2,20 +2,21 @@ import { ChangeDetectorRef, Component, OnInit, OnDestroy, AfterViewInit, ViewEnc
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DashboardApiService } from './service/dashboard-api.service';
+import { FormsModule } from '@angular/forms';
 
 declare const Chart: any;
 
 @Component({
   standalone: true,
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
- 
+
   loading = false;
 
   summary = {
@@ -44,52 +45,28 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  chartPeriod: 'week' | 'month' = 'week';
+  chartPeriod: 'week' | 'month' ='week';
 
-  tableList = [
-    { number: '01', status: 'Occ.' },
-    { number: '02', status: 'Free' },
-    { number: '03', status: 'Occ.' },
-    { number: '04', status: 'Rsv.' },
-    { number: '05', status: 'Occ.' },
-    { number: '06', status: 'Free' },
-    { number: '07', status: 'Rsv.' },
-    { number: '08', status: 'Occ.' },
-  ];
+  startDate: string = '';
+  endDate: string = '';
 
-  get freeCount(): number { return this.tableList.filter(t => t.status === 'Free').length; }
-  get occCount(): number { return this.tableList.filter(t => t.status === 'Occ.').length; }
-  get resCount(): number { return this.tableList.filter(t => t.status === 'Rsv.').length; }
+  orderAnalytics: any;
+  recentOrders:any[] = [];
+
+tableStatus = {
+  available: 0,
+  occupied: 0
+};
+
+tableList:any[] = [];
+
+topItems: any[] = [];
+
 
   getTableClass(t: { status: string }): string {
-    const map: Record<string, string> = { 'Free': 'free', 'Occ.': 'occ', 'Rsv.': 'res' };
+    const map: Record<string, string> = { 'Free': 'free', 'Occ.': 'occ' };
     return `db-tc ${map[t.status] ?? 'free'}`;
   }
-
-  recentOrders = [
-    { emoji: '🍛', name: 'Dal Makhani', category: 'Vegetarian · Main', table: 'T-07', qty: 2, amount: 520, status: 'Confirmed', time: '2 min ago' },
-    { emoji: '🥩', name: 'Butter Chicken', category: 'Non-Veg · Main', table: 'T-12', qty: 1, amount: 380, status: 'Pending', time: '5 min ago' },
-    { emoji: '🍺', name: 'Kingfisher Premium', category: 'Beverage', table: 'T-03', qty: 3, amount: 750, status: 'Served', time: '18 min ago' },
-    { emoji: '🧁', name: 'Gulab Jamun', category: 'Dessert', table: 'T-09', qty: 4, amount: 280, status: 'Pending', time: '22 min ago' },
-    { emoji: '🍗', name: 'Chicken Tikka', category: 'Non-Veg · Starter', table: 'T-15', qty: 2, amount: 460, status: 'Confirmed', time: '28 min ago' },
-  ];
-
-  topItems = [
-    { name: 'Dal Makhani', orders: 38, revenue: 9880 },
-    { name: 'Butter Chicken', orders: 31, revenue: 7750 },
-    { name: 'Kingfisher Premium', orders: 27, revenue: 6210 },
-    { name: 'Paneer Tikka', orders: 22, revenue: 5060 },
-    { name: 'Gulab Jamun', orders: 19, revenue: 4370 },
-  ];
-
-  // ── Activity feed (static demo — replace with API) ───────────
-  activityFeed = [
-    { initials: 'RK', name: 'Rajan Kumar', desc: 'Marked order #1047 as served', label: 'Served', type: 'served', time: '2m', color: 'linear-gradient(135deg,#C9A84C,#A07820)' },
-    { initials: 'PM', name: 'Priya Menon', desc: 'New order placed for Table 07', label: 'New Order', type: 'order', time: '5m', color: 'linear-gradient(135deg,#3a7d44,#1d5c2a)' },
-    { initials: 'AS', name: 'Arjun Sharma', desc: 'Added new item "Mango Lassi" to menu', label: 'Menu Edit', type: 'menu', time: '18m', color: 'linear-gradient(135deg,#2962A0,#1a3d6b)' },
-    { initials: 'MN', name: 'Maya Nair', desc: 'Updated Table 04 to Reserved', label: 'Table Edit', type: 'table', time: '32m', color: 'linear-gradient(135deg,#534AB7,#3C3489)' },
-    { initials: 'RK', name: 'Rajan Kumar', desc: 'Cancelled order #1038 (customer request)', label: 'Cancelled', type: 'cancelled', time: '45m', color: 'linear-gradient(135deg,#c0392b,#7d2a2a)' },
-  ];
 
   // ── Menu categories (static — wire to API) ───────────────────
   menuCategories = [
@@ -109,10 +86,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
   ) { }
 
- 
+
 
   ngOnInit(): void {
     this.loadDashboard();
+    this.loadOrderAnalytics();
+    this.loadTableStatus();
+    this.loadRecentOrders();
+    this.loadTopItems();
   }
 
   ngAfterViewInit(): void {
@@ -132,8 +113,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (res) => {
         this.summary = res;
         this.loading = false;
+
+        this.loadOrderAnalytics();
+
         this.cdr.detectChanges();
-        
+
         setTimeout(() => this.initCharts(), 150);
       },
       error: (err) => {
@@ -144,6 +128,79 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  loadOrderAnalytics(): void {
+
+    this.dashboardApi
+      .getOrderAnalytics(this.chartPeriod, this.startDate, this.endDate)
+      .subscribe((res: any) => {
+
+        this.orderAnalytics = res;
+
+        setTimeout(() => {
+          this.initOrdersChart();
+        }, 100);
+
+      });
+
+  }
+
+loadTableStatus() {
+
+  this.dashboardApi.getTableStatus()
+    .subscribe((res:any) => {
+
+      this.tableStatus.available = res.available;
+      this.tableStatus.occupied = res.occupied;
+
+      this.tableList = res.tables;
+
+    });
+
+}
+
+
+loadRecentOrders() {
+
+  this.dashboardApi.getRecentOrders()
+    .subscribe((res:any) => {
+
+      this.recentOrders = res;
+
+    });
+
+}
+
+getTimeAgo(date: string): string {
+
+  const now = new Date().getTime();
+  const orderTime = new Date(date).getTime();
+
+  const diff = now - orderTime;
+
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return 'Just now';
+
+  if (minutes < 60) return minutes + ' min ago';
+
+  if (hours < 24) return hours + ' hour ago';
+
+  return days + ' day ago';
+
+}
+
+loadTopItems() {
+
+  this.dashboardApi.getTopItems()
+    .subscribe((res:any) => {
+
+      this.topItems = res;
+
+    });
+
+}
 
   private initCharts(): void {
     if (typeof Chart === 'undefined') return;
@@ -161,25 +218,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ordersChart = new Chart(canvas, {
       type: 'bar',
       data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: this.orderAnalytics?.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         datasets: [
           {
             label: 'Confirmed',
-            data: [38, 52, 45, 68, 72, 95, 60],
+            data: this.orderAnalytics?.confirmed || [],
             backgroundColor: 'rgba(201,168,76,0.75)',
             borderRadius: 5,
             borderSkipped: false,
           },
           {
             label: 'Pending',
-            data: [12, 18, 14, 22, 16, 28, 18],
+            data: this.orderAnalytics?.pending || [],
             backgroundColor: 'rgba(184,146,46,0.28)',
             borderRadius: 5,
             borderSkipped: false,
           },
           {
             label: 'Served',
-            data: [30, 40, 38, 55, 60, 78, 50],
+            data: this.orderAnalytics?.served || [],
             backgroundColor: 'rgba(58,125,68,0.45)',
             borderRadius: 5,
             borderSkipped: false,
@@ -249,7 +306,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   setChartPeriod(period: 'week' | 'month'): void {
+
     this.chartPeriod = period;
+
+    this.startDate = '';
+    this.endDate = '';
+
+    this.loadOrderAnalytics();
 
   }
 
@@ -264,4 +327,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   newOrder(): void {
     this.router.navigate(['/admin/orders/new']);
   }
+
+applyCustomFilter(): void {
+
+  if (!this.startDate || !this.endDate) {
+    alert('Please select start and end date');
+    return;
+  }
+
+  this.dashboardApi
+    .getOrderAnalytics(undefined, this.startDate, this.endDate)
+    .subscribe((res: any) => {
+
+      this.orderAnalytics = res;
+
+      this.initOrdersChart();
+
+    });
+
+}
 }

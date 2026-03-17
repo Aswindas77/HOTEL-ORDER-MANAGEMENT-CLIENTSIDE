@@ -30,8 +30,7 @@
       <div class="db-stat-card" (click)="navigate('/admin/menu')">
         <div class="db-sc-icon gold">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <path d="M4 4h12M4 10h12M4 16h8" stroke="#B8922E"
-                  stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4 4h12M4 10h12M4 16h8" stroke="#B8922E" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </div>
         <div class="db-sc-label">Total Menus</div>
@@ -51,10 +50,8 @@
       <div class="db-stat-card" (click)="navigate('/admin/orders')">
         <div class="db-sc-icon green">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <rect x="3" y="2" width="14" height="16" rx="2"
-                  stroke="#3a7d44" stroke-width="1.5"/>
-            <path d="M7 8h6M7 12h4" stroke="#3a7d44"
-                  stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="3" y="2" width="14" height="16" rx="2" stroke="#3a7d44" stroke-width="1.5" />
+            <path d="M7 8h6M7 12h4" stroke="#3a7d44" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </div>
         <div class="db-sc-label">Total Orders</div>
@@ -72,18 +69,16 @@
 
       <!-- Pending Orders -->
       <div class="db-stat-card" [class.has-alert]="summary.pendingOrders > 0"
-           (click)="navigate('/admin/orders/pending')">
+        (click)="navigate('/admin/orders/pending')">
         <div class="db-sc-icon amber">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="7.5" stroke="#BA7517" stroke-width="1.5"/>
-            <path d="M10 6v4l2.5 1.5" stroke="#BA7517"
-                  stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="10" cy="10" r="7.5" stroke="#BA7517" stroke-width="1.5" />
+            <path d="M10 6v4l2.5 1.5" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </div>
         <div class="db-sc-label">Pending Orders</div>
         <div class="db-sc-val">{{ summary.pendingOrders }}</div>
-        <div class="db-sc-delta" [class.dn]="summary.pendingOrders > 0"
-             [class.neu]="summary.pendingOrders === 0">
+        <div class="db-sc-delta" [class.dn]="summary.pendingOrders > 0" [class.neu]="summary.pendingOrders === 0">
           {{ summary.pendingOrders > 0 ? '▼ needs attention' : '✓ all clear' }}
         </div>
         <div class="db-sc-prog-wrap">
@@ -101,10 +96,8 @@
       <div class="db-stat-card" (click)="navigate('/admin/tables')">
         <div class="db-sc-icon blue">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <rect x="2" y="7" width="16" height="2" rx="1"
-                  stroke="#2962A0" stroke-width="1.5"/>
-            <path d="M5 9v5M15 9v5" stroke="#2962A0"
-                  stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="2" y="7" width="16" height="2" rx="1" stroke="#2962A0" stroke-width="1.5" />
+            <path d="M5 9v5M15 9v5" stroke="#2962A0" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </div>
         <div class="db-sc-label">Active Tables</div>
@@ -116,8 +109,7 @@
             <span>{{ occupancyRate }}%</span>
           </div>
           <div class="db-sc-prog">
-            <div class="db-sc-prog-fill blue"
-                 [style.width.%]="occupancyRate"></div>
+            <div class="db-sc-prog-fill blue" [style.width.%]="occupancyRate"></div>
           </div>
         </div>
       </div>
@@ -126,9 +118,8 @@
       <div class="db-stat-card" (click)="navigate('/admin/users')">
         <div class="db-sc-icon purple">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="7" r="3.5" stroke="#534AB7" stroke-width="1.5"/>
-            <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"
-                  stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="10" cy="7" r="3.5" stroke="#534AB7" stroke-width="1.5" />
+            <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </div>
         <div class="db-sc-label">Total Users</div>
@@ -154,16 +145,20 @@
         <div class="db-panel-head">
           <span class="db-panel-title">Order Analytics</span>
           <div style="display:flex;align-items:center;gap:12px">
+
+            <!-- DATE FILTER -->
+            <input type="date" [(ngModel)]="startDate">
+            <input type="date" [(ngModel)]="endDate">
+
+            <button (click)="applyCustomFilter()">Filter</button>
+
             <div class="db-panel-tabs">
-              <button class="db-panel-tab"
-                      [class.active]="chartPeriod === 'week'"
-                      (click)="setChartPeriod('week')">Week</button>
-              <button class="db-panel-tab"
-                      [class.active]="chartPeriod === 'month'"
-                      (click)="setChartPeriod('month')">Month</button>
+              <button class="db-panel-tab" [class.active]="chartPeriod === 'week'"
+                (click)="setChartPeriod('week')">Week</button>
+              <button class="db-panel-tab" [class.active]="chartPeriod === 'month'"
+                (click)="setChartPeriod('month')">Month</button>
             </div>
-            <button class="db-panel-action"
-                    (click)="navigate('/admin/orders')">View all →</button>
+            <button class="db-panel-action" (click)="navigate('/admin/orders')">View all →</button>
           </div>
         </div>
         <div class="db-chart-legend">
@@ -186,156 +181,150 @@
       <div class="db-panel">
         <div class="db-panel-head">
           <span class="db-panel-title">Table Status</span>
-          <button class="db-panel-action"
-                  (click)="navigate('/admin/tables')">Manage →</button>
+          <button class="db-panel-action" (click)="navigate('/admin/tables')">Manage →</button>
         </div>
-        <div class="db-table-cells">
-          <div class="db-tc" [class]="getTableClass(t)"
-               *ngFor="let t of tableList">
-            <div class="db-tc-num">{{ t.number }}</div>
-            <span>{{ t.status }}</span>
-          </div>
-        </div>
+<div class="db-table-cells">
+
+  <div class="db-tc"
+       *ngFor="let t of tableList"
+       [class.free]="t.status === 'AVAILABLE'"
+       [class.occ]="t.status === 'OCCUPIED'">
+
+    <div class="db-tc-num">{{ t.tableNumber }}</div>
+
+
+    <span>
+      {{ t.status === 'AVAILABLE' ? 'Available' : 'Occupied' }}
+    </span>
+
+  </div>
+
+</div>
         <div class="db-tc-legend">
-          <span><span class="db-ldot free"></span>Free ({{ freeCount }})</span>
-          <span><span class="db-ldot occ"></span>Occ. ({{ occCount }})</span>
-          <span><span class="db-ldot res"></span>Rsv. ({{ resCount }})</span>
+          <span>
+          <span class="db-ldot free"></span>
+          Available ({{ tableStatus.available }})
+          </span>
+
+          <span>
+            <span class="db-ldot occ"></span>
+            Occupied ({{ tableStatus.occupied }})
+          </span>
+          <!-- <span><span class="db-ldot res"></span>Rsv. ({{ resCount }})</span> -->
         </div>
+       
         <div class="db-qs-row">
           <div class="db-qs-item">
-            <div class="db-qs-label">Free</div>
-            <div class="db-qs-val">{{ freeCount }}</div>
+            <div class="db-qs-label">available</div>
+            <div class="db-qs-val">{{ tableStatus.available }}</div>
           </div>
           <div class="db-qs-item">
-            <div class="db-qs-label">Reserved</div>
-            <div class="db-qs-val">{{ resCount }}</div>
+            <div class="db-qs-label">Occupied</div>
+            <div class="db-qs-val">{{ tableStatus.occupied }}</div>
           </div>
         </div>
-      </div>
-
-    </div>
-
-    <!-- ── ROW 2: Recent Orders ── -->
-    <div class="db-row">
-      <div class="db-panel">
-        <div class="db-panel-head">
-          <span class="db-panel-title">Recent Orders</span>
-          <button class="db-panel-action"
-                  (click)="navigate('/admin/orders')">View all orders →</button>
-        </div>
-        <table class="db-orders-table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Table</th>
-              <th>Qty</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of recentOrders">
-              <td>
-                <div class="db-ot-item">
-                  <div class="db-ot-thumb">{{ order.emoji }}</div>
-                  <div>
-                    <div class="db-ot-name">{{ order.name }}</div>
-                    <div class="db-ot-sub">{{ order.category }}</div>
-                  </div>
-                </div>
-              </td>
-              <td>{{ order.table }}</td>
-              <td>× {{ order.qty }}</td>
-              <td class="db-amount">₹{{ order.amount }}</td>
-              <td>
-                <span class="db-pill" [class]="order.status.toLowerCase()">
-                  {{ order.status }}
-                </span>
-              </td>
-              <td class="db-time">{{ order.time }}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
 
-    <!-- ── ROW 3: Top Items + Activity + Menu Breakdown ── -->
-    <div class="db-row r333">
 
-      <!-- Top menu items -->
-      <div class="db-panel">
-        <div class="db-panel-head">
-          <span class="db-panel-title">Top Menu Items</span>
-          <button class="db-panel-action">Today</button>
-        </div>
-        <div class="db-top-item" *ngFor="let item of topItems; let i = index"
-             (click)="navigate('/admin/menu')">
-          <div class="db-top-rank" [class.gold]="i === 0">{{ i + 1 }}</div>
-          <div class="db-top-info">
-            <div class="db-top-name">{{ item.name }}</div>
-            <div class="db-top-orders">{{ item.orders }} orders</div>
-            <div class="db-top-bar-wrap">
-              <div class="db-top-bar-fill"
-                   [style.width.%]="(item.orders / topItems[0].orders) * 100"></div>
-            </div>
-          </div>
-          <div class="db-top-rev">₹{{ item.revenue | number }}</div>
-        </div>
-      </div>
-
-      <!-- Activity feed -->
-      <div class="db-panel">
-        <div class="db-panel-head">
-          <span class="db-panel-title">Recent Activity</span>
-          <button class="db-panel-action">See all →</button>
-        </div>
-        <div class="db-activity-list">
-          <div class="db-act-row" *ngFor="let act of activityFeed">
-            <div class="db-act-ava" [style.background]="act.color">
-              {{ act.initials }}
-            </div>
-            <div class="db-act-body">
-              <div class="db-act-name">{{ act.name }}</div>
-              <div class="db-act-desc">{{ act.desc }}</div>
-              <span class="db-act-badge" [class]="act.type">{{ act.label }}</span>
-            </div>
-            <div class="db-act-time">{{ act.time }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Menu category breakdown -->
-      <div class="db-panel">
-        <div class="db-panel-head">
-          <span class="db-panel-title">Menu Breakdown</span>
-          <button class="db-panel-action">By category</button>
-        </div>
-        <div class="db-chart-legend" style="padding:12px 22px 0;flex-wrap:wrap">
-          <span class="db-legend-item" *ngFor="let cat of menuCategories">
-            <span class="db-legend-dot" [style.background]="cat.color"></span>
-            {{ cat.name }} {{ cat.pct }}%
-          </span>
-        </div>
-        <div class="db-chart-wrap" style="height:190px">
-          <canvas id="db-menu-chart"></canvas>
-        </div>
-        <div class="db-cat-bars">
-          <div class="db-cat-bar-row" *ngFor="let cat of menuCategories">
-            <div class="db-cat-bar-label">
-              <span>{{ cat.name }}</span>
-              <span class="db-cat-bar-count">{{ cat.count }} items</span>
-            </div>
-            <div class="db-cat-track">
-              <div class="db-cat-fill"
-                   [style.width.%]="cat.pct"
-                   [style.background]="cat.color"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+<!-- ── ROW 2: Recent Orders ── -->
+<div class="db-row">
+  <div class="db-panel">
+    <div class="db-panel-head">
+      <span class="db-panel-title">Recent Orders</span>
+      <button class="db-panel-action" (click)="navigate('/admin/orders')">View all orders →</button>
     </div>
+    <table class="db-orders-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Table</th>
+          <th>Qty</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of recentOrders">
+          <td>
+            <div class="db-ot-item">
+              <div class="db-ot-thumb">🍽️</div>
+              <!-- <div class="db-ot-thumb">{{ order.emoji }}</div> -->
+              <div>
+                <div class="db-ot-name">{{ order.item }}</div>
+                <!-- <div class="db-ot-sub">{{ order.category }}</div> -->
+              </div>
+            </div>
+          </td>
+          <td>{{ order.table }}</td>
+          <td>× {{ order.qty }}</td>
+          <td class="db-amount">₹{{ order.amount }}</td>
+          <td>
+            <span class="db-pill" [class]="order.status.toLowerCase()">
+              {{ order.status }}
+            </span>
+          </td>
+           <td>{{ order.time }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-  </ng-container>
+<!-- ── ROW 3: Top Items + Activity + Menu Breakdown ── -->
+<div class="db-row r333">
+
+  <!-- Top menu items -->
+  <div class="db-panel">
+    <div class="db-panel-head">
+      <span class="db-panel-title">Top Menu Items</span>
+      <button class="db-panel-action">Today</button>
+    </div>
+    <div class="db-top-item" *ngFor="let item of topItems; let i = index" (click)="navigate('/admin/menu')">
+      <div class="db-top-rank" [class.gold]="i === 0">{{ i + 1 }}</div>
+      <div class="db-top-info">
+        <div class="db-top-name">{{ item.name }}</div>
+        <div class="db-top-orders">{{ item.orders }} orders</div>
+        <div class="db-top-bar-wrap">
+          <div class="db-top-bar-fill" [style.width.%]="(item.orders / topItems[0].orders) * 100"></div>
+        </div>
+      </div>
+      <div class="db-top-rev">₹{{ item.revenue | number }}</div>
+    </div>
+  </div>
+
+  
+
+  <!-- Menu category breakdown -->
+  <div class="db-panel">
+    <div class="db-panel-head">
+      <span class="db-panel-title">Menu Breakdown</span>
+      <button class="db-panel-action">By category</button>
+    </div>
+    <div class="db-chart-legend" style="padding:12px 22px 0;flex-wrap:wrap">
+      <span class="db-legend-item" *ngFor="let cat of menuCategories">
+        <span class="db-legend-dot" [style.background]="cat.color"></span>
+        {{ cat.name }} {{ cat.pct }}%
+      </span>
+    </div>
+    <div class="db-chart-wrap" style="height:190px">
+      <canvas id="db-menu-chart"></canvas>
+    </div>
+    <div class="db-cat-bars">
+      <div class="db-cat-bar-row" *ngFor="let cat of menuCategories">
+        <div class="db-cat-bar-label">
+          <span>{{ cat.name }}</span>
+          <span class="db-cat-bar-count">{{ cat.count }} items</span>
+        </div>
+        <div class="db-cat-track">
+          <div class="db-cat-fill" [style.width.%]="cat.pct" [style.background]="cat.color"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</ng-container>
 </div>
