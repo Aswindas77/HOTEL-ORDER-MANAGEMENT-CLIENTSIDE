@@ -20,6 +20,7 @@ import { SetupHotelComponent } from './pages/setupHotel/setup-hotel.component';
 import { ActivationPendingComponent } from './pages/activation-pending/activation-pending.component';
 import { AnalyticsComponent } from './pages/super-admin/analytics/analytics.component';
 import { SubscriptionExpiryComponent } from './pages/super-admin/subscription-expiry/subscription-expiry.component';
+import { ComingSoonComponent } from './pages/comming soon/coming-soon.component';
 
 export const routes: Routes = [
 
@@ -42,18 +43,81 @@ export const routes: Routes = [
 
 
   {
-    path: 'admin',
-    component: AdminLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'menu', component: MenuComponent },
-      { path: 'orders', component: OrdersComponent },
-      { path: 'tables', component: TablesComponent },
-      { path: 'users', component: UsersComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
-  },
+  path: 'admin',
+  component: AdminLayoutComponent,
+  canActivate: [AuthGuard],
+  children: [
+
+    // ✅ EXISTING REAL
+    { path: 'dashboard', component: DashboardComponent },
+    { path: 'users', component: UsersComponent },
+
+    // ======================
+    // 🔥 MENU
+    // ======================
+    {
+      path: 'menu',
+      children: [
+        { path: '', component: MenuComponent },
+        { path: 'all', component: ComingSoonComponent, data: { title: 'All Menu Items' } },
+        { path: 'categories', component: ComingSoonComponent, data: { title: 'Categories' } },
+        { path: 'add', component: ComingSoonComponent, data: { title: 'Add Menu Item' } },
+        { path: 'offers', component: ComingSoonComponent, data: { title: 'Special Offers' } }
+      ]
+    },
+
+    // ======================
+    // 🔥 ORDERS
+    // ======================
+    {
+      path: 'orders',
+      children: [
+        { path: '', component: OrdersComponent },
+        { path: 'live', component: ComingSoonComponent, data: { title: 'Live Orders' } },
+        { path: 'history', component: ComingSoonComponent, data: { title: 'Order History' } },
+        { path: 'pending', component: ComingSoonComponent, data: { title: 'Pending Orders' } },
+        { path: 'new', component: ComingSoonComponent, data: { title: 'New Order' } }
+      ]
+    },
+
+    // ======================
+    // 🔥 TABLES
+    // ======================
+    {
+      path: 'tables',
+      children: [
+        { path: '', component: TablesComponent },
+        { path: 'floor', component: ComingSoonComponent, data: { title: 'Floor Plan' } },
+        { path: 'reservations', component: ComingSoonComponent, data: { title: 'Reservations' } }
+      ]
+    },
+
+    {
+      path: 'reports',
+      children: [
+        { path: '', component: ComingSoonComponent, data: { title: 'Reports Overview' } },
+        { path: 'daily', component: ComingSoonComponent, data: { title: 'Daily Summary' } },
+        { path: 'revenue', component: ComingSoonComponent, data: { title: 'Revenue Analytics' } },
+        { path: 'items', component: ComingSoonComponent, data: { title: 'Item Performance' } },
+        { path: 'export', component: ComingSoonComponent, data: { title: 'Export Reports' } }
+      ]
+    },
+
+    {
+      path: 'settings',
+      children: [
+        { path: '', component: ComingSoonComponent, data: { title: 'General Settings' } },
+        { path: 'profile', component: ComingSoonComponent, data: { title: 'Profile Settings' } },
+        { path: 'billing', component: ComingSoonComponent, data: { title: 'Billing' } },
+        { path: 'notifications', component: ComingSoonComponent, data: { title: 'Notifications' } },
+        { path: 'integrations', component: ComingSoonComponent, data: { title: 'Integrations' } }
+      ]
+    },
+
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+
+  ]
+},
 
   {
   path: 'super-admin',
@@ -61,17 +125,76 @@ export const routes: Routes = [
   canActivate: [AuthGuard],
   children: [
 
-    {
-  path: 'subscription-expiry',
-  component: SubscriptionExpiryComponent
-},
+    // ✅ EXISTING
+    { path: 'subscription-expiry', component: SubscriptionExpiryComponent },
     { path: 'analytics', component: AnalyticsComponent },
-    { path:'hotels', component:HotelsComponent },
-    { path: 'branch-requests',component: BranchRequestsComponent},
+    { path: 'hotels', component: HotelsComponent },
+    { path: 'branch-requests', component: BranchRequestsComponent },
     { path: 'user-management', component: UserManagementComponent },
-    { path: 'menu-cards', component: MenuCardManagementComponent },
     { path: 'purchase-approvals', component: PurchaseApprovalComponent },
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+
+    // ✅ MENU CARDS (coming soon)
+    { 
+      path: 'menu-cards', 
+      component: ComingSoonComponent,
+      data: { title: 'Menu Cards' }
+    },
+
+    {
+      path: 'reports',
+      children: [
+        { 
+          path: '', 
+          component: ComingSoonComponent,
+          data: { title: 'Platform Overview' }
+        },
+        { 
+          path: 'revenue', 
+          component: ComingSoonComponent,
+          data: { title: 'Revenue Analytics' }
+        },
+        { 
+          path: 'benchmarks', 
+          component: ComingSoonComponent,
+          data: { title: 'Hotel Benchmarks' }
+        },
+        { 
+          path: 'export', 
+          component: ComingSoonComponent,
+          data: { title: 'Export Reports' }
+        }
+      ]
+    },
+
+    
+    {
+      path: 'settings',
+      children: [
+        { 
+          path: '', 
+          component: ComingSoonComponent,
+          data: { title: 'General Settings' }
+        },
+        { 
+          path: 'billing', 
+          component: ComingSoonComponent,
+          data: { title: 'Billing & Subscription' }
+        },
+        { 
+          path: 'integrations', 
+          component: ComingSoonComponent,
+          data: { title: 'Integrations' }
+        },
+        { 
+          path: 'audit', 
+          component: ComingSoonComponent,
+          data: { title: 'Audit Logs' }
+        }
+      ]
+    },
+
+    
+    { path: '', redirectTo: 'analytics', pathMatch: 'full' }
 
   ]
 },

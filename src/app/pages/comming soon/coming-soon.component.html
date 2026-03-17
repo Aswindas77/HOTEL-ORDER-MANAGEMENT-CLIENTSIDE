@@ -1,0 +1,52 @@
+<!-- coming-soon.component.html -->
+
+<div class="cs-page">
+
+  <div class="cs-orb cs-orb-1"></div>
+  <div class="cs-orb cs-orb-2"></div>
+  <div class="cs-grid"></div>
+  <div class="cs-corner cs-tl"></div>
+  <div class="cs-corner cs-br"></div>
+
+  <div class="cs-content">
+
+    <!-- Icon ring badge -->
+    <div class="cs-icon-wrap">
+      <div class="cs-icon-ring r1"></div>
+      <div class="cs-icon-ring r2"></div>
+      <div class="cs-icon-core">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+          <path d="M14 3l2.2 6.6H23l-5.6 4 2.2 6.6L14 16.2l-5.6 4 2.2-6.6L5 9.6h6.8L14 3Z"
+                stroke="#C9A84C" stroke-width="1.4" stroke-linejoin="round"
+                fill="rgba(201,168,76,0.10)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Status pill -->
+    <div class="cs-pill">
+      <span class="cs-dot"></span>
+      Coming Soon
+    </div>
+
+    <!-- Title -->
+    <h1 class="cs-title">Feature in <em>Development</em></h1>
+
+    <!-- Subtitle -->
+    <p class="cs-sub">
+      We're crafting something great for this section.<br/>
+      It will be available very soon.
+    </p>
+
+    <!-- Go back -->
+    <button class="cs-back-btn" (click)="goBack()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Go Back
+    </button>
+
+  </div>
+
+</div>

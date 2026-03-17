@@ -1,10 +1,40 @@
 <div class="hotel-page">
 
+  <!-- Header -->
   <div class="page-header">
-    <h2>Hotel Management</h2>
-    <p>Total Hotels: {{ hotels.length }}</p>
+    <div>
+      <h2>Hotel Management</h2>
+      <p>Total Hotels: {{ total }}</p>
+    </div>
   </div>
 
+  <!-- Filters -->
+  <div class="filters">
+
+    <input
+      type="text"
+      placeholder="Search hotel..."
+      [(ngModel)]="search"
+      (keyup.enter)="searchHotels()"
+    />
+
+    <select [(ngModel)]="status" (change)="searchHotels()">
+      <option value="">All Status</option>
+      <option value="true">Active</option>
+      <option value="false">Inactive</option>
+    </select>
+
+    <button class="search-btn" (click)="searchHotels()">
+      Search
+    </button>
+
+    <button class="clear-btn" (click)="clearFilters()">
+      Clear
+    </button>
+
+  </div>
+
+  <!-- Table -->
   <div class="table-container">
 
     <table class="hotel-table">
@@ -12,8 +42,8 @@
       <thead>
         <tr>
           <th>Hotel Name</th>
-          <th>Email</th>
-          <th>Phone</th>
+          <th>Hotel Email</th>
+          <th>Hotel Phone</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
@@ -28,21 +58,26 @@
           <td>{{hotel.phone || '-'}}</td>
 
           <td>
-            <span *ngIf="hotel.isActive" class="status active">Active</span>
-            <span *ngIf="!hotel.isActive" class="status inactive">Inactive</span>
+            <span *ngIf="hotel.isActive" class="status active">
+              Active
+            </span>
+
+            <span *ngIf="!hotel.isActive" class="status inactive">
+              Inactive
+            </span>
           </td>
 
           <td>
             <button class="view-btn" (click)="viewBranches(hotel)">
-  View
-</button>
+              View details
+            </button>
           </td>
 
         </tr>
 
         <tr *ngIf="hotels.length === 0">
           <td colspan="5" class="empty">
-            No hotels available
+            No hotels found
           </td>
         </tr>
 
@@ -52,77 +87,131 @@
 
   </div>
 
- <!-- Premium Branch Modal -->
+  <!-- Pagination -->
+  <div class="pagination">
 
-<div class="branch-modal-overlay" *ngIf="showModal">
+    <button (click)="prevPage()" [disabled]="page === 1">
+      ← Prev
+    </button>
 
-  <div class="branch-modal">
+    <button
+      *ngFor="let p of [].constructor(totalPages); let i = index"
+      (click)="goToPage(i+1)"
+      [class.active]="page === i+1"
+    >
+      {{i+1}}
+    </button>
 
-    <!-- Modal Header -->
-    <div class="branch-modal-header">
+    <button (click)="nextPage()" [disabled]="page === totalPages">
+      Next →
+    </button>
 
-      <div class="hotel-info">
-        <h3>{{selectedHotel?.name}}</h3>
-        <span class="branch-count">
-          {{branches.length}} Branches
-        </span>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="branch-modal-overlay" *ngIf="showModal">
+
+    <div class="branch-modal">
+
+      <!-- Modal Header -->
+      <div class="branch-modal-header">
+
+        <div>
+          <h3>{{selectedHotel?.name}}</h3>
+          <span class="branch-count">
+            {{branches.length}} Branches
+          </span>
+        </div>
+
+        <button class="modal-close" (click)="closeModal()">✕</button>
+
       </div>
 
-      <button class="modal-close" (click)="closeModal()">✕</button>
+      <!-- Modal Body -->
+      <div class="branch-modal-body">
 
-    </div>
+        <!-- Hotel + Manager Info -->
+        <div class="details-grid">
 
-    <!-- Modal Body -->
-    <div class="branch-modal-body">
+          <!-- Hotel Details -->
+          <div class="detail-card">
 
-      <table class="branch-table">
+            <h4>Hotel Details</h4>
 
-        <thead>
-          <tr>
-            <th>Branch Name</th>
-            <th>City</th>
-            <th>Phone</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+            <p><strong>Name:</strong> {{selectedHotel?.name}}</p>
+            <p><strong>Email:</strong> {{selectedHotel?.email}}</p>
+            <p><strong>Phone:</strong> {{selectedHotel?.phone}}</p>
 
-        <tbody>
+            <p>
+              <strong>Status:</strong>
+              <span *ngIf="selectedHotel?.isActive" class="status active">Active</span>
+              <span *ngIf="!selectedHotel?.isActive" class="status inactive">Inactive</span>
+            </p>
 
-          <tr *ngFor="let branch of branches">
+          </div>
 
-            <td class="branch-name">
-              {{branch.branchName}}
-            </td>
+          <!-- Manager Details -->
+          <div class="detail-card">
 
-            <td>{{branch.city}}</td>
+            <h4>Manager Details</h4>
 
-            <td>{{branch.phone || '-'}}</td>
+            <p><strong>Name:</strong> {{selectedHotel?.ownerId?.name}}</p>
+            <p><strong>Email:</strong> {{selectedHotel?.ownerId?.email}}</p>
+            <p><strong>Phone:</strong> {{selectedHotel?.ownerId?.phone}}</p>
 
-            <td>
-              <span *ngIf="branch.isActive" class="status active">
-                Active
-              </span>
+          </div>
 
-              <span *ngIf="!branch.isActive" class="status inactive">
-                Inactive
-              </span>
-            </td>
+        </div>
 
-          </tr>
+        <!-- Branch Section -->
+        <h4 class="branch-title">Branches</h4>
 
-          <tr *ngIf="branches.length === 0">
-            <td colspan="4" class="empty">
-              No branches found for this hotel
-            </td>
-          </tr>
+        <table class="branch-table">
 
-        </tbody>
+          <thead>
+            <tr>
+              <th>Branch Name</th>
+              <th>City</th>
+              <th>Phone</th>
+              <th>address</th>
+              <th>Status</th>
+            </tr>
+          </thead>
 
-      </table>
+          <tbody>
+
+            <tr *ngFor="let branch of branches">
+
+              <td class="branch-name">
+                {{branch.branchName}}
+              </td>
+
+              <td>{{branch.city}}</td>
+
+              <td>{{branch.phone || '-'}}</td>
+              <td>{{branch.address}}</td>
+
+              <td>
+                <span *ngIf="branch.isActive" class="status active">Active</span>
+                <span *ngIf="!branch.isActive" class="status inactive">Inactive</span>
+              </td>
+
+            </tr>
+
+            <tr *ngIf="branches.length === 0">
+              <td colspan="4" class="empty">
+                No branches available
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
 
   </div>
 
-</div>
 </div>

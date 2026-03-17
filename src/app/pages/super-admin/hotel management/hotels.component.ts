@@ -1,78 +1,131 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HotelApiService } from './service/hotel-api.service';
 import { BranchApiService } from './service/branch-api.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-hotels',
-    standalone: true,
-    imports: [CommonModule],
-    templateUrl: './hotels.component.html',
-    styleUrls: ['./hotels.component.scss']
+  selector: 'app-hotels',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './hotels.component.html',
+  styleUrls: ['./hotels.component.scss']
 })
 export class HotelsComponent implements OnInit {
 
-    hotels: any[] = [];
-    branches: any[] = [];
+  hotels: any[] = [];
+  branches: any[] = [];
 
-    selectedHotel: any = null;
-    showModal: boolean = false;
+  selectedHotel: any = null;
+  showModal: boolean = false;
 
-    constructor(
-        private hotelApi: HotelApiService,
-        private branchApi: BranchApiService,
-        private router: Router,
-        private cdr: ChangeDetectorRef
-    ) { }
+  status = '';
 
-    ngOnInit() {
+  // pagination
+  page = 1;
+  limit = 10;
+  total = 0;
+  totalPages = 0;
 
-        // 🔥 reload when returning to this page
-        this.router.events
-            .pipe(
-                filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-            )
-            .subscribe((event) => {
+  // search
+  search = '';
 
-                if (event.urlAfterRedirects.includes('/hotels')) {
-                    this.loadHotels();
-                }
+  constructor(
+    private hotelApi: HotelApiService,
+    private branchApi: BranchApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-            });
+  ngOnInit() {
+    this.loadHotels();
+  }
 
-        this.loadHotels();
+
+
+  loadHotels() {
+
+    this.hotelApi.getHotels(
+      this.page,
+      this.limit,
+      this.search,
+      this.status
+    ).subscribe((res: any) => {
+
+      this.hotels = res.data;
+      this.total = res.total;
+      this.totalPages = res.totalPages;
+
+      this.cdr.detectChanges();
+
+    });
+
+  }
+
+
+  nextPage() {
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.loadHotels();
     }
+  }
 
-    loadHotels() {
-        this.hotelApi.getHotels().subscribe((res: any) => {
-            this.hotels = res;
-            this.cdr.detectChanges(); // 🔥 force UI update
-        })
+  prevPage() {
+    if (this.page > 1) {
+      this.page--;
+      this.loadHotels();
     }
+  }
 
-    viewBranches(hotel: any) {
+  goToPage(p: number) {
+    this.page = p;
+    this.loadHotels();
+  }
 
-        this.selectedHotel = hotel;
-        this.showModal = true;
 
-        this.branchApi.getBranches().subscribe((res: any) => {
 
-            console.log("Branches API:", res);
-            console.log("Hotel clicked:", hotel);
+  searchHotels() {
+    this.page = 1;
+    this.loadHotels();
+  }
 
-            this.branches = res.filter(
-                (b: any) => (b.hotelId?._id || b.hotelId) === hotel._id
-            );
+  clearFilters() {
 
-            this.cdr.detectChanges(); // 🔥 refresh modal UI
-        });
+    this.search = '';
+    this.status = '';
+    this.page = 1;
 
-    }
+    this.loadHotels();
+  }
 
-    closeModal() {
-        this.showModal = false;
-    }
+
+
+  viewBranches(hotel: any) {
+
+    this.showModal = true;
+
+
+    this.hotelApi.getHotelById(hotel._id).subscribe((hotelData: any) => {
+
+      this.selectedHotel = hotelData;
+
+      this.branchApi.getBranches().subscribe((branches: any) => {
+
+        this.branches = branches.filter(
+          (b: any) => (b.hotelId?._id || b.hotelId) === hotel._id
+        );
+
+        this.cdr.detectChanges();
+
+      });
+
+    });
+
+  }
+
+
+
+  closeModal() {
+    this.showModal = false;
+  }
 
 }

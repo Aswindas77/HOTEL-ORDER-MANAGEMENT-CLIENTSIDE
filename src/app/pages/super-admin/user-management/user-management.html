@@ -1,143 +1,243 @@
 <!-- src/app/pages/super-admin/user-management/user-management.html -->
 
-<div class="page">
+<div class="um-page">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h2>User Management</h2>
-    <button class="add-btn" (click)="openForm()">+ Add User</button>
+  <!-- ── PAGE HEADER ── -->
+  <div class="um-header">
+    <div class="um-header-left">
+      <div class="um-breadcrumb">Super Admin &nbsp;/&nbsp; User Management</div>
+      <h1 class="um-title">User Management</h1>
+      <p class="um-subtitle">Manage platform managers, roles and access permissions</p>
+    </div>
+    <div class="um-header-right">
+      <div class="um-stat-pill">
+        <span class="um-stat-dot green"></span>
+        <strong>{{ activeCount }}</strong> Active
+      </div>
+      <div class="um-stat-pill">
+        <span class="um-stat-dot grey"></span>
+        <strong>{{ inactiveCount }}</strong> Inactive
+      </div>
+      <button class="um-add-btn" (click)="openForm()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Add Manager
+      </button>
+    </div>
   </div>
 
-
-<!-- ADD USER MODAL -->
-
-<div class="modal-overlay" *ngIf="showForm">
-
-  <div class="modal-card">
-
-    <h3>Add Manager</h3>
-
-    <input
-      type="text"
-      placeholder="Name"
-      [(ngModel)]="newUser.name"
-    />
-
-    <input
-      type="email"
-      placeholder="Email"
-      [(ngModel)]="newUser.email"
-    />
-
-    <input
-      type="password"
-      placeholder="Password"
-      [(ngModel)]="newUser.password"
-    />
-
-    <div class="modal-actions">
-
-      <button class="save-btn" (click)="submitUser()">
-        Save
+  <!-- ── FILTER BAR ── -->
+  <div class="um-filter-bar">
+    <div class="um-search-wrap">
+      <svg class="um-search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="#8A8A8A" stroke-width="1.5"/>
+        <path d="M11 11L14.5 14.5" stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input
+        class="um-search-input"
+        type="text"
+        placeholder="Search by name or email..."
+        [(ngModel)]="search"
+        (input)="applyFilters()"
+      />
+      <button class="um-clear-x" *ngIf="search" (click)="search=''; applyFilters()">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+          <path d="M1 1l10 10M11 1L1 11" stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
       </button>
-
-      <button class="cancel-btn" (click)="showForm=false">
-        Cancel
-      </button>
-
     </div>
 
+    <div class="um-select-wrap">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;opacity:0.45">
+        <circle cx="6" cy="6" r="4.5" stroke="#111" stroke-width="1.4"/>
+        <path d="M14 14l-3-3" stroke="#111" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <select class="um-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="">All Status</option>
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
+      </select>
+    </div>
+
+    <button class="um-filter-clear" (click)="clearFilters()" *ngIf="search || statusFilter">
+      Clear filters
+    </button>
+
+    <div class="um-results-count">
+      {{ filteredUsers.length }} of {{ users.length }} users
+    </div>
   </div>
 
-</div>
+  <!-- ── USER TABLE ── -->
+  <div class="um-table-card">
 
+    <!-- Empty state -->
+    <div class="um-empty" *ngIf="filteredUsers.length === 0">
+      <div class="um-empty-icon">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="12" r="5.5" stroke="#C9A84C" stroke-width="1.5"/>
+          <path d="M5 28c0-6.08 4.924-11 11-11s11 4.92 11 11" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="um-empty-text">No users found</div>
+      <div class="um-empty-sub">Try adjusting your search or filters</div>
+    </div>
 
-  <!-- SEARCH FILTER -->
-  <div class="filter-card">
-
-    <input
-      type="text"
-      placeholder="Search user..."
-      [(ngModel)]="search"
-    />
-
-    <select [(ngModel)]="statusFilter">
-      <option value="">All Status</option>
-      <option value="true">Active</option>
-      <option value="false">Inactive</option>
-    </select>
-
-    <button class="search-btn" (click)="applyFilters()">Search</button>
-
-    <button class="clear-btn" (click)="clearFilters()">Clear</button>
-
-  </div>
-
-  <!-- USERS TABLE -->
-  <div class="table-card">
-
-    <table>
-
+    <table *ngIf="filteredUsers.length > 0">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>User</th>
           <th>Email</th>
           <th>Role</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
-
       <tbody>
+        <tr *ngFor="let user of filteredUsers; let i = index"
+            [style.animation-delay]="(i * 35) + 'ms'">
 
-        <tr *ngFor="let user of filteredUsers">
-
-          <td>{{user.name}}</td>
-          <td>{{user.email}}</td>
-
+          <!-- User (avatar + name) -->
           <td>
-            <span class="role">
-              {{user.role}}
+            <div class="um-user-cell">
+              <div class="um-avatar">{{ getInitials(user.name) }}</div>
+              <div class="um-user-info">
+                <span class="um-user-name">{{ user.name }}</span>
+              </div>
+            </div>
+          </td>
+
+          <!-- Email -->
+          <td>
+            <span class="um-email">{{ user.email }}</span>
+          </td>
+
+          <!-- Role badge -->
+          <td>
+            <span class="um-role-badge">{{ user.role }}</span>
+          </td>
+
+          <!-- Status -->
+          <td>
+            <span class="um-status" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+              <span class="um-status-dot"></span>
+              {{ user.isActive ? 'Active' : 'Inactive' }}
             </span>
           </td>
 
+          <!-- Actions -->
           <td>
-            <span
-              class="status"
-              [ngClass]="user.isActive ? 'active' : 'inactive'"
-            >
-              {{user.isActive ? 'Active' : 'Inactive'}}
-            </span>
-          </td>
-
-          <td class="actions">
-
-            <button class="edit-btn" (click)="editUser(user)">Edit</button>
-
-            <button
-              *ngIf="user.isActive"
-              class="deactivate-btn"
-              (click)="deactivateUser(user._id)"
-            >
-              Deactivate
-            </button>
-
-            <button
-              *ngIf="!user.isActive"
-              class="activate-btn"
-              (click)="activateUser(user._id)"
-            >
-              Activate
-            </button>
-
+            <div class="um-actions">
+              <button class="um-action-btn edit" (click)="editUser(user)" title="Edit">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                  <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                </svg>
+                Edit
+              </button>
+              <button
+                *ngIf="user.isActive"
+                class="um-action-btn deactivate"
+                (click)="deactivateUser(user._id)"
+                title="Deactivate">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M5 8h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                Deactivate
+              </button>
+              <button
+                *ngIf="!user.isActive"
+                class="um-action-btn activate"
+                (click)="activateUser(user._id)"
+                title="Activate">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M5.5 8l2 2 3-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Activate
+              </button>
+            </div>
           </td>
 
         </tr>
-
       </tbody>
-
     </table>
-
   </div>
 
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     ADD / EDIT MODAL
+══════════════════════════════════════════════════════════════ -->
+<div class="um-modal-overlay" *ngIf="showForm" (click)="onOverlayClick($event)">
+  <div class="um-modal" role="dialog">
+
+    <!-- Gold top bar -->
+    <div class="um-modal-bar"></div>
+
+    <!-- Header -->
+    <div class="um-modal-head">
+      <div>
+        <div class="um-modal-eyebrow">{{ editingUserId ? 'Edit' : 'New' }} Manager</div>
+        <h2 class="um-modal-title">{{ editingUserId ? 'Update User Details' : 'Add Manager Account' }}</h2>
+      </div>
+      <button class="um-modal-close" (click)="showForm = false">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="um-modal-body">
+
+      <div class="um-field">
+        <label class="um-label">Full Name</label>
+        <div class="um-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="5.5" r="3" stroke="#8A8A8A" stroke-width="1.3"/>
+            <path d="M2 14c0-3.31 2.686-6 6-6s6 2.69 6 6" stroke="#8A8A8A" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input type="text" placeholder="e.g. Arjun Krishnan" [(ngModel)]="newUser.name"/>
+        </div>
+      </div>
+
+      <div class="um-field">
+        <label class="um-label">Email Address</label>
+        <div class="um-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="#8A8A8A" stroke-width="1.3"/>
+            <path d="M1.5 5l6.5 4.5L14.5 5" stroke="#8A8A8A" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input type="email" placeholder="e.g. arjun@hotel.com" [(ngModel)]="newUser.email"/>
+        </div>
+      </div>
+
+      <div class="um-field">
+        <label class="um-label">Password {{ editingUserId ? '(leave blank to keep current)' : '' }}</label>
+        <div class="um-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#8A8A8A" stroke-width="1.3"/>
+            <path d="M5 7V5a3 3 0 016 0v2" stroke="#8A8A8A" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input type="password" placeholder="••••••••" [(ngModel)]="newUser.password"/>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="um-modal-foot">
+      <button class="um-modal-cancel" (click)="showForm = false">Cancel</button>
+      <button class="um-modal-save" (click)="submitUser()">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {{ editingUserId ? 'Update User' : 'Create Manager' }}
+      </button>
+    </div>
+
+  </div>
 </div>

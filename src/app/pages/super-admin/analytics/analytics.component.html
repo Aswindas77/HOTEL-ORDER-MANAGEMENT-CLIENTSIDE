@@ -1,79 +1,428 @@
-<div class="analytics-page">
+<!-- analytics.component.html -->
 
-  <h1 class="page-title">Analytics Dashboard</h1>
+<div class="an-page" *ngIf="data">
 
-  <!-- STATS CARDS -->
-  <div class="stats-grid">
+  <!-- ── PAGE HEADER ─────────────────────────────────────────── -->
+  <div class="an-header">
+    <div class="an-header-left">
+      <div class="an-breadcrumb">Super Admin &nbsp;/&nbsp; Analytics</div>
+      <h1 class="an-title">Platform Analytics</h1>
+      <p class="an-subtitle">Live overview of hotels, users, requests and subscription health</p>
+    </div>
+    <div class="an-header-right">
+      <div class="an-date-chip">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="2.5" width="13" height="12" rx="2" stroke="#8A8A8A" stroke-width="1.3"/>
+          <path d="M1.5 6h13M5.5 1v3M10.5 1v3" stroke="#8A8A8A" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        {{ today }}
+      </div>
+      <button class="an-refresh-btn" (click)="loadAnalytics()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <path d="M13.5 8a5.5 5.5 0 11-1.4-3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 2.5V6h-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
 
-    <div class="stat-card hotels">
-      <div class="stat-value">{{data?.hotels}}</div>
-      <div class="stat-label">Total Hotels</div>
+  <!-- ── ROW 1: PRIMARY KPI CARDS ────────────────────────────── -->
+  <div class="an-kpi-row">
+
+    <div class="an-kpi-card" style="--delay:0ms">
+      <div class="an-kpi-top">
+        <div class="an-kpi-icon hotels">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="7" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M7 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M8 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="an-kpi-trend up">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 7l3-4 3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          +{{ data.hotelGrowth || 8 }}%
+        </div>
+      </div>
+      <div class="an-kpi-value">{{ data.hotels }}</div>
+      <div class="an-kpi-label">Total Hotels</div>
+      <div class="an-kpi-sub">{{ data.activeHotels || data.hotels }} active properties</div>
+      <div class="an-sparkline">
+        <svg viewBox="0 0 120 32" preserveAspectRatio="none">
+          <polyline points="0,28 20,22 40,24 60,14 80,18 100,8 120,4"
+                    fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <polyline points="0,32 0,28 20,22 40,24 60,14 80,18 100,8 120,4 120,32"
+                    fill="url(#spark-gold)" stroke="none"/>
+          <defs>
+            <linearGradient id="spark-gold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(201,168,76,0.15)"/>
+              <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
     </div>
 
-    <div class="stat-card branches">
-      <div class="stat-value">{{data?.branches}}</div>
-      <div class="stat-label">Total Branches</div>
+    <div class="an-kpi-card" style="--delay:60ms">
+      <div class="an-kpi-top">
+        <div class="an-kpi-icon branches">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="4" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="4"  cy="16" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="16" cy="16" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M10 6.5v3.5M10 10l-4 3.5M10 10l4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="an-kpi-trend up">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 7l3-4 3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          +{{ data.branchGrowth || 12 }}%
+        </div>
+      </div>
+      <div class="an-kpi-value">{{ data.branches }}</div>
+      <div class="an-kpi-label">Total Branches</div>
+      <div class="an-kpi-sub">Avg {{ avgBranchesPerHotel }} per hotel</div>
+      <div class="an-sparkline">
+        <svg viewBox="0 0 120 32" preserveAspectRatio="none">
+          <polyline points="0,30 20,26 40,20 60,18 80,12 100,10 120,6"
+                    fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <polyline points="0,32 0,30 20,26 40,20 60,18 80,12 100,10 120,6 120,32"
+                    fill="url(#spark-gold2)" stroke="none"/>
+          <defs>
+            <linearGradient id="spark-gold2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(201,168,76,0.15)"/>
+              <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
     </div>
 
-    <div class="stat-card users">
-      <div class="stat-value">{{data?.users}}</div>
-      <div class="stat-label">Total Users</div>
+    <div class="an-kpi-card" style="--delay:120ms">
+      <div class="an-kpi-top">
+        <div class="an-kpi-icon users">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M2 17c0-3.31 2.686-6 6-6s6 2.69 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M14 9a2.5 2.5 0 000-5M18 17c0-2.76-1.79-5.1-4.25-5.85" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="an-kpi-trend up">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 7l3-4 3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          +{{ data.userGrowth || 6 }}%
+        </div>
+      </div>
+      <div class="an-kpi-value">{{ data.users }}</div>
+      <div class="an-kpi-label">Total Users</div>
+      <div class="an-kpi-sub">Platform-wide accounts</div>
+      <div class="an-sparkline">
+        <svg viewBox="0 0 120 32" preserveAspectRatio="none">
+          <polyline points="0,26 20,24 40,22 60,16 80,14 100,10 120,8"
+                    fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <polyline points="0,32 0,26 20,24 40,22 60,16 80,14 100,10 120,8 120,32"
+                    fill="url(#spark-gold3)" stroke="none"/>
+          <defs>
+            <linearGradient id="spark-gold3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(201,168,76,0.15)"/>
+              <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Activation Requests Summary -->
+    <div class="an-kpi-card an-kpi-dark" style="--delay:180ms">
+      <div class="an-kpi-top">
+        <div class="an-kpi-icon requests">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M7 10h6M7 7h6M7 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="an-kpi-trend warn" *ngIf="data.activationRequests?.pending > 0">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M5 3v2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="5" cy="7" r="0.5" fill="currentColor"/>
+          </svg>
+          {{ data.activationRequests?.pending }} pending
+        </div>
+      </div>
+      <div class="an-kpi-value light">{{ totalRequests }}</div>
+      <div class="an-kpi-label light">Total Requests</div>
+      <div class="an-req-mini-row">
+        <div class="an-req-mini">
+          <span class="an-req-dot pending"></span>
+          <span>{{ data.activationRequests?.pending }}</span>
+          <span class="an-req-tag">Pending</span>
+        </div>
+        <div class="an-req-mini">
+          <span class="an-req-dot approved"></span>
+          <span>{{ data.activationRequests?.approved }}</span>
+          <span class="an-req-tag">Approved</span>
+        </div>
+        <div class="an-req-mini">
+          <span class="an-req-dot rejected"></span>
+          <span>{{ data.activationRequests?.rejected }}</span>
+          <span class="an-req-tag">Rejected</span>
+        </div>
+      </div>
     </div>
 
   </div>
 
+  <!-- ── ROW 2: REQUESTS DETAIL + SUBSCRIPTION RINGS ─────────── -->
+  <div class="an-mid-row">
 
-  <!-- ACTIVATION REQUESTS -->
-  <div class="analytics-section">
-
-    <h2>Activation Requests</h2>
-
-    <div class="stats-grid small">
-
-      <div class="stat-card pending">
-        <div class="stat-value">{{data?.activationRequests?.pending}}</div>
-        <div class="stat-label">Pending</div>
+    <!-- Activation Requests breakdown -->
+    <div class="an-panel an-requests-panel">
+      <div class="an-panel-head">
+        <div>
+          <div class="an-panel-eyebrow">Activation</div>
+          <h2 class="an-panel-title">Branch Requests</h2>
+        </div>
+        <a class="an-panel-link" routerLink="/super-admin/branch-requests">View all →</a>
       </div>
 
-      <div class="stat-card approved">
-        <div class="stat-value">{{data?.activationRequests?.approved}}</div>
-        <div class="stat-label">Approved</div>
+      <div class="an-req-bars">
+
+        <!-- Pending -->
+        <div class="an-req-bar-row">
+          <div class="an-req-bar-label">
+            <span class="an-req-dot pending"></span>
+            Pending
+          </div>
+          <div class="an-req-bar-track">
+            <div class="an-req-bar-fill pending"
+                 [style.width]="getReqPct('pending') + '%'">
+            </div>
+          </div>
+          <div class="an-req-bar-val">{{ data.activationRequests?.pending }}</div>
+          <div class="an-req-bar-pct">{{ getReqPct('pending') }}%</div>
+        </div>
+
+        <!-- Approved -->
+        <div class="an-req-bar-row">
+          <div class="an-req-bar-label">
+            <span class="an-req-dot approved"></span>
+            Approved
+          </div>
+          <div class="an-req-bar-track">
+            <div class="an-req-bar-fill approved"
+                 [style.width]="getReqPct('approved') + '%'">
+            </div>
+          </div>
+          <div class="an-req-bar-val">{{ data.activationRequests?.approved }}</div>
+          <div class="an-req-bar-pct">{{ getReqPct('approved') }}%</div>
+        </div>
+
+        <!-- Rejected -->
+        <div class="an-req-bar-row">
+          <div class="an-req-bar-label">
+            <span class="an-req-dot rejected"></span>
+            Rejected
+          </div>
+          <div class="an-req-bar-track">
+            <div class="an-req-bar-fill rejected"
+                 [style.width]="getReqPct('rejected') + '%'">
+            </div>
+          </div>
+          <div class="an-req-bar-val">{{ data.activationRequests?.rejected }}</div>
+          <div class="an-req-bar-pct">{{ getReqPct('rejected') }}%</div>
+        </div>
+
       </div>
 
-      <div class="stat-card rejected">
-        <div class="stat-value">{{data?.activationRequests?.rejected}}</div>
-        <div class="stat-label">Rejected</div>
+      <!-- Approval rate -->
+      <div class="an-approval-rate">
+        <div class="an-ar-label">Approval Rate</div>
+        <div class="an-ar-track">
+          <div class="an-ar-fill" [style.width]="approvalRate + '%'"></div>
+        </div>
+        <div class="an-ar-val">{{ approvalRate }}%</div>
+      </div>
+    </div>
+
+    <!-- Subscription rings -->
+    <div class="an-panel an-sub-panel">
+      <div class="an-panel-head">
+        <div>
+          <div class="an-panel-eyebrow">Plans</div>
+          <h2 class="an-panel-title">Subscription Breakdown</h2>
+        </div>
+        <a class="an-panel-link" routerLink="/super-admin/menu-cards">Manage →</a>
+      </div>
+
+      <div class="an-sub-rings">
+
+        <div class="an-sub-ring-item">
+          <div class="an-ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="8"/>
+              <circle cx="40" cy="40" r="30" fill="none" stroke="#C9A84C" stroke-width="8"
+                      stroke-linecap="round"
+                      [attr.stroke-dasharray]="getRingDash('premium')"
+                      stroke-dashoffset="0"
+                      transform="rotate(-90 40 40)"/>
+            </svg>
+            <div class="an-ring-center">
+              <span class="an-ring-val">{{ data.subscriptions?.premium }}</span>
+            </div>
+          </div>
+          <div class="an-ring-label">Premium</div>
+          <div class="an-ring-pct">{{ getSubPct('premium') }}%</div>
+        </div>
+
+        <div class="an-sub-ring-item">
+          <div class="an-ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="8"/>
+              <circle cx="40" cy="40" r="30" fill="none" stroke="#555" stroke-width="8"
+                      stroke-linecap="round"
+                      [attr.stroke-dasharray]="getRingDash('standard')"
+                      stroke-dashoffset="0"
+                      transform="rotate(-90 40 40)"/>
+            </svg>
+            <div class="an-ring-center">
+              <span class="an-ring-val">{{ data.subscriptions?.standard }}</span>
+            </div>
+          </div>
+          <div class="an-ring-label">Standard</div>
+          <div class="an-ring-pct">{{ getSubPct('standard') }}%</div>
+        </div>
+
+        <div class="an-sub-ring-item">
+          <div class="an-ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="8"/>
+              <circle cx="40" cy="40" r="30" fill="none" stroke="#AAAAAA" stroke-width="8"
+                      stroke-linecap="round"
+                      [attr.stroke-dasharray]="getRingDash('classic')"
+                      stroke-dashoffset="0"
+                      transform="rotate(-90 40 40)"/>
+            </svg>
+            <div class="an-ring-center">
+              <span class="an-ring-val">{{ data.subscriptions?.classic }}</span>
+            </div>
+          </div>
+          <div class="an-ring-label">Classic</div>
+          <div class="an-ring-pct">{{ getSubPct('classic') }}%</div>
+        </div>
+
+      </div>
+
+      <div class="an-sub-total">
+        <span class="an-sub-total-val">{{ totalSubscriptions }}</span>
+        <span class="an-sub-total-label">total subscriptions</span>
       </div>
 
     </div>
 
   </div>
 
+  <!-- ── ROW 3: DETAILED STAT TILES ──────────────────────────── -->
+  <div class="an-tiles-row">
 
-  <!-- SUBSCRIPTIONS -->
-  <div class="analytics-section">
-
-    <h2>Subscription Plans</h2>
-
-    <div class="stats-grid small">
-
-      <div class="stat-card premium">
-        <div class="stat-value">{{data?.subscriptions?.premium}}</div>
-        <div class="stat-label">Premium</div>
+    <!-- Hotels / Branches ratio -->
+    <div class="an-tile">
+      <div class="an-tile-head">
+        <span class="an-tile-eyebrow">Distribution</span>
+        <h3 class="an-tile-title">Hotels vs Branches</h3>
       </div>
-
-      <div class="stat-card standard">
-        <div class="stat-value">{{data?.subscriptions?.standard}}</div>
-        <div class="stat-label">Standard</div>
+      <div class="an-hb-chart">
+        <div class="an-hb-bar">
+          <div class="an-hb-seg hotels" [style.flex]="data.hotels"
+               [title]="data.hotels + ' Hotels'">
+          </div>
+          <div class="an-hb-seg branches" [style.flex]="data.branches"
+               [title]="data.branches + ' Branches'">
+          </div>
+        </div>
+        <div class="an-hb-legend">
+          <div class="an-hb-leg-item">
+            <div class="an-hb-dot hotels"></div>
+            Hotels <strong>{{ data.hotels }}</strong>
+          </div>
+          <div class="an-hb-leg-item">
+            <div class="an-hb-dot branches"></div>
+            Branches <strong>{{ data.branches }}</strong>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="stat-card classic">
-        <div class="stat-value">{{data?.subscriptions?.classic}}</div>
-        <div class="stat-label">Classic</div>
+    <!-- Platform health score -->
+    <div class="an-tile an-tile-health">
+      <div class="an-tile-head">
+        <span class="an-tile-eyebrow">Platform</span>
+        <h3 class="an-tile-title">Health Score</h3>
       </div>
+      <div class="an-health-wrap">
+        <svg class="an-health-ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none"
+                  stroke="url(#health-grad)"
+                  stroke-width="10" stroke-linecap="round"
+                  [attr.stroke-dasharray]="healthDash"
+                  stroke-dashoffset="0"
+                  transform="rotate(-90 60 60)"/>
+          <defs>
+            <linearGradient id="health-grad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#C9A84C"/>
+              <stop offset="100%" stop-color="#8B6914"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="an-health-center">
+          <div class="an-health-val">{{ healthScore }}</div>
+          <div class="an-health-lbl">/ 100</div>
+        </div>
+      </div>
+      <div class="an-health-grade">{{ healthGrade }}</div>
+    </div>
 
+    <!-- Quick stats list -->
+    <div class="an-tile an-tile-list">
+      <div class="an-tile-head">
+        <span class="an-tile-eyebrow">Summary</span>
+        <h3 class="an-tile-title">Quick Stats</h3>
+      </div>
+      <div class="an-qs-list">
+        <div class="an-qs-row">
+          <span class="an-qs-label">Avg branches / hotel</span>
+          <span class="an-qs-val">{{ avgBranchesPerHotel }}</span>
+        </div>
+        <div class="an-qs-row">
+          <span class="an-qs-label">Avg users / hotel</span>
+          <span class="an-qs-val">{{ avgUsersPerHotel }}</span>
+        </div>
+        <div class="an-qs-row">
+          <span class="an-qs-label">Request approval rate</span>
+          <span class="an-qs-val">{{ approvalRate }}%</span>
+        </div>
+        <div class="an-qs-row">
+          <span class="an-qs-label">Premium subscribers</span>
+          <span class="an-qs-val gold">{{ getSubPct('premium') }}%</span>
+        </div>
+        <div class="an-qs-row">
+          <span class="an-qs-label">Total subscriptions</span>
+          <span class="an-qs-val">{{ totalSubscriptions }}</span>
+        </div>
+      </div>
     </div>
 
   </div>
 
+</div>
+
+<!-- Loading skeleton -->
+<div class="an-loading" *ngIf="!data">
+  <div class="an-loader-ring"></div>
+  <p>Loading analytics…</p>
 </div>

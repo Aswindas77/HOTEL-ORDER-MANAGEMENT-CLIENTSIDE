@@ -9,10 +9,18 @@ export class BranchRequestApiService {
 
   private baseUrl = `${environment.host}/api/activation-request`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getRequests() {
-    return this.http.get(this.baseUrl);
+  getRequests(page?: number, limit?: number, search?: string, status?: string) {
+
+    let params: any = {};
+
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+    if (search) params.search = search;
+    if (status) params.status = status;
+
+    return this.http.get(this.baseUrl, { params });
   }
 
   approveRequest(id: string) {

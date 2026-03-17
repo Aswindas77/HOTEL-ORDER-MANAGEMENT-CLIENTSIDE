@@ -8,10 +8,31 @@
     </div>
 
     <div class="request-count">
-      Total Requests: {{ requests.length }}
+      Total Requests: {{ total }}
     </div>
   </div>
 
+  <!-- Filters -->
+  <div class="filters">
+
+    <input
+      type="text"
+      placeholder="Search hotel..."
+      [(ngModel)]="search"
+      (keyup.enter)="searchRequests()"
+    />
+
+    <select [(ngModel)]="status" (change)="searchRequests()">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+    </select>
+
+    <button class="btn search-btn" (click)="searchRequests()">Search</button>
+    <button class="btn clear-btn" (click)="clearFilters()">Clear</button>
+
+  </div>
 
   <!-- Table Card -->
   <div class="card">
@@ -40,6 +61,7 @@
           <td>
             {{ req.subscriptionId?.planType | titlecase }}
           </td>
+
           <td>
             {{ req.branchId?.branchName || '-' }}
           </td>
@@ -47,7 +69,6 @@
           <td>
             {{ req.branchId?.phone || '-' }}
           </td>
-
 
           <td>
             <span *ngIf="req.status === 'pending'" class="badge pending">
@@ -63,36 +84,36 @@
             </span>
           </td>
 
-<td class="actions">
+          <td class="actions">
 
-  <div class="action-buttons">
+            <div class="action-buttons">
 
-    <button class="btn view" (click)="openDetails(req)">
-      View
-    </button>
+              <button class="btn view" (click)="openDetails(req)">
+                View
+              </button>
 
-    <button
-      class="btn approve"
-      [disabled]="req.status === 'approved'"
-      (click)="approveRequest(req._id)">
-      Approve
-    </button>
+              <button
+                class="btn approve"
+                [disabled]="req.status === 'approved'"
+                (click)="approveRequest(req._id)">
+                Approve
+              </button>
 
-    <button
-      class="btn reject"
-      [disabled]="req.status === 'rejected'"
-      (click)="rejectRequest(req._id)">
-      Reject
-    </button>
+              <button
+                class="btn reject"
+                [disabled]="req.status === 'rejected'"
+                (click)="rejectRequest(req._id)">
+                Reject
+              </button>
 
-  </div>
+            </div>
 
-</td>
+          </td>
 
         </tr>
 
         <tr *ngIf="requests.length === 0">
-          <td colspan="4" class="empty">
+          <td colspan="6" class="empty">
             No branch requests available
           </td>
         </tr>
@@ -103,63 +124,87 @@
 
   </div>
 
-<div class="modal-backdrop" *ngIf="showDetailsModal">
+  <!-- Pagination -->
 
-  <div class="modal premium-modal">
+  <div class="pagination">
 
-    <div class="modal-header">
-      <h3>Branch Request Details</h3>
-      <button class="close" (click)="closeDetailsModal()">✕</button>
-    </div>
+    <button (click)="prevPage()" [disabled]="page === 1">
+      Prev
+    </button>
 
-    <div class="modal-body">
+    <button
+      *ngFor="let p of [].constructor(totalPages); let i = index"
+      (click)="goToPage(i+1)"
+      [class.active]="page === i+1">
+      {{i+1}}
+    </button>
 
-      <!-- HOTEL -->
-      <div class="detail-card">
-        <h4>🏨 Hotel Details</h4>
+    <button (click)="nextPage()" [disabled]="page === totalPages">
+      Next
+    </button>
 
-        <div class="detail-grid">
-          <div><span>Name</span><p>{{ selectedRequest?.hotelId?.name }}</p></div>
-          <div><span>Email</span><p>{{ selectedRequest?.hotelId?.email }}</p></div>
-          <div><span>Phone</span><p>{{ selectedRequest?.hotelId?.phone }}</p></div>
-        </div>
+  </div>
+
+
+  <!-- DETAILS MODAL -->
+
+  <div class="modal-backdrop" *ngIf="showDetailsModal">
+
+    <div class="modal premium-modal">
+
+      <div class="modal-header">
+        <h3>Branch Request Details</h3>
+        <button class="close" (click)="closeDetailsModal()">✕</button>
       </div>
 
-      <!-- BRANCH -->
-      <div class="detail-card">
-        <h4>🏢 Branch Details</h4>
+      <div class="modal-body">
 
-        <div class="detail-grid">
-          <div><span>Branch</span><p>{{ selectedRequest?.branchId?.branchName }}</p></div>
-          <div><span>City</span><p>{{ selectedRequest?.branchId?.city }}</p></div>
-          <div><span>Phone</span><p>{{ selectedRequest?.branchId?.phone }}</p></div>
+        <!-- HOTEL -->
+        <div class="detail-card">
+          <h4>🏨 Hotel Details</h4>
+
+          <div class="detail-grid">
+            <div><span>Name</span><p>{{ selectedRequest?.hotelId?.name }}</p></div>
+            <div><span>Email</span><p>{{ selectedRequest?.hotelId?.email }}</p></div>
+            <div><span>Phone</span><p>{{ selectedRequest?.hotelId?.phone }}</p></div>
+          </div>
         </div>
-      </div>
 
-      <!-- SUBSCRIPTION -->
-      <div class="detail-card">
-        <h4>💳 Subscription</h4>
+        <!-- BRANCH -->
+        <div class="detail-card">
+          <h4>🏢 Branch Details</h4>
 
-        <div class="detail-grid">
-          <div><span>Plan</span><p>{{ selectedRequest?.subscriptionId?.planType | titlecase }}</p></div>
-          <div><span>Branches Allowed</span><p>{{ selectedRequest?.subscriptionId?.branchCount }}</p></div>
+          <div class="detail-grid">
+            <div><span>Branch</span><p>{{ selectedRequest?.branchId?.branchName }}</p></div>
+            <div><span>City</span><p>{{ selectedRequest?.branchId?.city }}</p></div>
+            <div><span>Phone</span><p>{{ selectedRequest?.branchId?.phone }}</p></div>
+          </div>
         </div>
-      </div>
 
-      <!-- STATUS -->
-      <div class="detail-card">
-        <h4>📊 Status</h4>
+        <!-- SUBSCRIPTION -->
+        <div class="detail-card">
+          <h4>💳 Subscription</h4>
 
-        <span class="status-badge"
-          [ngClass]="selectedRequest?.status">
-          {{ selectedRequest?.status }}
-        </span>
+          <div class="detail-grid">
+            <div><span>Plan</span><p>{{ selectedRequest?.subscriptionId?.planType | titlecase }}</p></div>
+            <div><span>Branches Allowed</span><p>{{ selectedRequest?.subscriptionId?.branchCount }}</p></div>
+          </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="detail-card">
+          <h4>📊 Status</h4>
+
+          <span class="status-badge"
+            [ngClass]="selectedRequest?.status">
+            {{ selectedRequest?.status }}
+          </span>
+        </div>
+
       </div>
 
     </div>
 
   </div>
-
-</div>
 
 </div>

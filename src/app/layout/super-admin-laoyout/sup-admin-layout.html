@@ -1,49 +1,445 @@
-<div class="admin-layout">
+<!-- Ambient orbs -->
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
 
-  <aside class="sidebar">
 
-    <h2 class="brand">Super Admin</h2>
+<nav class="sa-navbar">
 
-    <nav>
+  <!-- ── Row 1: Brand + utilities ── -->
+  <div class="sa-nb-top">
 
-      <a routerLink="/super-admin/analytics" routerLinkActive="active">
+    <a class="sa-brand" routerLink="/super-admin/analytics">
+      <div class="sa-brand-icon">
+        <svg width="20" height="18" viewBox="0 0 20 18" fill="none">
+          <path d="M2 14L1 5L6 10L10 2L14 10L19 5L18 14H2Z"
+                stroke="#C9A84C" stroke-width="1.3" fill="rgba(201,168,76,0.20)"/>
+          <rect x="2" y="14" width="16" height="2.5" rx="1" fill="#C9A84C" opacity="0.65"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sa-brand-name">Woopme</div>
+        <div class="sa-brand-sub">Platform · Super Admin</div>
+      </div>
+    </a>
+
+    <div class="sa-role-chip">Super Admin</div>
+
+    <div class="sa-nb-divider"></div>
+    <div class="sa-nb-tagline">Good morning, {{ adminName }}</div>
+
+    <div class="sa-nb-right">
+
+      <!-- Live stats -->
+      <div class="sa-stat-chips">
+        <div class="sa-stat-chip">
+          <div class="dot dot-green"></div>
+          <strong>{{ totalHotels }}</strong> Hotels Live
+        </div>
+        <div class="sa-stat-chip">
+          <div class="dot dot-gold"></div>
+          <strong>{{ pendingCount }}</strong> Pending
+        </div>
+      </div>
+
+      <!-- Search -->
+      <!-- <div class="sa-search" (click)="openSearch()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="#8A8A8A" stroke-width="1.5"/>
+          <path d="M11 11L14.5 14.5" stroke="#8A8A8A" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Search...
+        <span class="sa-kbd">⌘K</span>
+      </div> -->
+
+      <!-- Notifications -->
+      <div class="sa-icon-btn" (click)="openNotifications()">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2C7.2 2 5 4.2 5 7v1.5L3 11v1h14v-1l-2-2.5V7c0-2.8-2.2-5-5-5Z"
+                stroke="#5A5A5A" stroke-width="1.4"/>
+          <path d="M8 12v1a2 2 0 004 0v-1" stroke="#5A5A5A" stroke-width="1.4"/>
+        </svg>
+        <div class="sa-notif-dot" *ngIf="hasNotifications"></div>
+      </div>
+
+      <!-- Settings -->
+      <div class="sa-icon-btn" routerLink="/super-admin/settings">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="3" stroke="#5A5A5A" stroke-width="1.4"/>
+          <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"
+                stroke="#5A5A5A" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <!-- Avatar + profile dropdown -->
+      <div class="sa-profile-wrapper">
+        <div class="sa-avatar" (click)="toggleProfile()">{{ adminInitials }}</div>
+
+        <div class="sa-profile-menu" [class.is-show]="showProfileMenu">
+          <div class="sa-pm-box">
+            <div class="sa-pm-header">
+              <div class="sa-pm-avatar">{{ adminInitials }}</div>
+              <div>
+                <div class="sa-pm-name">{{ adminName }}</div>
+                <div class="sa-pm-role">Super Administrator</div>
+              </div>
+            </div>
+            <div class="sa-pm-divider"></div>
+
+            <div class="sa-pm-link" routerLink="/super-admin/profile" (click)="showProfileMenu = false">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="7" r="3.5" stroke="#5A5A5A" stroke-width="1.4"/>
+                <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#5A5A5A" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+              My Profile
+            </div>
+
+            <div class="sa-pm-link" routerLink="/super-admin/settings" (click)="showProfileMenu = false">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="3" stroke="#5A5A5A" stroke-width="1.4"/>
+                <path d="M10 2v2M10 16v2M2 10h2M16 10h2" stroke="#5A5A5A" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+              Platform Settings
+            </div>
+
+            <div class="sa-pm-divider"></div>
+
+            <div class="sa-pm-logout" (click)="logout()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+                <path d="M13 4.5l4 5.5-4 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M17 10H8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M8 3H4a1 1 0 00-1 1v12a1 1 0 001 1h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+              Sign Out
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Row 2: Navigation links ── -->
+  <!-- [class.has-open]="hasOpenDropdown" drives the blur-siblings CSS -->
+  <div class="sa-nb-nav" [class.has-open]="hasOpenDropdown">
+
+    <!-- Analytics -->
+    <div class="sa-nav-item">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/analytics"
+              routerLinkActive="is-active">
         Analytics
-      </a>
+      </button>
+    </div>
 
-            <!-- NEW -->
-      <a routerLink="/super-admin/hotels" routerLinkActive="active">
-        Hotel Management
-      </a>
+    <!-- ── HOTELS ── -->
+    <div class="sa-nav-item"
+         (mouseenter)="openMenu('hotels')"
+         (mouseleave)="scheduleClose('hotels')">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/hotels"
+              routerLinkActive="is-active"
+              [class.is-open]="activeDropdown === 'hotels'">
+        Hotels
+        <span class="sa-nav-badge gold">{{ totalHotels }}</span>
+        <svg class="sa-chev" [class.is-up]="activeDropdown === 'hotels'" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
 
-      <a routerLink="/super-admin/user-management" routerLinkActive="active">
-        User Management
-      </a>
+      <div class="sa-mega"
+           [class.is-show]="activeDropdown === 'hotels'"
+           (mouseenter)="openMenu('hotels')"
+           (mouseleave)="scheduleClose('hotels')">
+        <div class="sa-mega-box">
+          <div class="sa-mh">
+            <span class="sa-mh-title">Hotel Management</span>
+            <span class="sa-mh-badge green">{{ totalHotels }} active</span>
+          </div>
+          <div class="sa-mgrid c2">
 
-      <a routerLink="/super-admin/branch-requests" routerLinkActive="active">
-   Branch Request
-</a>
+            <div class="sa-mcard" routerLink="/super-admin/hotels" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <rect x="2" y="6" width="16" height="12" rx="2" stroke="#888" stroke-width="1.4"/>
+                  <path d="M6 6V4a4 4 0 018 0v2" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">All Hotels</div>
+                <div class="sa-md">View and manage every registered hotel property</div>
+                <span class="sa-mk green">{{ totalHotels }} active</span>
+              </div>
+            </div>
 
-      <a routerLink="/super-admin/menu-cards" routerLinkActive="active">
-        Menu Card Plans
-      </a>
+            <div class="sa-mcard" routerLink="/super-admin/hotels/onboard" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <rect x="3" y="3" width="14" height="14" rx="3" stroke="#888" stroke-width="1.4"/>
+                  <path d="M10 7v6M7 10h6" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Onboard Hotel</div>
+                <div class="sa-md">Register a new hotel property on the platform</div>
+              </div>
+            </div>
 
-      <a routerLink="/super-admin/purchase-approvals" routerLinkActive="active">
-        Purchase Approvals
-      </a>
+            <div class="sa-mcard" routerLink="/super-admin/hotels/performance" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 14l3-4 3 2 3-5 3 3" stroke="#888" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="2" y="2" width="16" height="16" rx="2" stroke="#888" stroke-width="1.4"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Performance</div>
+                <div class="sa-md">Revenue and engagement across all properties</div>
+                <span class="sa-mk">This month</span>
+              </div>
+            </div>
 
-      <a routerLink="/super-admin/subscription-expiry" routerLinkActive="active">
-  Subscription Expiry
-</a>
+            <div class="sa-mcard" routerLink="/super-admin/subscription-expiry" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="7.5" stroke="#888" stroke-width="1.4"/>
+                  <path d="M10 6v4l2.5 2.5" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Subscription Status</div>
+                <div class="sa-md">Manage plans, renewals and billing cycles</div>
+                <span class="sa-mk red">{{ expiringCount }} expiring</span>
+              </div>
+            </div>
 
-      
+          </div>
+          <div class="sa-mfoot">
+            Last sync 4 min ago
+            <span class="sa-mfa" routerLink="/super-admin/hotels" (click)="closeMenus()">Open hotel list →</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    </nav>
-    
-<button class="logout-btn" (click)="logout()">Logout</button>
-  </aside>
+    <!-- ── USERS ── -->
+    <div class="sa-nav-item"
+         (mouseenter)="openMenu('users')"
+         (mouseleave)="scheduleClose('users')">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/user-management"
+              routerLinkActive="is-active"
+              [class.is-open]="activeDropdown === 'users'">
+        Users
+        <svg class="sa-chev" [class.is-up]="activeDropdown === 'users'" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
 
-  <section class="content">
-    <router-outlet></router-outlet>
-  </section>
+      <div class="sa-mega"
+           [class.is-show]="activeDropdown === 'users'"
+           (mouseenter)="openMenu('users')"
+           (mouseleave)="scheduleClose('users')">
+        <div class="sa-mega-box">
+          <div class="sa-mh">
+            <span class="sa-mh-title">User Management</span>
+            <span class="sa-mh-badge">{{ totalUsers }} users</span>
+          </div>
+          <div class="sa-mgrid c3">
 
+            <div class="sa-mcard" routerLink="/super-admin/user-management" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="7" r="3.5" stroke="#888" stroke-width="1.4"/>
+                  <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">All Users</div>
+                <div class="sa-md">Browse, search and edit platform users</div>
+                <span class="sa-mk green">{{ totalUsers }} active</span>
+              </div>
+            </div>
+
+            <div class="sa-mcard" routerLink="/super-admin/user-management/roles" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 2L12.5 8H18l-4.5 3.5 1.5 5.5L10 14l-5 3 1.5-5.5L2 8h5.5L10 2Z"
+                        stroke="#888" stroke-width="1.4" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Roles & Permissions</div>
+                <div class="sa-md">Configure admin, manager and staff access</div>
+              </div>
+            </div>
+
+            <div class="sa-mcard" routerLink="/super-admin/user-management/invite" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <rect x="3" y="5" width="14" height="10" rx="2" stroke="#888" stroke-width="1.4"/>
+                  <path d="M3 9h14" stroke="#888" stroke-width="1.4"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Invite User</div>
+                <div class="sa-md">Send platform invitations with role presets</div>
+              </div>
+            </div>
+
+          </div>
+          <div class="sa-mfoot">
+            5 invites pending
+            <span class="sa-mfa" routerLink="/super-admin/user-management" (click)="closeMenus()">Manage users →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REQUESTS ── -->
+    <div class="sa-nav-item"
+         (mouseenter)="openMenu('requests')"
+         (mouseleave)="scheduleClose('requests')">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/branch-requests"
+              routerLinkActive="is-active"
+              [class.is-open]="activeDropdown === 'requests'">
+        Requests
+        <span class="sa-nav-badge red">{{ pendingCount }}</span>
+        <svg class="sa-chev" [class.is-up]="activeDropdown === 'requests'" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="sa-mega"
+           [class.is-show]="activeDropdown === 'requests'"
+           (mouseenter)="openMenu('requests')"
+           (mouseleave)="scheduleClose('requests')">
+        <div class="sa-mega-box">
+          <div class="sa-mh">
+            <span class="sa-mh-title">Requests & Approvals</span>
+            <span class="sa-mh-badge red">{{ pendingCount }} pending</span>
+          </div>
+          <div class="sa-mgrid c2">
+
+            <div class="sa-mcard" routerLink="/super-admin/branch-requests" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <rect x="2" y="6" width="16" height="12" rx="2" stroke="#888" stroke-width="1.4"/>
+                  <path d="M6 6V4a4 4 0 018 0v2" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Branch Requests</div>
+                <div class="sa-md">New branch opening approvals from hotel admins</div>
+                <span class="sa-mk red">5 new</span>
+              </div>
+            </div>
+
+            <div class="sa-mcard" routerLink="/super-admin/purchase-approvals" (click)="closeMenus()">
+              <div class="sa-mi">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 4h12v2H4zM4 9h8M4 14h5" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="sa-mt">Purchase Approvals</div>
+                <div class="sa-md">Review and approve plan upgrade requests</div>
+                <span class="sa-mk red">2 pending</span>
+              </div>
+            </div>
+
+          </div>
+          <div class="sa-mfoot">
+            Oldest request: 2 days ago
+            <span class="sa-mfa" routerLink="/super-admin/branch-requests" (click)="closeMenus()">View all →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PLANS (small) ── -->
+    <div class="sa-nav-item sa-small-drop"
+         (mouseenter)="openMenu('plans')"
+         (mouseleave)="scheduleClose('plans')">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/menu-cards"
+              routerLinkActive="is-active"
+              [class.is-open]="activeDropdown === 'plans'">
+        Plans
+        <svg class="sa-chev" [class.is-up]="activeDropdown === 'plans'" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sa-mega sa-left"
+           [class.is-show]="activeDropdown === 'plans'"
+           (mouseenter)="openMenu('plans')"
+           (mouseleave)="scheduleClose('plans')">
+        <div class="sa-mega-box">
+          <div class="sa-dlink" routerLink="/super-admin/menu-cards" (click)="closeMenus()"><div class="sa-ddot"></div>Menu Card Plans</div>
+          <div class="sa-dlink" routerLink="/super-admin/menu-cards" (click)="closeMenus()"><div class="sa-ddot"></div>Subscription Tiers</div>
+          <div class="sa-dlink" routerLink="/super-admin/menu-cards" (click)="closeMenus()"><div class="sa-ddot"></div>Promo &amp; Discounts</div>
+          <div class="sa-dlink" routerLink="/super-admin/subscription-expiry" (click)="closeMenus()"><div class="sa-ddot"></div>Expiry Monitor</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REPORTS (small) ── -->
+    <div class="sa-nav-item sa-small-drop"
+         (mouseenter)="openMenu('reports')"
+         (mouseleave)="scheduleClose('reports')">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/reports"
+              routerLinkActive="is-active"
+              [class.is-open]="activeDropdown === 'reports'">
+        Reports
+        <svg class="sa-chev" [class.is-up]="activeDropdown === 'reports'" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sa-mega sa-left"
+           [class.is-show]="activeDropdown === 'reports'"
+           (mouseenter)="openMenu('reports')"
+           (mouseleave)="scheduleClose('reports')">
+        <div class="sa-mega-box">
+          <div class="sa-dlink" routerLink="/super-admin/reports" (click)="closeMenus()"><div class="sa-ddot"></div>Platform Overview</div>
+          <div class="sa-dlink" routerLink="/super-admin/reports/revenue" (click)="closeMenus()"><div class="sa-ddot"></div>Revenue Analytics</div>
+          <div class="sa-dlink" routerLink="/super-admin/reports/benchmarks" (click)="closeMenus()"><div class="sa-ddot"></div>Hotel Benchmarks</div>
+          <div class="sa-dlink" routerLink="/super-admin/reports/export" (click)="closeMenus()"><div class="sa-ddot"></div>Export CSV / PDF</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS (small) ── -->
+    <div class="sa-nav-item sa-small-drop"
+         (mouseenter)="openMenu('settings')"
+         (mouseleave)="scheduleClose('settings')">
+      <button class="sa-nav-trigger"
+              routerLink="/super-admin/settings"
+              routerLinkActive="is-active"
+              [class.is-open]="activeDropdown === 'settings'">
+        Settings
+        <svg class="sa-chev" [class.is-up]="activeDropdown === 'settings'" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="#5A5A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sa-mega sa-left"
+           [class.is-show]="activeDropdown === 'settings'"
+           (mouseenter)="openMenu('settings')"
+           (mouseleave)="scheduleClose('settings')">
+        <div class="sa-mega-box">
+          <div class="sa-dlink" routerLink="/super-admin/settings" (click)="closeMenus()"><div class="sa-ddot"></div>General Settings</div>
+          <div class="sa-dlink" routerLink="/super-admin/settings/billing" (click)="closeMenus()"><div class="sa-ddot"></div>Billing &amp; Subscription</div>
+          <div class="sa-dlink" routerLink="/super-admin/settings/integrations" (click)="closeMenus()"><div class="sa-ddot"></div>Integrations</div>
+          <div class="sa-dlink" routerLink="/super-admin/settings/audit" (click)="closeMenus()"><div class="sa-ddot"></div>Audit Logs</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sa-nb-nav -->
+</nav>
+
+<!-- Page content area -->
+<div class="sa-page-content" (click)="onPageClick()">
+  <router-outlet (activate)="onPageActivate($event)"></router-outlet>
 </div>
