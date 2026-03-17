@@ -59,9 +59,9 @@ export const routes: Routes = [
       path: 'menu',
       children: [
         { path: '', component: MenuComponent },
-        { path: 'all', component: ComingSoonComponent, data: { title: 'All Menu Items' } },
-        { path: 'categories', component: ComingSoonComponent, data: { title: 'Categories' } },
-        { path: 'add', component: ComingSoonComponent, data: { title: 'Add Menu Item' } },
+        { path: 'all', component: MenuComponent, data: { title: 'All Menu Items' } },
+        { path: 'categories', component: MenuComponent, data: { title: 'Categories' } },
+        { path: 'add', component: MenuComponent, data: { title: 'Add Menu Item' } },
         { path: 'offers', component: ComingSoonComponent, data: { title: 'Special Offers' } }
       ]
     },
@@ -73,10 +73,10 @@ export const routes: Routes = [
       path: 'orders',
       children: [
         { path: '', component: OrdersComponent },
-        { path: 'live', component: ComingSoonComponent, data: { title: 'Live Orders' } },
-        { path: 'history', component: ComingSoonComponent, data: { title: 'Order History' } },
-        { path: 'pending', component: ComingSoonComponent, data: { title: 'Pending Orders' } },
-        { path: 'new', component: ComingSoonComponent, data: { title: 'New Order' } }
+        { path: 'live', component: OrdersComponent, data: { title: 'Live Orders' } },
+        { path: 'history', component: OrdersComponent, data: { title: 'Order History' } },
+        { path: 'pending', component: OrdersComponent, data: { title: 'Pending Orders' } },
+        { path: 'new', component: OrdersComponent, data: { title: 'New Order' } }
       ]
     },
 
@@ -87,7 +87,7 @@ export const routes: Routes = [
       path: 'tables',
       children: [
         { path: '', component: TablesComponent },
-        { path: 'floor', component: ComingSoonComponent, data: { title: 'Floor Plan' } },
+        { path: 'floor', component: TablesComponent, data: { title: 'Floor Plan' } },
         { path: 'reservations', component: ComingSoonComponent, data: { title: 'Reservations' } }
       ]
     },
@@ -125,7 +125,7 @@ export const routes: Routes = [
   canActivate: [AuthGuard],
   children: [
 
-    // ✅ EXISTING
+   
     { path: 'subscription-expiry', component: SubscriptionExpiryComponent },
     { path: 'analytics', component: AnalyticsComponent },
     { path: 'hotels', component: HotelsComponent },
@@ -133,7 +133,7 @@ export const routes: Routes = [
     { path: 'user-management', component: UserManagementComponent },
     { path: 'purchase-approvals', component: PurchaseApprovalComponent },
 
-    // ✅ MENU CARDS (coming soon)
+    
     { 
       path: 'menu-cards', 
       component: ComingSoonComponent,
