@@ -44,7 +44,7 @@
         Search
       </button>
       <button class="tb-btn-ghost tb-btn-sm"
-              (click)="search=''; selectedStatus=null; applyFilters()">
+              (click)="resetFilters()">
         Clear
       </button>
 
@@ -79,7 +79,7 @@
   </div>
 
   <!-- ══ EMPTY — filter no match ══ -->
-  <div *ngIf="!loading && tables.length > 0 && filteredTables.length === 0"
+  <div *ngIf="!loading && tables.length === 0 && (search || selectedStatus)"
        class="tb-empty">
     <div class="tb-empty-icon">
       <svg width="38" height="38" viewBox="0 0 20 20" fill="none">
@@ -92,7 +92,7 @@
   </div>
 
   <!-- ══ TABLE GRID ══ -->
-  <div class="tb-grid" *ngIf="!loading && filteredTables.length > 0">
+  <div class="tb-grid" *ngIf="!loading && tables.length > 0">
 
     <div class="tb-card" *ngFor="let table of paginatedTables">
 

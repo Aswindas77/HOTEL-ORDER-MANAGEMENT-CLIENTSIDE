@@ -46,8 +46,8 @@
           <div class="mn-cat-item" [class.is-active]="!filters.category" (click)="selectCategory(''); showFilterCategoryDropdown=false">
             All Categories
           </div>
-          <div class="mn-cat-item" *ngFor="let c of categories" [class.is-active]="filters.category === c.name"
-            (click)="selectCategory(c.name)">
+          <div class="mn-cat-item" *ngFor="let c of categories" [class.is-active]="filters.category === c._id"
+            (click)="menuForm.category = c._id">
             <span>{{ c.name }}</span>
 
           </div>

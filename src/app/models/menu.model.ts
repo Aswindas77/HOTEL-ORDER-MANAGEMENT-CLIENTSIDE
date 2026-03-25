@@ -9,7 +9,7 @@ export interface Menu {
 
   price: number | null;
 
-  category: MenuCategory;
+  category: string;
   foodType: FoodType;
 
   isAvailable: boolean;

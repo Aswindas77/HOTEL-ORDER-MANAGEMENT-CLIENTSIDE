@@ -73,4 +73,19 @@ export class AuthApiService {
 
   }
 
+  getUser(): any {
+    const token = this.getToken();
+    if (!token) return null;
+
+    return jwtDecode(token);
+  }
+
+  getBranchId(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    const decoded: any = jwtDecode(token);
+    return decoded.branchId || null;
+  }
+
 }

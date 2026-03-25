@@ -109,19 +109,13 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // ── State ────────────────────────────────────────────────────────────────
 
-    categories: Category[] = [
-        'All',
-        'STARTER',
-        'MAIN_COURSE',
-        'DESSERT',
-        'BEVERAGE'
-    ];
-    activeCategory: Category = 'All';
+    categories: string[] = ['All'];
+    activeCategory: string = 'All';
     searchQuery = '';
     activeFoodType: 'VEG' | 'NON_VEG' | null = null;
-    searchFocused = false;   // drives .focused class on the bar
+    searchFocused = false;
 
-    /** Feature / hero card managed separately for layout reasons */
+
     featureItem = {
         id: 0,
         title: 'Atlantic Lobster Thermidor',
@@ -210,9 +204,10 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
             console.log('Token:', this.tableToken);
+            this.loadMenu();
         });
 
-        this.loadMenu();
+
     }
 
     ngAfterViewInit(): void {
@@ -235,19 +230,24 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.activeFoodType) params.foodType = this.activeFoodType;
         if (this.searchQuery.trim()) params.search = this.searchQuery.trim();
 
-        this.menuApi.getMenu(params).subscribe({
-            next: (res: MenuItem[]) => {
-                this.menuItems = res
-                    .filter(item => item.isAvailable)
-                    .map(item => ({ ...item, added: false }));
+        this.menuApi.getMenuByTable(this.tableToken, params)
+            .subscribe({
+                next: (res: any) => {
 
-                this.cdr.markForCheck();
-            },
-            error: (err) => console.error('Menu fetch failed', err)
-        });
+                    this.menuItems = res.menu.map((item: any) => ({
+                        ...item,
+                        added: false
+                    }));
+
+                    this.categories = ['All', ...res.categories];
+
+                    this.cdr.markForCheck();
+                },
+                error: (err) => console.error('Menu fetch failed', err)
+            });
     }
 
-    setCategory(cat: Category): void {
+    setCategory(cat: string): void {
         this.activeCategory = cat;
         this.loadMenu(cat);
 

@@ -8,12 +8,11 @@ export class MenuApiService {
 
     constructor(private http: HttpClient) { }
 
-    // Create menu
     createMenu(payload: any) {
         return this.http.post(`${environment.host}/menu`, payload);
     }
 
-    // Get all / filtered menu
+    
     getMenu(params?: any) {
         const httpParams = new HttpParams({
             fromObject: { ...(params ?? {}) }
@@ -25,23 +24,30 @@ export class MenuApiService {
         );
     }
 
-    // Get by id
+    
     getMenuById(id: string) {
         return this.http.get(`${environment.host}/menu/${id}`);
     }
 
-    // Update
+   
     updateMenu(id: string, payload: any) {
         return this.http.patch(`${environment.host}/menu/${id}`, payload);
     }
 
-    // Disable
+    
     disableMenu(id: string) {
         return this.http.patch(`${environment.host}/menu/${id}/disable`, {});
     }
 
-    // Enable
+   
     enableMenu(id: string) {
         return this.http.patch(`${environment.host}/menu/${id}/enable`, {});
+    }
+
+    getMenuByTable(token: string, params?: any) {
+        return this.http.get<any>(
+            `${environment.host}/api/menu/by-table/${token}`,
+            { params }
+        );
     }
 }

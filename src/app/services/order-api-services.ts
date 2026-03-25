@@ -22,25 +22,25 @@ export class OrderApiService {
 
   // ───────── UPDATE ORDER STATUS ─────────
 
-  updateOrderStatus(id: string, status: string) {
+  updateOrderStatus(id: string, status: string, branchId: string) {
     return this.http.patch<Order>(
-      `${environment.host}/api/orders/${id}/status`,
+      `${environment.host}/api/orders/${id}/status?branchId=${branchId}`,
       { status }
     );
   }
 
   // ───────── PAYMENT ACTIONS ─────────
 
-  markAsPaid(id: string) {
+  markAsPaid(id: string, branchId: string) {
     return this.http.patch<Order>(
-      `${environment.host}/api/orders/${id}/pay`,
+      `${environment.host}/api/orders/${id}/pay?branchId=${branchId}`,
       {}
     );
   }
 
-  markAsUnpaid(id: string) {
+  markAsUnpaid(id: string, branchId: string) {
     return this.http.patch<Order>(
-      `${environment.host}/api/orders/${id}/unpay`,
+      `${environment.host}/api/orders/${id}/unpay?branchId=${branchId}`,
       {}
     );
   }
@@ -54,11 +54,18 @@ export class OrderApiService {
     status?: string;
     startDate?: string;
     endDate?: string;
+    branchId?: string;
   }) {
 
-    const httpParams = new HttpParams({
-      fromObject: { ...(params ?? {}) }
-    });
+    let httpParams = new HttpParams();
+
+    if (params?.page) httpParams = httpParams.set('page', params.page);
+    if (params?.limit) httpParams = httpParams.set('limit', params.limit);
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.status) httpParams = httpParams.set('status', params.status);
+    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
+    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
+    if (params?.branchId) httpParams = httpParams.set('branchId', params.branchId);
 
     return this.http.get<{
       total: number;
@@ -74,9 +81,10 @@ export class OrderApiService {
 
   // ───────── MANAGER ORDERS ─────────
 
-  getManagerOrders(page: number = 1, limit: number = 10) {
+  getManagerOrders(branchId: string, page: number = 1, limit: number = 10) {
 
     const params = new HttpParams()
+      .set('branchId', branchId)
       .set('page', String(page))
       .set('limit', String(limit));
 
@@ -93,13 +101,7 @@ export class OrderApiService {
 
   // ───────── ALL ORDERS (ADMIN) ─────────
 
-  getOrders(filters?: {
-    status?: string;
-    paymentStatus?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  getOrders(filters?: any) {
 
     let params = new HttpParams();
 
@@ -122,6 +124,11 @@ export class OrderApiService {
     if (filters?.limit) {
       params = params.set('limit', String(filters.limit));
     }
+
+    // 🔥 IMPORTANT FIX
+    params = params.set('branchId', filters?.branchId || '');
+
+    console.log('FINAL PARAMS:', params.toString()); // debug
 
     return this.http.get<{
       total: number;

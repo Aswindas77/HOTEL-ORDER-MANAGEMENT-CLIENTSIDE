@@ -3,14 +3,20 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environment/environment';
 import { Table } from '../../../models/table.model';
 import { TableStatus } from '../../../enums/table-status.enum';
+import { AuthApiService } from '../../../services/auth-api.service';
+
 
 @Injectable({ providedIn: 'root' })
 export class TableApiService {
 
   private baseUrl = `${environment.host}/api/tables`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthApiService
+  ) {}
 
+  // 🔹 GET TABLES
   getTables(
     page: number = 1,
     limit: number = 12,
@@ -18,9 +24,13 @@ export class TableApiService {
     status?: TableStatus
   ) {
 
+    const branchId = this.authService.getBranchId();
+    
+
     let params = new HttpParams()
       .set('page', page)
-      .set('limit', limit);
+      .set('limit', limit)
+      .set('branchId', branchId || '');
 
     if (search) {
       params = params.set('search', search);
@@ -39,27 +49,62 @@ export class TableApiService {
 
   }
 
+ 
   createTable(payload: {
     tableNumber: string;
     capacity: number;
     status: string;
   }) {
-    return this.http.post(this.baseUrl, payload);
+
+    const branchId = this.authService.getBranchId();
+
+    return this.http.post(this.baseUrl, {
+      ...payload,
+      branchId
+    });
   }
+
 
   updateTable(id: string, payload: any) {
-    return this.http.patch(`${this.baseUrl}/${id}`, payload);
+
+    const branchId = this.authService.getBranchId();
+
+    return this.http.patch(
+      `${this.baseUrl}/${id}?branchId=${branchId}`,
+      payload
+    );
   }
+
 
   deleteTable(id: string) {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+
+    const branchId = this.authService.getBranchId();
+
+    return this.http.delete(
+      `${this.baseUrl}/${id}?branchId=${branchId}`
+    );
   }
 
+ 
   openTable(id: string) {
-    return this.http.patch(`${this.baseUrl}/${id}/open`, {});
+
+    const branchId = this.authService.getBranchId();
+
+    return this.http.patch(
+      `${this.baseUrl}/${id}/open?branchId=${branchId}`,
+      {}
+    );
   }
+
 
   closeTable(id: string) {
-    return this.http.patch(`${this.baseUrl}/${id}/close`, {});
+
+    const branchId = this.authService.getBranchId();
+
+    return this.http.patch(
+      `${this.baseUrl}/${id}/close?branchId=${branchId}`,
+      {}
+    );
   }
+
 }
