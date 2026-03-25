@@ -18,7 +18,7 @@
         </svg>
       </div>
       <div>
-        <div class="al-brand-name">Aurelia</div>
+        <div class="al-brand-name">{{ hotelName }}</div>
         <div class="al-brand-sub">Hotel &amp; Dining</div>
       </div>
     </div>
@@ -149,7 +149,7 @@
         <div class="al-mega-box">
           <div class="al-mh">
             <span class="al-mh-title">Menu Management</span>
-            <span class="al-mh-badge">148 items</span>
+            <span class="al-mh-badge">{{ menuTotalCount }} items</span>
           </div>
           <div class="al-mgrid c2">
 
@@ -163,7 +163,7 @@
               <div>
                 <div class="al-mt">All Items</div>
                 <div class="al-md">Browse &amp; edit every menu item across all categories</div>
-                <span class="al-mk">148 active</span>
+                <span class="al-mk">{{ menuActiveCount }} active</span>
               </div>
             </div>
 
@@ -178,7 +178,7 @@
               <div>
                 <div class="al-mt">Categories</div>
                 <div class="al-md">Manage starters, mains, desserts, beverages</div>
-                <span class="al-mk is-blue">8 categories</span>
+                <!-- <span class="al-mk is-blue">8 categories</span> -->
               </div>
             </div>
 
@@ -207,7 +207,7 @@
               <div>
                 <div class="al-mt">Special Offers</div>
                 <div class="al-md">Set daily specials, combos and discount menus</div>
-                <span class="al-mk is-warn">3 active</span>
+                <!-- <span class="al-mk is-warn">3 active</span> -->
               </div>
             </div>
 
@@ -295,7 +295,7 @@
               <div>
                 <div class="al-mt">Pending</div>
                 <div class="al-md">Unconfirmed orders awaiting kitchen</div>
-                <span class="al-mk is-warn">5 pending</span>
+                <span class="al-mk is-warn">{{ pendingOrderCount }} pending</span>
               </div>
             </div>
 
@@ -335,7 +335,7 @@
         <div class="al-mega-box">
           <div class="al-mh">
             <span class="al-mh-title">Floor &amp; Tables</span>
-            <span class="al-mh-badge is-blue">18 / 24 occ.</span>
+            <span class="al-mh-badge is-blue">{{ occupiedTables }} / {{ totalTables }} OCC.</span>
           </div>
           <div class="al-mgrid c2">
 
@@ -368,13 +368,13 @@
               <div>
                 <div class="al-mt">Reservations</div>
                 <div class="al-md">Today's bookings and upcoming reserved tables</div>
-                <span class="al-mk is-blue">3 reserved</span>
+                <!-- <span class="al-mk is-blue">3 reserved</span> -->
               </div>
             </div>
 
           </div>
           <div class="al-mfoot">
-            75% occupancy right now
+            {{ occupancyRate }}% occupancy right now
             <span class="al-mfa" routerLink="/admin/tables">Manage tables →</span>
           </div>
         </div>
@@ -383,7 +383,7 @@
 
     
     <!-- ── REPORTS small ── -->
-    <div class="al-nav-item al-small-drop"
+    <!-- <div class="al-nav-item al-small-drop"
          (mouseenter)="openMenu('reports')"
          (mouseleave)="closeMenu('reports')">
       <button class="al-nav-trigger"
@@ -408,10 +408,10 @@
           <div class="al-dlink" routerLink="/admin/reports/export"><div class="al-ddot"></div>Export CSV / PDF</div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- ── SETTINGS small ── -->
-    <div class="al-nav-item al-small-drop"
+    <!-- <div class="al-nav-item al-small-drop"
          (mouseenter)="openMenu('settings')"
          (mouseleave)="closeMenu('settings')">
       <button class="al-nav-trigger"
@@ -436,7 +436,7 @@
           <div class="al-dlink" routerLink="/admin/settings/integrations"><div class="al-ddot"></div>Integrations</div>
         </div>
       </div>
-    </div>
+    </div> -->
 
   </div><!-- /al-nb-nav -->
 

@@ -32,6 +32,11 @@ export class AnalyticsComponent implements OnInit {
 
   // ── Data loading ──────────────────────────────────────────
   loadAnalytics(): void {
+      console.log('Refreshing analytics...');
+
+  // 👇 Force UI reset (important)
+  this.data = null;
+
     this.analyticsApi.getAnalytics().subscribe({
       next: (res: any) => {
         this.data = res;

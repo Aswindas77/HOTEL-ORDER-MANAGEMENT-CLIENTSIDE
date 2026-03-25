@@ -7,28 +7,28 @@ import { User } from '../../../models/user.model';
 export class UserApiService {
   private baseUrl = `${environment.host}/api/users`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-getUsers(
-  page: number = 1,
-  limit: number = 10,
-  search?: string,
-  role?: string,
-  status?: boolean
-) {
+  getUsers(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    role?: string,
+    status?: boolean
+  ) {
 
-  let params: any = {
-    page,
-    limit
-  };
+    let params: any = {
+      page,
+      limit
+    };
 
-  if (search) params.search = search;
-  if (role) params.role = role;
-  if (status !== null && status !== undefined) params.status = status;
+    if (search) params.search = search;
+    if (role) params.role = role;
+    if (status !== null && status !== undefined) params.status = status;
 
-  return this.http.get<any>(this.baseUrl, { params });
+    return this.http.get<any>(this.baseUrl, { params });
 
-}
+  }
 
   createUser(payload: any) {
     return this.http.post(this.baseUrl, payload);
@@ -40,5 +40,9 @@ getUsers(
 
   deleteUser(id: string) {
     return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+
+  getUserById(id: string) {
+    return this.http.get(`${this.baseUrl}/${id}`);
   }
 }

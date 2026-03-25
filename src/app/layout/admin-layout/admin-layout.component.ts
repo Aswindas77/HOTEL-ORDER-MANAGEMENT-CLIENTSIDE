@@ -4,6 +4,13 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd, } fr
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthApiService } from '../../services/auth-api.service';
+import { MenuApiService } from '../../pages/menu/service/menu-api.service';
+import { OrderApiService } from '../../services/order-api-services';
+import { OrderStatus } from '../../enums/order-status.enum';
+import { TableApiService } from '../../pages/tables/service/table-api.service';
+import { HotelApiService } from '../../services/hotel-api.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { UserApiService } from '../../pages/users/service/user-api.service';
 
 @Component({
   standalone: true,
@@ -17,23 +24,32 @@ import { AuthApiService } from '../../services/auth-api.service';
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
 
-  
+
   activeDropdown: string | null = null;
 
 
   adminInitials = 'AM';
 
 
-  adminName = 'Admin Manager';
+  adminName = 'Loading...';
+  hotelName = 'Loading...';
 
+  liveOrderCount = 0;
+  pendingOrderCount = 0;
 
-  liveOrderCount = 12;
+  totalTables = 0;
+  occupiedTables = 0;
+  occupancyRate = 0;
 
 
   notificationCount = 3;
 
 
   showProfileMenu = false;
+  menuActiveCount = 0;
+  menuTotalCount = 0;
+
+
 
 
   private closeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -42,17 +58,31 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   constructor(
     private authApi: AuthApiService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
+    private menuApi: MenuApiService,
+    private orderApi: OrderApiService,
+    private tableApi: TableApiService,
+    private hotelApi: HotelApiService,
+    private userApi: UserApiService,
+
   ) { }
 
 
 
   ngOnInit(): void {
-  
+
+
+    this.loadMenuCounts();
+    this.loadOrderCounts();
+    this.loadTableCounts();
+    this.loadHotel();
+
     this.routerSub = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
         this.activeDropdown = null;
-        this.showProfileMenu = false; 
+        this.showProfileMenu = false;
+
       });
   }
 
@@ -61,7 +91,126 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     if (this.closeTimer) clearTimeout(this.closeTimer);
   }
 
- 
+
+  loadMenuCounts(): void {
+    this.menuApi.getAdminMenus().subscribe({
+      next: (menus: any[]) => {
+        this.menuTotalCount = menus.length;
+
+        this.menuActiveCount = menus.filter(m => m.isAvailable).length;
+      },
+      error: () => {
+        this.menuTotalCount = 0;
+        this.menuActiveCount = 0;
+      }
+    });
+  }
+
+
+  loadOrderCounts(): void {
+    this.orderApi.getOrders({ limit: 1000 }).subscribe({
+      next: (res) => {
+        const orders = res?.data || [];
+
+        // ✅ LIVE = NOT COMPLETED
+        this.liveOrderCount = orders.filter(o =>
+          o.status !== OrderStatus.COMPLETED
+        ).length;
+
+        // ✅ PENDING
+        this.pendingOrderCount = orders.filter(o =>
+          o.status === OrderStatus.PENDING
+        ).length;
+      },
+      error: () => {
+        this.liveOrderCount = 0;
+        this.pendingOrderCount = 0;
+      }
+    });
+  }
+
+
+  loadTableCounts(): void {
+    this.tableApi.getTables(1, 1000).subscribe({
+      next: (res) => {
+        const tables = res?.data || [];
+
+        this.totalTables = tables.length;
+
+        this.occupiedTables = tables.filter(t =>
+          t.status?.toLowerCase() === 'occupied'
+        ).length;
+
+        this.occupancyRate = this.totalTables
+          ? Math.round((this.occupiedTables / this.totalTables) * 100)
+          : 0;
+
+        // ✅ SAFE detect
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        });
+      }
+    });
+  }
+
+loadHotel(): void {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    this.hotelName = 'My Hotel';
+    return;
+  }
+
+  // ✅ decode token
+  const decoded: any = JSON.parse(atob(token.split('.')[1]));
+
+  const userId =
+    decoded?.userId ||
+    decoded?._id ||
+    decoded?.sub ||
+    decoded?.id;
+
+  if (!userId) {
+    this.hotelName = 'My Hotel';
+    return;
+  }
+
+  // ✅ SERVICE CALL (USER)
+  this.userApi.getUserById(userId).subscribe({
+    next: (user: any) => {
+      console.log('USER:', user);
+
+      this.adminName = user?.name || 'Admin';
+
+      const hotelId = user?.hotelId;
+
+      if (!hotelId) {
+        this.hotelName = 'My Hotel';
+        return;
+      }
+
+      // ✅ SERVICE CALL (HOTEL)
+      this.hotelApi.getHotelById(hotelId).subscribe({
+        next: (hotel: any) => {
+          console.log('HOTEL:', hotel);
+
+          this.hotelName = hotel?.name || 'My Hotel';
+
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.hotelName = 'My Hotel';
+          this.cdr.detectChanges();
+        }
+      });
+    },
+    error: () => {
+      this.hotelName = 'My Hotel';
+      this.cdr.detectChanges();
+    }
+  });
+}
+
   openMenu(key: string): void {
     if (this.closeTimer) {
       clearTimeout(this.closeTimer);
@@ -70,7 +219,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     this.activeDropdown = key;
   }
 
- 
+
   closeMenu(key: string): void {
     this.closeTimer = setTimeout(() => {
       if (this.activeDropdown === key) {
@@ -79,21 +228,21 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  
+
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.activeDropdown = null;
-    this.showProfileMenu = false; 
+    this.showProfileMenu = false;
   }
 
- 
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(e: MouseEvent): void {
     if (!(e.target as HTMLElement).closest('.al-navbar')) {
       this.activeDropdown = null;
-      this.showProfileMenu = false; 
+      this.showProfileMenu = false;
     }
-   
+
     if (!(e.target as HTMLElement).closest('.al-profile-wrapper')) {
       this.showProfileMenu = false;
     }
@@ -120,7 +269,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     el ? el.scrollTo({ top: 0, behavior: 'smooth' }) : window.scrollTo(0, 0);
   }
 
- 
+
 
   logout(): void {
     this.authApi.logout();
@@ -128,16 +277,16 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   }
 
   openSearch(): void {
-    
+
     console.log('Search opened (⌘K)');
   }
 
   openNotifications(): void {
-    
+
     console.log('Notifications opened');
   }
 
- 
+
   openProfile(): void {
     this.showProfileMenu = !this.showProfileMenu;
   }

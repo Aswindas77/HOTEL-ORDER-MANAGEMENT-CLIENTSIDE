@@ -1,7 +1,10 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthApiService } from '../../services/auth-api.service';
+import { SuperAdminApiService } from '../../services/super-admin-api/super-admin-api.service';
+import { SubscriptionExpiryApiService } from '../../pages/super-admin/subscription-expiry/service/subscription-expiry-api.service';
+import { BranchRequestApiService } from '../../pages/super-admin/branch-requests/service/branch-request-api.service';
 
 @Component({
   selector: 'app-super-admin-layout',
@@ -15,10 +18,10 @@ export class SuperAdminLayoutComponent implements OnInit {
   // ── Display data ─────────────────────────────────────────────
   adminName = 'Aswin das';
   adminInitials = 'AS';
-  totalHotels = 24;
-  totalUsers = 312;
-  pendingCount = 7;
-  expiringCount = 3;
+  totalHotels = 0;
+  totalUsers = 0;
+  pendingCount = 0;
+  expiringCount = 0;
   hasNotifications = true;
 
   // ── Dropdown state ───────────────────────────────────────────
@@ -33,6 +36,10 @@ export class SuperAdminLayoutComponent implements OnInit {
   constructor(
     private authApi: AuthApiService,
     private router: Router,
+    private superAdminApi: SuperAdminApiService,
+    private expiryApi: SubscriptionExpiryApiService,
+    private branchRequestApi: BranchRequestApiService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -42,7 +49,75 @@ export class SuperAdminLayoutComponent implements OnInit {
       .slice(0, 2)
       .join('')
       .toUpperCase();
+    this.loadHotelsCount();        // ✅ ONLY hotels
+    this.loadExpiringCount();
+    this.loadUsersCount();
+    this.loadPendingRequestsCount();
   }
+
+
+  loadHotelsCount(): void {
+    this.superAdminApi.getHotels().subscribe((res: any) => {
+      console.log('Hotels:', res);
+
+      this.totalHotels = res?.total || 0;   // ✅ ALWAYS use total
+      this.cdr.detectChanges();
+    });
+  }
+
+  loadExpiringCount(): void {
+    this.expiryApi.getExpiringSubscriptions().subscribe((res: any) => {
+
+      const subscriptions = res?.data || res || [];
+
+      this.expiringCount = subscriptions.filter((s: any) => {
+        const days = this.getDaysLeft(s.expiryDate);
+        return days > 0 && days <= 4;
+      }).length;
+      this.cdr.detectChanges();
+    });
+  }
+
+  getDaysLeft(expiryDate: string): number {
+    const diff = new Date(expiryDate).getTime() - new Date().getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+loadUsersCount(): void {
+  this.superAdminApi.getUsers(1, 1000).subscribe((res: any) => {
+
+    const users = res?.data || res || [];
+
+    // ✅ SAME LOGIC AS USER MANAGEMENT
+    const managerUsers = users.filter((u: any) =>
+      u.role === 'MANAGER' &&
+      (u.isActive === true || u.isActive === 'true')
+    );
+
+    this.totalUsers = managerUsers.length;
+
+    this.cdr.detectChanges();
+
+  });
+}
+
+
+loadPendingRequestsCount(): void {
+  this.branchRequestApi.getRequests(1, 1000).subscribe((res: any) => {
+
+    const requests = res?.data || res || [];
+
+    console.log('Requests:', requests); // debug
+
+    this.pendingCount = requests.filter((r: any) =>
+      r.status?.toLowerCase() === 'pending'
+    ).length;
+
+    this.cdr.detectChanges();
+
+  });
+}
+
 
   // ── Nav blur helper ──────────────────────────────────────────
   /**

@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { DashboardApiService } from './service/dashboard-api.service';
 import { FormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
-
-
+import { UserApiService } from '../../pages/users/service/user-api.service';
 @Component({
   standalone: true,
   selector: 'app-dashboard',
@@ -26,6 +25,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     activeTables: 0,
     totalUsers: 0,
   };
+
+  adminName: string = 'Admin';
+
 
   readonly totalTables = 24;
 
@@ -79,6 +81,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private dashboardApi: DashboardApiService,
     private cdr: ChangeDetectorRef,
     private router: Router,
+    private userApi: UserApiService,
   ) { }
 
 
@@ -90,6 +93,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadRecentOrders();
     this.loadTopItems();
     this.loadMenuBreakdown();
+    this.loadAdminName();
   }
 
   ngAfterViewInit(): void {
@@ -215,6 +219,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const hue = (index * 137.508) % 360;
     return `hsl(${hue}, 65%, 55%)`;
   }
+
+loadAdminName(): void {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    this.adminName = 'Admin';
+    return;
+  }
+
+  // ✅ decode token
+  const decoded: any = JSON.parse(atob(token.split('.')[1]));
+
+  const userId =
+    decoded?.userId ||
+    decoded?._id ||
+    decoded?.sub ||
+    decoded?.id;
+
+  if (!userId) {
+    this.adminName = 'Admin';
+    return;
+  }
+this.userApi.getUserById(userId).subscribe({
+  next: (user: any) => {
+    this.adminName = user?.name || 'Admin';
+  }
+});
+}
 
 
 

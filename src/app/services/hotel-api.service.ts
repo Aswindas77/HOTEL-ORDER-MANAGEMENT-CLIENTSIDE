@@ -17,4 +17,8 @@ export class HotelApiService {
     return this.http.get(`${environment.host}/api/hotels/my-hotel`);
   }
 
+  getHotelById(id: string) {
+  return this.http.get(`${environment.host}/api/hotels/${id}`);
+}
+
 }

@@ -14,13 +14,13 @@
     <div class="db-header">
       <div>
         <div class="db-eyebrow">Hotel Admin</div>
-        <h1 class="db-title">Good morning, <em>Admin</em></h1>
+        <h1 class="db-title">Good morning, <em>{{ adminName }}</em></h1>
         <p class="db-sub">{{ todayLabel }} · Here's your hotel at a glance</p>
       </div>
-      <div class="db-header-right">
+      <!-- <div class="db-header-right">
         <button class="db-btn-outline" (click)="exportReport()">↓ Export Report</button>
         <button class="db-btn-primary" (click)="newOrder()">+ New Order</button>
-      </div>
+      </div> -->
     </div>
 
     <!-- ── STAT CARDS ── -->
@@ -115,7 +115,7 @@
       </div>
 
       <!-- Total Users -->
-      <div class="db-stat-card" (click)="navigate('/admin/users')">
+      <!-- <div class="db-stat-card" (click)="navigate('/admin/users')">
         <div class="db-sc-icon purple">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
             <circle cx="10" cy="7" r="3.5" stroke="#534AB7" stroke-width="1.5" />
@@ -133,7 +133,7 @@
           <div class="db-sc-bar purple hi" style="height:65%"></div>
           <div class="db-sc-bar purple hi" style="height:75%"></div>
         </div>
-      </div>
+      </div> -->
 
     </div>
 
