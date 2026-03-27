@@ -5,6 +5,8 @@ import { DashboardApiService } from './service/dashboard-api.service';
 import { FormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
 import { UserApiService } from '../../pages/users/service/user-api.service';
+import { AuthApiService } from '../../services/auth-api.service';
+
 @Component({
   standalone: true,
   selector: 'app-dashboard',
@@ -82,6 +84,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private userApi: UserApiService,
+    private authApi: AuthApiService   
   ) { }
 
 
@@ -107,6 +110,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   loadDashboard(): void {
+
+    const user = this.authApi.getUser();
+
     this.loading = true;
 
     this.dashboardApi.getSummary().subscribe({
@@ -126,6 +132,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadOrderAnalytics(): void {
 
+    const user = this.authApi.getUser();
+
     this.dashboardApi
       .getOrderAnalytics(this.chartPeriod, this.startDate, this.endDate)
       .subscribe((res: any) => {
@@ -141,6 +149,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadTableStatus() {
 
+    const user = this.authApi.getUser();
+
     this.dashboardApi.getTableStatus()
       .subscribe((res: any) => {
 
@@ -155,6 +165,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   loadRecentOrders() {
+
+    const user = this.authApi.getUser();
 
     this.dashboardApi.getRecentOrders()
       .subscribe((res: any) => {
@@ -188,6 +200,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadTopItems() {
 
+    const user = this.authApi.getUser();
+
     this.dashboardApi.getTopItems()
       .subscribe((res: any) => {
 
@@ -198,6 +212,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadMenuBreakdown() {
+
+    const user = this.authApi.getUser();
 
     this.dashboardApi.getMenuBreakdown()
       .subscribe((res: any) => {
