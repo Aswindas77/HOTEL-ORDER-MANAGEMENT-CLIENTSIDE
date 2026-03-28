@@ -609,3 +609,38 @@ $text-3:      rgba(28, 26, 23, 0.30);
   .node-label { font-size: 10.5px; }
   .node-sublabel { display: none; }
 }
+
+.signup-later {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.btn--ghost {
+  position: relative;
+  padding: 12px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 600; /* makes text thicker */
+  font-size: 14px;
+  letter-spacing: 0.2px;
+
+  background: rgba(255, 252, 247, 0.8);
+  border: 1px solid rgba($gold-bright, 0.35);
+  color: $gold-dark;
+
+  box-shadow:
+    0 2px 8px rgba($gold-dark, 0.08),
+    0 0 0 0.5px rgba(255,255,255,0.8) inset;
+
+  transition: all 0.25s ease;
+}
+
+.btn--ghost:hover {
+  background: linear-gradient(135deg, rgba($gold-bright,0.15), rgba($gold-mid,0.08));
+  border-color: $gold-bright;
+  color: $gold-mid;
+
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px rgba($gold-dark, 0.15);
+}

@@ -6,8 +6,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import * as THREE from 'three';
+import { Router, ActivatedRoute } from '@angular/router';import * as THREE from 'three';
 
 @Component({
   selector: 'app-activation-pending',
@@ -43,7 +42,38 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
     '--delay': `${i * 0.08}s`,
   }));
 
-  constructor(private router: Router) {}
+  status: 'success' | 'failed' = 'success';
+
+pageContent = {
+  success: {
+    title: 'Thank You for Your Purchase',
+    subtitle: 'Your hotel setup has been completed successfully.',
+    reviewText: `Our admin team is carefully reviewing your activation request.
+    Once approved, log back in to access your full hotel dashboard.`,
+    buttonText: 'Back to Login'
+  },
+  failed: {
+    title: 'Subscription Failed',
+    subtitle: 'We were unable to process your subscription.',
+    reviewText: `Please try again or contact support if the issue persists.`,
+    buttonText: 'Back to Login'
+  }
+};
+
+  constructor(
+  private router: Router,
+  private route: ActivatedRoute
+) {}
+
+ngOnInit(): void {
+  const paymentStatus = this.route.snapshot.queryParamMap.get('status');
+
+  if (paymentStatus === 'failed') {
+    this.status = 'failed';
+  } else {
+    this.status = 'success';
+  }
+}
 
   ngAfterViewInit(): void {
     this.initThree();
