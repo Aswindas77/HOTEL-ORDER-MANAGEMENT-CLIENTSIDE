@@ -189,7 +189,7 @@ export class OrdersComponent implements OnInit {
         error: (err) => {
           console.error(err);
           this.processingOrderId = null;
-          alert('Status update failed');
+          alert(err?.error?.message || 'Please mark payment before completing order');
         }
       });
   }

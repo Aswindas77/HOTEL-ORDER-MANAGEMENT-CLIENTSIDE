@@ -8,7 +8,7 @@ export class MenuApiService {
 
   private readonly baseUrl = `${environment.host}/api/menu`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // ✅ CREATE MENU (POST /menu)
   createMenu(payload: Partial<Menu>) {
@@ -29,18 +29,18 @@ export class MenuApiService {
   }
 
   getAdminMenus(params?: {
-  category?: string;
-  foodType?: string;
-  search?: string;
-}) {
-  const httpParams = new HttpParams({
-    fromObject: { ...(params ?? {}) } as any
-  });
+    category?: string;
+    foodType?: string;
+    search?: string;
+  }) {
+    const httpParams = new HttpParams({
+      fromObject: { ...(params ?? {}) } as any
+    });
 
-  return this.http.get<Menu[]>(`${this.baseUrl}/admin`, {
-    params: httpParams
-  });
-}
+    return this.http.get<Menu[]>(`${this.baseUrl}/admin`, {
+      params: httpParams
+    });
+  }
 
   // ✅ GET MENU BY ID (GET /menu/:id)
   getMenuById(menuId: string) {
@@ -53,13 +53,22 @@ export class MenuApiService {
   }
 
   // ✅ DISABLE MENU (PATCH /menu/:id/disable)
-  disableMenu(menuId: string) {
-    return this.http.patch(`${this.baseUrl}/${menuId}/disable`, {});
+  disableMenu(menuId: string, hotelId: string, branchId: string) {
+    const params = new HttpParams()
+      .set('hotelId', hotelId)
+      .set('branchId', branchId);
+    return this.http.patch(`${this.baseUrl}/${menuId}/disable`, {}, { params });
   }
 
   // ✅ ENABLE MENU (PATCH /menu/:id/enable)
-  enableMenu(menuId: string) {
-    return this.http.patch(`${this.baseUrl}/${menuId}/enable`, {});
+  enableMenu(menuId: string, hotelId: string, branchId: string) {
+
+    const params = new HttpParams()
+      .set('hotelId', hotelId)
+      .set('branchId', branchId);
+
+    return this.http.patch(`${this.baseUrl}/${menuId}/enable`, {}, { params });
+
   }
 }
 

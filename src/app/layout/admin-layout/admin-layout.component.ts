@@ -108,7 +108,16 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
 
   loadOrderCounts(): void {
-    this.orderApi.getOrders({ limit: 1000 }).subscribe({
+
+      const token = this.authApi.getToken();
+
+  let branchId = '';
+
+  if (token) {
+    const decoded: any = JSON.parse(atob(token.split('.')[1]));
+    branchId = decoded.branchId;
+  }
+    this.orderApi.getOrders({ limit: 10000,branchId: branchId}).subscribe({
       next: (res) => {
         const orders = res?.data || [];
 

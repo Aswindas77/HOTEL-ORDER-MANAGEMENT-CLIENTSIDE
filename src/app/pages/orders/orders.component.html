@@ -229,7 +229,7 @@
                         Mark Paid
                       </button>
 
-                      <button *ngIf="order.paymentStatus === 'PAID'"
+                      <button *ngIf="order.paymentStatus === 'PAID'&& order.status !== OrderStatus.COMPLETED"
                               class="or-btn-act unpaid"
                               (click)="markUnpaid(order)">
                         Mark Unpaid

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HotelApiService } from './service/hotel-api.service';
 import { BranchApiService } from './service/branch-api.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-hotels',
@@ -33,16 +34,34 @@ export class HotelsComponent implements OnInit {
   constructor(
     private hotelApi: HotelApiService,
     private branchApi: BranchApiService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
+
+      this.route.queryParams.subscribe(params => {
+
+    this.page = +params['page'] || 1;
+    this.search = params['search'] || '';
+    this.status = params['status'] || '';
     this.loadHotels();
+    });
   }
 
 
 
   loadHotels() {
+
+      this.router.navigate([], {
+    queryParams: {
+      page: this.page,
+      search: this.search || null,
+      status: this.status || null
+    },
+    queryParamsHandling: 'merge'
+  });
 
     this.hotelApi.getHotels(
       this.page,

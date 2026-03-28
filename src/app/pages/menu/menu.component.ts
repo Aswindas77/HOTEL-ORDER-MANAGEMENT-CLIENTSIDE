@@ -104,7 +104,7 @@ export class MenuComponent implements OnInit {
 
     const params: any = {};
     if (this.filters.search) params.search = this.filters.search;
-    if (this.filters.category && this.filters.category.length === 24) {
+    if (this.filters.category) {
       params.category = this.filters.category;
     }
     if (this.filters.foodType) params.foodType = this.filters.foodType;
@@ -192,9 +192,13 @@ export class MenuComponent implements OnInit {
   }
 
   toggleAvailability(menu: any): void {
+
+    const user = this.authApi.getUser();
     const req$ = menu.isAvailable
-      ? this.menuApi.disableMenu(menu._id)
-      : this.menuApi.enableMenu(menu._id);
+      ? this.menuApi.disableMenu(menu._id, user.hotelId,
+        user.branchId)
+      : this.menuApi.enableMenu(menu._id, user.hotelId,
+        user.branchId);
 
     req$.subscribe(() => this.loadMenus());
   }
