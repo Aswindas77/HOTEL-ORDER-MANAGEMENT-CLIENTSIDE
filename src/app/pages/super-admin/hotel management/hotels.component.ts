@@ -31,6 +31,8 @@ export class HotelsComponent implements OnInit {
   // search
   search = '';
 
+  constantTotal = 0;
+
   constructor(
     private hotelApi: HotelApiService,
     private branchApi: BranchApiService,
@@ -75,8 +77,21 @@ export class HotelsComponent implements OnInit {
       this.totalPages = res.totalPages;
 
       this.cdr.detectChanges();
-
+  
+       
     });
+
+      // constant total (no filter)
+  this.hotelApi.getHotels(
+    1,
+    1,
+    '',
+    ''
+  ).subscribe((res: any) => {
+
+    this.constantTotal = res.total;  // always full total
+
+  });
 
   }
 
