@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
 import { MenuApiService } from './service/menu-api.service';
@@ -24,25 +23,27 @@ import { AuthApiService } from '../../services/auth-api.service';
 })
 export class MenuComponent implements OnInit {
 
+  // ✅ FIX: for HTML Math usage
   readonly Math = Math;
 
   menus: any[] = [];
   paginatedMenus: any[] = [];
+  categories: any[] = [];
+
   loading = false;
 
   showModal = false;
-  editingMenuId: string | null = null;
   showCategoryModal = false;
   showFilterCategoryDropdown = false;
   showModalCategoryDropdown = false;
 
-  categories: any[] = [];
-  categoryName = '';
-  categorySearch = '';
+  editingMenuId: string | null = null;
   editingCategoryId: string | null = null;
 
-  foodTypes = Object.values(FoodType);
+  categoryName = '';
+  categorySearch = '';
 
+  foodTypes = Object.values(FoodType);
 
   menuForm = {
     name: '',
@@ -65,37 +66,30 @@ export class MenuComponent implements OnInit {
 
   expandedMenuId: string | null = null;
 
-  get availableCount(): number {
-    return this.menus.filter(m => m.isAvailable).length;
-  }
-
-  get unavailableCount(): number {
-    return this.menus.filter(m => !m.isAvailable).length;
-  }
-
-  get pageNumbers(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  get filteredCategories(): any[] {
-    if (!this.categorySearch.trim()) return this.categories;
-
-    return this.categories.filter(c =>
-      c.name.toLowerCase().includes(this.categorySearch.toLowerCase())
-    );
-  }
-
   constructor(
     private menuApi: MenuApiService,
     private categoryApi: CategoryApiService,
-    private router: Router,
     private cdr: ChangeDetectorRef,
     private authApi: AuthApiService
-  ) { }
+  ) {}
 
+  // ─────────── INIT ───────────
   ngOnInit(): void {
     this.loadCategories();
-    this.loadMenus();
+  }
+
+  // ─────────── LOAD CATEGORIES ───────────
+  loadCategories(): void {
+    this.categoryApi.getCategories().subscribe({
+      next: (res: any) => {
+        this.categories = res || [];
+        this.loadMenus(); // ✅ after categories
+      },
+      error: () => {
+        this.categories = [];
+        this.loadMenus();
+      },
+    });
   }
 
   // ─────────── LOAD MENUS ───────────
@@ -104,9 +98,7 @@ export class MenuComponent implements OnInit {
 
     const params: any = {};
     if (this.filters.search) params.search = this.filters.search;
-    if (this.filters.category) {
-      params.category = this.filters.category;
-    }
+    if (this.filters.category) params.category = this.filters.category;
     if (this.filters.foodType) params.foodType = this.filters.foodType;
 
     this.menuApi.getAdminMenus(params)
@@ -118,21 +110,13 @@ export class MenuComponent implements OnInit {
         next: (res: any) => {
           this.menus = res || [];
           this.totalPages = Math.ceil(this.menus.length / this.pageSize);
-          this.updatePaginatedMenus();
+          this.updatePagination();
         },
         error: () => {
           this.menus = [];
           this.paginatedMenus = [];
         }
       });
-  }
-
-  // ─────────── LOAD CATEGORIES ───────────
-  loadCategories(): void {
-    this.categoryApi.getCategories().subscribe({
-      next: (res: any) => this.categories = res,
-      error: () => this.categories = [],
-    });
   }
 
   // ─────────── MENU CRUD ───────────
@@ -149,7 +133,7 @@ export class MenuComponent implements OnInit {
       name: menu.name,
       description: menu.description ?? '',
       price: menu.price,
-      category: menu.category?._id || menu.category, // ✅ FIX
+      category: menu.category?._id || menu.category,
       foodType: menu.foodType,
       isAvailable: menu.isAvailable,
     };
@@ -163,18 +147,25 @@ export class MenuComponent implements OnInit {
 
   saveMenu(): void {
 
+    if (!this.menuForm.category) {
+      alert('Please select a category');
+      return;
+    }
+
     const user = this.authApi.getUser();
 
     const payload = {
       name: this.menuForm.name,
       description: this.menuForm.description,
       price: Number(this.menuForm.price),
-      category: this.menuForm.category || undefined,
+      category: this.menuForm.category,
       foodType: this.menuForm.foodType,
       isAvailable: true,
       hotelId: user.hotelId,
       branchId: user.branchId,
     };
+
+    console.log('PAYLOAD 👉', payload);
 
     const req$ = this.editingMenuId
       ? this.menuApi.updateMenu(this.editingMenuId, payload)
@@ -185,20 +176,16 @@ export class MenuComponent implements OnInit {
         this.closeModal();
         this.loadMenus();
       },
-      error: (err) => {
-        alert(err?.error?.message || 'Failed');
-      }
+      error: (err) => alert(err?.error?.message || 'Failed')
     });
   }
 
   toggleAvailability(menu: any): void {
-
     const user = this.authApi.getUser();
+
     const req$ = menu.isAvailable
-      ? this.menuApi.disableMenu(menu._id, user.hotelId,
-        user.branchId)
-      : this.menuApi.enableMenu(menu._id, user.hotelId,
-        user.branchId);
+      ? this.menuApi.disableMenu(menu._id, user.hotelId, user.branchId)
+      : this.menuApi.enableMenu(menu._id, user.hotelId, user.branchId);
 
     req$.subscribe(() => this.loadMenus());
   }
@@ -214,21 +201,25 @@ export class MenuComponent implements OnInit {
     this.applyFilters();
   }
 
-  selectCategory(id: string): void { // ✅ FIX
+  selectCategory(id: string): void {
     this.filters.category = id;
     this.showFilterCategoryDropdown = false;
     this.applyFilters();
   }
 
   // ─────────── PAGINATION ───────────
-  updatePaginatedMenus(): void {
+  updatePagination(): void {
     const start = (this.currentPage - 1) * this.pageSize;
     this.paginatedMenus = this.menus.slice(start, start + this.pageSize);
   }
 
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
   goToPage(page: number): void {
     this.currentPage = page;
-    this.updatePaginatedMenus();
+    this.updatePagination();
   }
 
   nextPage(): void {
@@ -242,14 +233,6 @@ export class MenuComponent implements OnInit {
   // ─────────── EXPAND ───────────
   toggleExpand(id: string): void {
     this.expandedMenuId = this.expandedMenuId === id ? null : id;
-  }
-
-  // ─────────── OVERLAY ───────────
-  onOverlayClick(event: MouseEvent, type: 'menu' | 'category'): void {
-    if ((event.target as HTMLElement).classList.contains('mn-modal-overlay')) {
-      if (type === 'menu') this.closeModal();
-      else this.closeCategoryModal();
-    }
   }
 
   // ─────────── CATEGORY CRUD ───────────
@@ -273,8 +256,6 @@ export class MenuComponent implements OnInit {
 
   saveCategory(): void {
 
-    console.log('Category Name:', this.categoryName);
-
     if (!this.categoryName.trim()) return;
 
     const req$ = this.editingCategoryId
@@ -287,11 +268,7 @@ export class MenuComponent implements OnInit {
         this.menuForm.category = '';
         this.closeCategoryModal();
       },
-      error: (err) => {
-        console.log('FULL ERROR:', err);
-        console.log('ERROR MESSAGE:', err?.error);
-        alert(err?.error?.message || 'Failed');
-      }
+      error: (err) => alert(err?.error?.message || 'Failed')
     });
   }
 
@@ -299,7 +276,28 @@ export class MenuComponent implements OnInit {
     this.showCategoryModal = false;
   }
 
-  // ─────────── RESET ───────────
+  // ─────────── HELPERS ───────────
+  getCategoryName(id: string): string {
+    if (!id || !this.categories?.length) return '';
+    const cat = this.categories.find(c => c._id === id);
+    return cat ? cat.name : '';
+  }
+
+  get filteredCategories(): any[] {
+    if (!this.categorySearch.trim()) return this.categories;
+
+    return this.categories.filter(c =>
+      c.name.toLowerCase().includes(this.categorySearch.toLowerCase())
+    );
+  }
+
+  onOverlayClick(event: MouseEvent, type: 'menu' | 'category'): void {
+    if ((event.target as HTMLElement).classList.contains('mn-modal-overlay')) {
+      if (type === 'menu') this.closeModal();
+      else this.closeCategoryModal();
+    }
+  }
+
   private resetForm(): void {
     this.menuForm = {
       name: '',

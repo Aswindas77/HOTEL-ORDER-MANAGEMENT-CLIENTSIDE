@@ -2,7 +2,9 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy, C
 import { CommonModule } from '@angular/common';
 import { MenuApiService } from '../../services/menu-api-services';
 import { OrderApiService } from '../../services/order-api-services';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Renderer2 } from '@angular/core';
+import { HostBinding } from '@angular/core';
 
 
 export type ToastType = 'success' | 'error' | 'info';
@@ -24,7 +26,7 @@ export interface MenuItem {
     name: string;
     description?: string;
     price: number;
-    category: 'STARTER' | 'MAIN_COURSE' | 'BEVERAGE' | 'DESSERT';
+    category: { _id: string; name: string };
     foodType: 'VEG' | 'NON_VEG';
     isAvailable: boolean;
     image?: string;
@@ -36,16 +38,6 @@ export interface MenuItem {
     bg?: string;
     delay?: number;
 }
-
-
-// ── Categories ────────────────────────────────────────────────────────────────
-
-export type Category =
-    | 'All'
-    | 'STARTER'
-    | 'MAIN_COURSE'
-    | 'DESSERT'
-    | 'BEVERAGE';
 
 
 
@@ -65,6 +57,8 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     toasts: Toast[] = [];
     private toastCounter = 0;
+    hotel: any = {};
+    branch: any = {};
 
     showToast(type: ToastType, title: string, message: string, duration = 3800): void {
 
@@ -109,7 +103,7 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // ── State ────────────────────────────────────────────────────────────────
 
-    categories: string[] = ['All'];
+    categories: { id: string; name: string }[] = [];
     activeCategory: string = 'All';
     searchQuery = '';
     activeFoodType: 'VEG' | 'NON_VEG' | null = null;
@@ -175,7 +169,7 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     private targetX = 0;
     private targetY = 0;
     tableToken!: string;
-
+    isDayMode = false;
 
     private boundMouseMove!: (e: MouseEvent) => void;
 
@@ -184,6 +178,7 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             private menuApi: MenuApiService,
             private orderApi: OrderApiService,
             private route: ActivatedRoute,
+            private router: Router,
             private cdr: ChangeDetectorRef
         ) { }
 
@@ -195,11 +190,14 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tableToken = params['token']?.toLowerCase();
 
             if (!this.tableToken) {
-                this.showToast(
-                    'error',
-                    'Access Denied',
-                    'Invalid table token. Please scan the QR code again.'
-                );
+                // this.showToast(
+                //     'error',
+                //     'Access Denied',
+                //     'Invalid table token. Please scan the QR code again.'
+                // );
+                this.router.navigate(['/login']);
+
+
                 return;
             }
 
@@ -226,7 +224,9 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     loadMenu(category?: string) {
         const params: any = {};
 
-        if (category && category !== 'All') params.category = category;
+        if (category && category !== 'All') {
+            params.category = category;
+        }
         if (this.activeFoodType) params.foodType = this.activeFoodType;
         if (this.searchQuery.trim()) params.search = this.searchQuery.trim();
 
@@ -234,23 +234,36 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (res: any) => {
 
+
                     this.menuItems = res.menu.map((item: any) => ({
                         ...item,
+                        category: item.category.name,
                         added: false
                     }));
 
-                    this.categories = ['All', ...res.categories];
-
-                    this.cdr.markForCheck();
+                    this.categories = [
+                        { id: 'All', name: 'All' },
+                        ...res.categories.map((c: any) => ({
+                            id: c._id,
+                            name: c.name
+                        }))
+                    ];
+                    this.hotel = res.hotel || {};
+                    this.branch = res.branch || {};
+                    this.cdr.detectChanges();
                 },
                 error: (err) => console.error('Menu fetch failed', err)
             });
     }
 
-    setCategory(cat: string): void {
-        this.activeCategory = cat;
-        this.loadMenu(cat);
+    setCategory(cat: any) {
+        this.activeCategory = cat.id;
 
+        if (cat.id === 'All') {
+            this.loadMenu();
+        } else {
+            this.loadMenu(cat.id);
+        }
     }
 
 
@@ -284,6 +297,9 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cdr.markForCheck();
     }
 
+    @HostBinding('class.day-mode') get dayModeClass() {
+        return this.isDayMode;
+    }
     placeOrder() {
 
         if (this.cart.length === 0) return;
@@ -365,6 +381,11 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadMenu(this.activeCategory);
     }
 
+    toggleTheme(): void {
+        this.isDayMode = !this.isDayMode;
+
+        document.body.classList.toggle('day-mode', this.isDayMode);
+    }
     cycleFoodType(): void {
         if (this.activeFoodType === null) this.activeFoodType = 'VEG';
         else if (this.activeFoodType === 'VEG') this.activeFoodType = 'NON_VEG';

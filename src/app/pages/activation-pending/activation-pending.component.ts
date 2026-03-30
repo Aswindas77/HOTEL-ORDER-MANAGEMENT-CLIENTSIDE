@@ -4,9 +4,11 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';import * as THREE from 'three';
+import { Router, ActivatedRoute } from '@angular/router'; import * as THREE from 'three';
+import { AuthApiService } from '../../services/auth-api.service';
 
 @Component({
   selector: 'app-activation-pending',
@@ -19,19 +21,19 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('canvasContainer', { static: true }) canvasRef!: ElementRef<HTMLDivElement>;
 
-  private scene!:    THREE.Scene;
-  private camera!:   THREE.PerspectiveCamera;
+  private scene!: THREE.Scene;
+  private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
-  private clock      = new THREE.Clock();
-  private rafId!:    number;
-  private mouse      = { x: 0, y: 0 };
+  private clock = new THREE.Clock();
+  private rafId!: number;
+  private mouse = { x: 0, y: 0 };
   private resizeObs!: ResizeObserver;
 
-  private starPoints!:  THREE.Points;
-  private rings:        THREE.Mesh[]  = [];
-  private orbGroup!:    THREE.Group;
-  private coreGroup!:   THREE.Group;
-  private trailGroup!:  THREE.Group;
+  private starPoints!: THREE.Points;
+  private rings: THREE.Mesh[] = [];
+  private orbGroup!: THREE.Group;
+  private coreGroup!: THREE.Group;
+  private trailGroup!: THREE.Group;
 
   // CSS floating specks data
   specks = Array.from({ length: 18 }, () => this.makeSpeck());
@@ -42,38 +44,54 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
     '--delay': `${i * 0.08}s`,
   }));
 
-  status: 'success' | 'failed' = 'success';
+  status: 'pending' | 'approved' | 'rejected' = 'pending';
 
-pageContent = {
-  success: {
-    title: 'Thank You for Your Purchase',
-    subtitle: 'Your hotel setup has been completed successfully.',
-    reviewText: `Our admin team is carefully reviewing your activation request.
-    Once approved, log back in to access your full hotel dashboard.`,
-    buttonText: 'Back to Login'
-  },
-  failed: {
-    title: 'Subscription Failed',
-    subtitle: 'We were unable to process your subscription.',
-    reviewText: `Please try again or contact support if the issue persists.`,
-    buttonText: 'Back to Login'
-  }
-};
+  pageContent = {
+    pending: {
+      title: 'Activation Under Review',
+      subtitle: 'Your request is being reviewed.',
+      reviewText: `Our admin team is reviewing your activation request.
+    This usually takes 2–3 days.`,
+      buttonText: 'Back to Login'
+    },
+    approved: {
+      title: 'Activation Approved',
+      subtitle: 'Your hotel is now live.',
+      reviewText: `You can now login and access your dashboard.`,
+      buttonText: 'Back to Login'
+    },
+    rejected: {
+      title: 'Activation Rejected',
+      subtitle: 'Your request was not approved.',
+      reviewText: `Please contact support or try again.`,
+      buttonText: 'Back to Login'
+    }
+  };
 
   constructor(
-  private router: Router,
-  private route: ActivatedRoute
-) {}
+    private router: Router,
+    private route: ActivatedRoute,
+    private authApi: AuthApiService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-ngOnInit(): void {
-  const paymentStatus = this.route.snapshot.queryParamMap.get('status');
+  ngOnInit(): void {
 
-  if (paymentStatus === 'failed') {
-    this.status = 'failed';
-  } else {
-    this.status = 'success';
+    this.authApi.getProfile().subscribe((user: any) => {
+
+      this.authApi.getMyActivationRequest().subscribe((res: any) => {
+
+        console.log('MY REQUEST 👉', res);
+
+        const reqStatus = res?.status;
+
+        this.status = reqStatus || 'pending';
+        this.cdr.detectChanges();
+      });
+
+    });
+
   }
-}
 
   ngAfterViewInit(): void {
     this.initThree();
@@ -91,21 +109,21 @@ ngOnInit(): void {
   private makeSpeck() {
     const size = 2 + Math.random() * 4;
     return {
-      '--x':     `${Math.random() * 100}vw`,
+      '--x': `${Math.random() * 100}vw`,
       '--delay': `${Math.random() * 12}s`,
-      '--dur':   `${10 + Math.random() * 16}s`,
-      '--size':  `${size}px`,
-      '--op':    `${0.15 + Math.random() * 0.35}`,
+      '--dur': `${10 + Math.random() * 16}s`,
+      '--size': `${size}px`,
+      '--op': `${0.15 + Math.random() * 0.35}`,
     };
   }
 
   // ── Three.js ─────────────────────────────────────────────────
   private initThree(): void {
     const el = this.canvasRef.nativeElement;
-    const W  = el.clientWidth  || window.innerWidth;
-    const H  = el.clientHeight || window.innerHeight;
+    const W = el.clientWidth || window.innerWidth;
+    const H = el.clientHeight || window.innerHeight;
 
-    this.scene  = new THREE.Scene();
+    this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 300);
     this.camera.position.z = 7;
 
@@ -125,28 +143,28 @@ ngOnInit(): void {
 
   private buildStarField(): void {
     const count = 3600;
-    const pos   = new Float32Array(count * 3);
+    const pos = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const phase = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
-      pos[i*3]     = (Math.random() - 0.5) * 110;
-      pos[i*3 + 1] = (Math.random() - 0.5) * 110;
-      pos[i*3 + 2] = (Math.random() - 0.5) * 80;
-      sizes[i]     = Math.random() * 0.07 + 0.008;
-      phase[i]     = Math.random() * Math.PI * 2;
+      pos[i * 3] = (Math.random() - 0.5) * 110;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 110;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 80;
+      sizes[i] = Math.random() * 0.07 + 0.008;
+      phase[i] = Math.random() * Math.PI * 2;
     }
 
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    geo.setAttribute('aSize',    new THREE.Float32BufferAttribute(sizes, 1));
-    geo.setAttribute('aPhase',   new THREE.Float32BufferAttribute(phase, 1));
+    geo.setAttribute('aSize', new THREE.Float32BufferAttribute(sizes, 1));
+    geo.setAttribute('aPhase', new THREE.Float32BufferAttribute(phase, 1));
 
     const mat = new THREE.ShaderMaterial({
       transparent: true,
-      depthWrite:  false,
+      depthWrite: false,
       uniforms: {
-        uTime:   { value: 0 },
+        uTime: { value: 0 },
         uColor1: { value: new THREE.Color(0xC9A84C) },
         uColor2: { value: new THREE.Color(0xFAD97A) },
       },
@@ -185,12 +203,12 @@ ngOnInit(): void {
 
   private buildRings(): void {
     const cfgs = [
-      { r: 2.8,  tube: 0.014, color: 0xC9A84C, op: 0.40, rx:  1.10, ry:  0.30, sp:  0.11, d:  1 },
-      { r: 3.7,  tube: 0.009, color: 0xB8922E, op: 0.26, rx:  0.50, ry:  1.20, sp:  0.07, d: -1 },
-      { r: 2.0,  tube: 0.018, color: 0xFAD97A, op: 0.33, rx: -0.70, ry:  0.90, sp:  0.16, d:  1 },
-      { r: 4.5,  tube: 0.007, color: 0x8B6914, op: 0.18, rx:  1.50, ry: -0.40, sp:  0.05, d:  1 },
-      { r: 1.4,  tube: 0.021, color: 0xE8C56A, op: 0.28, rx: -0.30, ry: -1.10, sp:  0.20, d: -1 },
-      { r: 5.2,  tube: 0.005, color: 0xC9A84C, op: 0.12, rx:  0.20, ry:  0.60, sp:  0.03, d:  1 },
+      { r: 2.8, tube: 0.014, color: 0xC9A84C, op: 0.40, rx: 1.10, ry: 0.30, sp: 0.11, d: 1 },
+      { r: 3.7, tube: 0.009, color: 0xB8922E, op: 0.26, rx: 0.50, ry: 1.20, sp: 0.07, d: -1 },
+      { r: 2.0, tube: 0.018, color: 0xFAD97A, op: 0.33, rx: -0.70, ry: 0.90, sp: 0.16, d: 1 },
+      { r: 4.5, tube: 0.007, color: 0x8B6914, op: 0.18, rx: 1.50, ry: -0.40, sp: 0.05, d: 1 },
+      { r: 1.4, tube: 0.021, color: 0xE8C56A, op: 0.28, rx: -0.30, ry: -1.10, sp: 0.20, d: -1 },
+      { r: 5.2, tube: 0.005, color: 0xC9A84C, op: 0.12, rx: 0.20, ry: 0.60, sp: 0.03, d: 1 },
     ];
 
     cfgs.forEach(c => {
@@ -198,9 +216,9 @@ ngOnInit(): void {
         new THREE.TorusGeometry(c.r, c.tube, 8, 180),
         new THREE.MeshBasicMaterial({ color: c.color, transparent: true, opacity: c.op }),
       );
-      mesh.rotation.x  = c.rx;
-      mesh.rotation.y  = c.ry;
-      mesh.userData    = { sp: c.sp, d: c.d };
+      mesh.rotation.x = c.rx;
+      mesh.rotation.y = c.ry;
+      mesh.userData = { sp: c.sp, d: c.d };
       this.scene.add(mesh);
       this.rings.push(mesh);
     });
@@ -211,19 +229,19 @@ ngOnInit(): void {
     this.scene.add(this.orbGroup);
 
     for (let i = 0; i < 28; i++) {
-      const r   = 0.035 + Math.random() * 0.095;
+      const r = 0.035 + Math.random() * 0.095;
       const hue = 0.095 + Math.random() * 0.065;
       const mesh = new THREE.Mesh(
         new THREE.SphereGeometry(r, 12, 12),
         new THREE.MeshBasicMaterial({
-          color:       new THREE.Color().setHSL(hue, 0.80, 0.48 + Math.random() * 0.24),
+          color: new THREE.Color().setHSL(hue, 0.80, 0.48 + Math.random() * 0.24),
           transparent: true,
-          opacity:     0.38 + Math.random() * 0.40,
+          opacity: 0.38 + Math.random() * 0.40,
         }),
       );
       const theta = Math.random() * Math.PI * 2;
-      const phi   = Math.random() * Math.PI;
-      const rad   = 1.4 + Math.random() * 3.2;
+      const phi = Math.random() * Math.PI;
+      const rad = 1.4 + Math.random() * 3.2;
       mesh.position.set(
         rad * Math.sin(phi) * Math.cos(theta),
         rad * Math.sin(phi) * Math.sin(theta),
@@ -259,12 +277,12 @@ ngOnInit(): void {
     for (let i = 0; i < 12; i++) {
       const points: THREE.Vector3[] = [];
       const startTheta = Math.random() * Math.PI * 2;
-      const r          = 2.0 + Math.random() * 2.5;
+      const r = 2.0 + Math.random() * 2.5;
 
       for (let j = 0; j <= 40; j++) {
         const t = j / 40;
         const theta = startTheta + t * (Math.PI * 0.35 + Math.random() * 0.5);
-        const phi   = Math.PI * 0.3 + Math.random() * Math.PI * 0.4;
+        const phi = Math.PI * 0.3 + Math.random() * Math.PI * 0.4;
         points.push(new THREE.Vector3(
           r * Math.sin(phi) * Math.cos(theta),
           r * Math.sin(phi) * Math.sin(theta) * 0.6,
@@ -274,9 +292,9 @@ ngOnInit(): void {
 
       const geo = new THREE.BufferGeometry().setFromPoints(points);
       const mat = new THREE.LineBasicMaterial({
-        color:       0xC9A84C,
+        color: 0xC9A84C,
         transparent: true,
-        opacity:     0.08 + Math.random() * 0.10,
+        opacity: 0.08 + Math.random() * 0.10,
       });
       const line = new THREE.Line(geo, mat);
       line.userData = { speed: 0.006 + Math.random() * 0.01, offset: Math.random() * Math.PI * 2 };
@@ -290,9 +308,9 @@ ngOnInit(): void {
       const mesh = new THREE.Mesh(
         new THREE.PlaneGeometry(size, size),
         new THREE.MeshBasicMaterial({
-          color:      0xC9A84C,
+          color: 0xC9A84C,
           transparent: true,
-          opacity:     0.008 + Math.random() * 0.014,
+          opacity: 0.008 + Math.random() * 0.014,
           depthWrite: false,
         }),
       );
@@ -302,14 +320,14 @@ ngOnInit(): void {
         (Math.random() - 0.5) * 5,
       );
       mesh.rotation.z = Math.random() * Math.PI;
-      mesh.userData   = { drift: 0.0004 + Math.random() * 0.001, breathe: Math.random() * Math.PI * 2 };
+      mesh.userData = { drift: 0.0004 + Math.random() * 0.001, breathe: Math.random() * Math.PI * 2 };
       this.scene.add(mesh);
     }
   }
 
   private animate = (): void => {
     this.rafId = requestAnimationFrame(this.animate);
-    const t    = this.clock.getElapsedTime();
+    const t = this.clock.getElapsedTime();
 
     // Stars
     const starMat = this.starPoints.material as THREE.ShaderMaterial;
@@ -325,8 +343,8 @@ ngOnInit(): void {
     });
 
     // Orb group + bob
-    this.orbGroup.rotation.y  = t * 0.052;
-    this.orbGroup.rotation.x  = Math.sin(t * 0.18) * 0.12;
+    this.orbGroup.rotation.y = t * 0.052;
+    this.orbGroup.rotation.x = Math.sin(t * 0.18) * 0.12;
     this.orbGroup.children.forEach(c => {
       const m = c as THREE.Mesh;
       m.position.y += Math.sin(t * m.userData['speed'] + m.userData['offset']) * 0.0016;
@@ -339,7 +357,7 @@ ngOnInit(): void {
 
     // Trails fade in-out
     this.trailGroup.children.forEach(c => {
-      const l   = c as THREE.Line;
+      const l = c as THREE.Line;
       const mat = l.material as THREE.LineBasicMaterial;
       mat.opacity = (0.06 + 0.08 * Math.sin(t * l.userData['speed'] * 80 + l.userData['offset']));
       l.rotation.y += l.userData['speed'];
@@ -348,7 +366,7 @@ ngOnInit(): void {
     // Nebula breathe
     this.scene.children.forEach(obj => {
       if (obj.userData['breathe'] !== undefined) {
-        const m   = obj as THREE.Mesh;
+        const m = obj as THREE.Mesh;
         const mat = m.material as THREE.MeshBasicMaterial;
         mat.opacity = 0.008 + 0.008 * Math.sin(t * 0.5 + obj.userData['breathe']);
         obj.rotation.z += obj.userData['drift'];
@@ -364,7 +382,7 @@ ngOnInit(): void {
   };
 
   private onMouse = (e: MouseEvent): void => {
-    this.mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1);
   };
 
@@ -372,8 +390,8 @@ ngOnInit(): void {
     window.addEventListener('mousemove', this.onMouse);
     this.resizeObs = new ResizeObserver(() => {
       const el = this.canvasRef.nativeElement;
-      const W  = el.clientWidth;
-      const H  = el.clientHeight;
+      const W = el.clientWidth;
+      const H = el.clientHeight;
       this.camera.aspect = W / H;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(W, H);

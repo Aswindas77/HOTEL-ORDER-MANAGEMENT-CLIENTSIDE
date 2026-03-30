@@ -1,4 +1,4 @@
-import { MenuCategory } from '../enums/menu-category.enum';
+
 import { FoodType } from '../enums/food-type.enum';
 
 export interface Menu {

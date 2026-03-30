@@ -88,4 +88,7 @@ export class AuthApiService {
     return decoded.branchId || null;
   }
 
+  getMyActivationRequest() {
+    return this.http.get(`${environment.host}/api/activation-request/my`);
+  }
 }

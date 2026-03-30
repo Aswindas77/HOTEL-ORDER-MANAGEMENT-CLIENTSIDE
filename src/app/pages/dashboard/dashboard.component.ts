@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private userApi: UserApiService,
-    private authApi: AuthApiService   
+    private authApi: AuthApiService
   ) { }
 
 
@@ -134,16 +134,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const user = this.authApi.getUser();
 
-    this.dashboardApi
-      .getOrderAnalytics(this.chartPeriod, this.startDate, this.endDate)
-      .subscribe((res: any) => {
+    const start = this.startDate || undefined;
+    const end = this.endDate || undefined;
 
-        this.orderAnalytics = res;
-        this.cdr.detectChanges();
-        this.initOrdersChart();
+    this.dashboardApi.getOrderAnalytics(
+      this.chartPeriod,
+      start,
+      end
+    ).subscribe((res: any) => {
+
+      this.orderAnalytics = res;
+      this.cdr.detectChanges();
+      this.initOrdersChart();
 
 
-      });
+    });
 
   }
 
@@ -236,33 +241,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     return `hsl(${hue}, 65%, 55%)`;
   }
 
-loadAdminName(): void {
-  const token = localStorage.getItem('token');
+  loadAdminName(): void {
+    const token = localStorage.getItem('token');
 
-  if (!token) {
-    this.adminName = 'Admin';
-    return;
+    if (!token) {
+      this.adminName = 'Admin';
+      return;
+    }
+
+    // ✅ decode token
+    const decoded: any = JSON.parse(atob(token.split('.')[1]));
+
+    const userId =
+      decoded?.userId ||
+      decoded?._id ||
+      decoded?.sub ||
+      decoded?.id;
+
+    if (!userId) {
+      this.adminName = 'Admin';
+      return;
+    }
+    this.userApi.getUserById(userId).subscribe({
+      next: (user: any) => {
+        this.adminName = user?.name || 'Admin';
+      }
+    });
   }
-
-  // ✅ decode token
-  const decoded: any = JSON.parse(atob(token.split('.')[1]));
-
-  const userId =
-    decoded?.userId ||
-    decoded?._id ||
-    decoded?.sub ||
-    decoded?.id;
-
-  if (!userId) {
-    this.adminName = 'Admin';
-    return;
-  }
-this.userApi.getUserById(userId).subscribe({
-  next: (user: any) => {
-    this.adminName = user?.name || 'Admin';
-  }
-});
-}
 
 
 

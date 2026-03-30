@@ -21,12 +21,17 @@ import { ActivationPendingComponent } from './pages/activation-pending/activatio
 import { AnalyticsComponent } from './pages/super-admin/analytics/analytics.component';
 import { SubscriptionExpiryComponent } from './pages/super-admin/subscription-expiry/subscription-expiry.component';
 import { ComingSoonComponent } from './pages/comming soon/coming-soon.component';
+import { TableViewStandardComponent } from './pages/standardTable/tableviewStandard';
+
+
+
 
 export const routes: Routes = [
 
   { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
 
   { path: 'tableview', component: TableViewComponent },
+  { path: 'tableview-standard', component: TableViewStandardComponent },
   { path: 'chefView', component: ChefOrdersComponent },
 
   {

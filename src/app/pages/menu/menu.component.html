@@ -36,7 +36,7 @@
             <rect x="1" y="9" width="6" height="6" rx="1" stroke="#7A6E60" stroke-width="1.4" />
             <rect x="9" y="9" width="6" height="6" rx="1" stroke="#7A6E60" stroke-width="1.4" />
           </svg>
-          {{ filters.category || 'All Categories' }}
+          {{ getCategoryName(filters.category) || 'All Categories' }}
           <svg class="mn-chev" [class.is-up]="showFilterCategoryDropdown" viewBox="0 0 12 12" fill="none">
             <path d="M2 4l4 4 4-4" stroke="#7A6E60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -47,7 +47,7 @@
             All Categories
           </div>
           <div class="mn-cat-item" *ngFor="let c of categories" [class.is-active]="filters.category === c._id"
-            (click)="menuForm.category = c._id">
+            (click)="selectCategory(c._id)">
             <span>{{ c.name }}</span>
 
           </div>
@@ -141,7 +141,7 @@
             </td>
             <td>
               <span class="mn-cat-pill">
-                {{ menu.category?.name || menu.category }}
+                {{ menu.category?.name }}
               </span>
             </td>
             <td>
@@ -162,7 +162,7 @@
                 <button class="mn-btn-action view" (click)="toggleExpand(menu._id)">
                   {{ expandedMenuId === menu._id ? 'Hide' : 'View' }}
                 </button>
-                <button class="mn-btn-action edit" (click)="openEditMenu(menu)" [disabled]="!menu.isAvailable">
+                <button class="mn-btn-action edit" (click)="openEditMenu(menu)">
                   Edit
                 </button>
                 <button class="mn-btn-action" [class.disable]="menu.isAvailable" [class.enable]="!menu.isAvailable"
@@ -270,7 +270,7 @@
 
             <div class="mn-cat-btn" (click)="showModalCategoryDropdown = !showModalCategoryDropdown">
 
-              {{ menuForm.category || 'Select Category' }}
+              {{ getCategoryName(menuForm.category) || 'Select Category' }}
 
               <svg class="mn-chev" [class.is-up]="showModalCategoryDropdown" viewBox="0 0 12 12">
                 <path d="M2 4l4 4 4-4" stroke="#7A6E60" stroke-width="1.5" stroke-linecap="round" />
@@ -292,7 +292,7 @@
               <!-- Categories -->
                <div class="mn-cat-list">
               <div class="mn-cat-item" *ngFor="let c of filteredCategories"
-                (click)="menuForm.category = c.name; showModalCategoryDropdown = false">
+                (click)="menuForm.category = c._id; showModalCategoryDropdown = false">
 
                 <span>{{ c.name }}</span>
 
