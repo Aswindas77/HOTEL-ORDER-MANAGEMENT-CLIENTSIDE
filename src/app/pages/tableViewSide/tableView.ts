@@ -19,8 +19,6 @@ export interface Toast {
 }
 
 
-// ── Interfaces ────────────────────────────────────────────────────────────────
-
 export interface MenuItem {
     _id: string;
     name: string;
@@ -32,16 +30,12 @@ export interface MenuItem {
     image?: string;
     preparationTime?: number;
 
-    // UI-only properties
     added?: boolean;
     tag?: string;
     bg?: string;
     delay?: number;
 }
 
-
-
-// ── Three.js ambient type (loaded via CDN) ────────────────────────────────────
 declare const THREE: any;
 
 @Component({
@@ -101,7 +95,7 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     trackToast(_: number, toast: Toast): number {
         return toast.id;
     }
-    // ── State ────────────────────────────────────────────────────────────────
+   
 
     categories: { id: string; name: string }[] = [];
     activeCategory: string = 'All';
@@ -119,7 +113,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     menuItems: MenuItem[] = []
 
-    // cart
     cart: {
         menuItemId: string;
         name: string;
@@ -128,7 +121,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         foodType: 'VEG' | 'NON_VEG';
     }[] = [];
 
-    // ── Computed ─────────────────────────────────────────────────────────────
 
     get showAll(): boolean {
         return this.activeCategory === 'All';
@@ -137,20 +129,12 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     isCartOpen = false;
 
 
-    // cart total
-
     get cartTotal(): number {
         return this.cart.reduce(
             (sum, item) => sum + item.price * item.quantity,
             0
         );
     }
-    // get filteredItems(): MenuItem[] {
-    //     if (this.activeCategory === 'All') return this.menuItems;
-    //     return this.menuItems.filter(item => item.filterKey === this.activeCategory);
-    // }
-
-    // ── Three.js / Animation refs ─────────────────────────────────────────────
 
     private animationId: number | null = null;
     private renderer: any;
@@ -182,7 +166,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
             private cdr: ChangeDetectorRef
         ) { }
 
-    // ── Lifecycle ────────────────────────────────────────────────────────────
 
     ngOnInit(): void {
 
@@ -267,7 +250,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-    //order category section 
 
     addToOrder(item: MenuItem): void {
 
@@ -415,9 +397,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         return 'cover-all';
     }
 
-
-    // ── Three.js Background ──────────────────────────────────────────────────
-
     private initThreeBackground(): void {
         if (typeof THREE === 'undefined') {
             console.warn('Three.js not loaded. Add CDN script to index.html.');
@@ -530,7 +509,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.camera.position.x = this.targetX * 0.5;
         this.camera.position.y = -this.targetY * 0.3;
 
-        // Animate particles
         const pos = this.particleGeo.attributes['position'].array as Float32Array;
         const count = pos.length / 3;
         for (let i = 0; i < count; i++) {
@@ -560,7 +538,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    // ── Custom Cursor ────────────────────────────────────────────────────────
 
     private initMouseCursor(): void {
         const cursor = document.getElementById('cursor')!;
@@ -615,7 +592,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    // ── CSS Particles ────────────────────────────────────────────────────────
 
     private initCssParticles(): void {
         const container = document.getElementById('particles');

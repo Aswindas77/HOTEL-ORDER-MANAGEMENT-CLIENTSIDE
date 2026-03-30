@@ -62,8 +62,6 @@ export class OrdersComponent implements OnInit {
     private toast: ToastService,
   ) { }
 
-  // ───────── INIT ─────────
-
   ngOnInit(): void {
 
    
@@ -93,8 +91,6 @@ export class OrdersComponent implements OnInit {
 
     this.loadOrders();
   }
-
-  // ───────── LOAD ORDERS ─────────
 
   loadOrders(): void {
 
@@ -135,8 +131,6 @@ export class OrdersComponent implements OnInit {
       });
   }
 
-  // ───────── UI HELPERS ─────────
-
   toggleExpand(orderId: string): void {
     this.expandedOrderId =
       this.expandedOrderId === orderId ? null : orderId;
@@ -173,8 +167,6 @@ export class OrdersComponent implements OnInit {
   get pageNumbers(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
-
-  // ───────── ACTIONS ─────────
 
   changeStatus(order: Order, status: OrderStatus): void {
 
@@ -230,7 +222,6 @@ export class OrdersComponent implements OnInit {
       });
   }
 
-  // ───────── FILTERS ─────────
 
   searchOrders(): void {
     this.currentPage = 1;
@@ -245,7 +236,6 @@ export class OrdersComponent implements OnInit {
     this.loadOrders();
   }
 
-  // ───────── PAGINATION ─────────
 
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;

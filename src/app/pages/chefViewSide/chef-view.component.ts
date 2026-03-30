@@ -74,7 +74,6 @@ export class ChefOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
-  // ───────── INIT ─────────
 
   ngOnInit(): void {
     this.branchId = localStorage.getItem('branchId') || ''; // 🔥 ADDED
@@ -95,7 +94,6 @@ export class ChefOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderer?.dispose();
   }
 
-  // ───────── LOAD ORDERS ─────────
 
   loadOrders(): void {
     this.loading = true;
@@ -103,7 +101,7 @@ export class ChefOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     const params: any = {
       page: this.page,
       limit: this.limit,
-      branchId: this.branchId // 🔥 ADDED
+      branchId: this.branchId 
     };
 
     if (this.search) params.search = this.search;
@@ -126,7 +124,6 @@ export class ChefOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ───────── UPDATE STATUS ─────────
 
   updateStatus(order: Order, status: string): void {
     this.orderApi.updateOrderStatus(order._id, status, this.branchId) // 🔥 FIXED
@@ -136,7 +133,6 @@ export class ChefOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  // ───────── HELPERS ─────────
 
   get filteredOrders(): Order[] {
     return this.orders;
@@ -260,8 +256,6 @@ export class ChefOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       COMPLETED: 'Done',
     }[step] ?? step;
   }
-
-  // ───────── THREE.JS (unchanged) ─────────
 
   private initThreeBackground(): void {}
   private initCssParticles(): void {}

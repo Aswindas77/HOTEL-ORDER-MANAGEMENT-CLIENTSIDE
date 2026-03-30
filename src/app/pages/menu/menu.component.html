@@ -129,8 +129,8 @@
           <tr [class.mn-row-disabled]="!menu.isAvailable">
             <td>
               <div class="mn-name-cell">
-                <div class="mn-food-dot" [class.veg]="menu.foodType === 'Veg'" [class.non]="menu.foodType !== 'Veg'">
-                </div>
+                <div class="mn-food-dot" [class.veg]="menu.foodType === 'VEG' || menu.foodType === 'Veg'" [class.non]="menu.foodType !== 'VEG' && menu.foodType !== 'Veg'">
+</div>
                 <div>
                   <div class="mn-name-text">{{ menu.name }}</div>
                   <div class="mn-name-sub">
@@ -145,9 +145,9 @@
               </span>
             </td>
             <td>
-              <span class="mn-ft-pill" [class.veg]="menu.foodType === 'Veg'" [class.non]="menu.foodType !== 'Veg'">
-                {{ menu.foodType }}
-              </span>
+              <span class="mn-ft-pill" [class.veg]="menu.foodType === 'VEG' || menu.foodType === 'Veg'" [class.non]="menu.foodType !== 'VEG' && menu.foodType !== 'Veg'">
+  {{ menu.foodType === 'VEG' ? 'VEG' : menu.foodType === 'NON_VEG' ? 'NON VEG' : menu.foodType }}
+</span>
             </td>
             <td>
               <span class="mn-price">₹{{ menu.price }}</span>

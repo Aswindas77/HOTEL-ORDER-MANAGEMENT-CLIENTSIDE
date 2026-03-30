@@ -35,10 +35,8 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
   private coreGroup!: THREE.Group;
   private trailGroup!: THREE.Group;
 
-  // CSS floating specks data
   specks = Array.from({ length: 18 }, () => this.makeSpeck());
 
-  // Button hover particles
   btnParticles = Array.from({ length: 8 }, (_, i) => ({
     '--angle': `${i * 45}deg`,
     '--delay': `${i * 0.08}s`,
@@ -117,7 +115,6 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
     };
   }
 
-  // ── Three.js ─────────────────────────────────────────────────
   private initThree(): void {
     const el = this.canvasRef.nativeElement;
     const W = el.clientWidth || window.innerWidth;
@@ -269,7 +266,6 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  // Curved light trails
   private buildTrails(): void {
     this.trailGroup = new THREE.Group();
     this.scene.add(this.trailGroup);
@@ -329,20 +325,17 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
     this.rafId = requestAnimationFrame(this.animate);
     const t = this.clock.getElapsedTime();
 
-    // Stars
     const starMat = this.starPoints.material as THREE.ShaderMaterial;
     starMat.uniforms['uTime'].value = t;
     this.starPoints.rotation.y += 0.00020;
     this.starPoints.rotation.x += 0.00005;
 
-    // Rings with breathing scale
     this.rings.forEach((r, i) => {
       r.rotation.z += r.userData['sp'] * r.userData['d'] * 0.004;
       const breathe = 1 + 0.025 * Math.sin(t * 0.4 + i * 1.1);
       r.scale.setScalar(breathe);
     });
 
-    // Orb group + bob
     this.orbGroup.rotation.y = t * 0.052;
     this.orbGroup.rotation.x = Math.sin(t * 0.18) * 0.12;
     this.orbGroup.children.forEach(c => {
@@ -350,12 +343,10 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
       m.position.y += Math.sin(t * m.userData['speed'] + m.userData['offset']) * 0.0016;
     });
 
-    // Core pulse
     const cp = 1 + 0.10 * Math.sin(t * 2.2);
     this.coreGroup.scale.setScalar(cp);
     this.coreGroup.rotation.y = t * 0.3;
 
-    // Trails fade in-out
     this.trailGroup.children.forEach(c => {
       const l = c as THREE.Line;
       const mat = l.material as THREE.LineBasicMaterial;
@@ -363,7 +354,6 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
       l.rotation.y += l.userData['speed'];
     });
 
-    // Nebula breathe
     this.scene.children.forEach(obj => {
       if (obj.userData['breathe'] !== undefined) {
         const m = obj as THREE.Mesh;
@@ -373,7 +363,6 @@ export class ActivationPendingComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    // Mouse parallax
     this.camera.position.x += (this.mouse.x * 0.45 - this.camera.position.x) * 0.032;
     this.camera.position.y += (this.mouse.y * 0.30 - this.camera.position.y) * 0.032;
     this.camera.lookAt(0, 0, 0);

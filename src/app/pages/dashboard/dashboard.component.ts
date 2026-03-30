@@ -89,8 +89,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private toast: ToastService,
   ) { }
 
-
-
   ngOnInit(): void {
     this.loadDashboard();
     this.loadOrderAnalytics();
@@ -260,7 +258,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // ✅ decode token
     const decoded: any = JSON.parse(atob(token.split('.')[1]));
 
     const userId =
