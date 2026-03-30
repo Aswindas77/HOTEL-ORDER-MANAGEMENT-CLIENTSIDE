@@ -274,9 +274,9 @@ tbody tr {
   }
 
   &.inactive {
-    background: rgba(244, 5, 5, 0.06);
-    color: #fb1717;
-    .um-status-dot { background: #fb1717; }
+    background:rgba(176,40,40,0.09);
+    color: var(--red);
+    .um-status-dot { background: var(--red); }
   }
 }
 
