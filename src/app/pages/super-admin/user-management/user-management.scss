@@ -486,3 +486,70 @@ tbody tr {
   }
   &:active { transform: translateY(0); }
 }
+
+/* PAGINATION - same as hotels page */
+.ht-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.ht-pg-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #5A5A5A;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.ht-pg-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  color: #111;
+}
+
+.ht-pg-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ht-pg-pages {
+  display: flex;
+  gap: 4px;
+}
+
+.ht-pg-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #5A5A5A;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.ht-pg-num:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #111;
+}
+
+.ht-pg-num.is-active {
+  background: #111110;
+  border-color: #111110;
+  color: #C9A84C;
+  font-weight: 700;
+}

@@ -14,6 +14,7 @@ import { SuperAdminApiService } from '../../../services/super-admin-api/super-ad
 export class UserManagementComponent implements OnInit {
 
   users: any[]         = [];
+  allUsers: any[] = [];
   filteredUsers: any[] = [];
 
   showForm      = false;
@@ -22,11 +23,16 @@ export class UserManagementComponent implements OnInit {
   search       = '';
   statusFilter = '';
 
+  page = 1;
+  limit = 10;
+  totalPages = 1;
+  totalFilteredUsers = 0;
+
   newUser = { name: '', email: '', password: '', role: 'MANAGER' };
 
   // ── Computed counts for the header pills ────────────────────
-  get activeCount():   number { return this.users.filter(u => u.isActive).length; }
-  get inactiveCount(): number { return this.users.filter(u => !u.isActive).length; }
+  get activeCount():   number { return this.allUsers.filter(u => u.isActive).length; }
+  get inactiveCount(): number { return this.allUsers.filter(u => !u.isActive).length; }
 
   constructor(
     private api: SuperAdminApiService,
@@ -39,37 +45,72 @@ export class UserManagementComponent implements OnInit {
 
   // ── Fetch ────────────────────────────────────────────────────
   fetchUsers(): void {
-    this.api.getUsers().subscribe((res: any) => {
-      const all = res.data || res;
-      this.users = all
-        .filter((u: any) => u.role === 'MANAGER')
-        .map((u: any) => ({ ...u, isActive: u.isActive === true || u.isActive === 'true' }));
-      this.applyFilters();
-      this.cdr.detectChanges();
-    });
-  }
+  this.api.getUsers(1, 1000).subscribe((res: any) => {
+    const all = res.data || res;
+
+    this.allUsers = all
+      .filter((u: any) => u.role === 'MANAGER')
+      .map((u: any) => ({
+        ...u,
+        isActive: u.isActive === true || u.isActive === 'true'
+      }));
+
+    this.applyFilters();
+    this.cdr.detectChanges();
+  });
+}
 
   // ── Filter ───────────────────────────────────────────────────
   applyFilters(): void {
-    this.filteredUsers = this.users.filter(user => {
-      const matchSearch =
-        !this.search ||
-        user.name.toLowerCase().includes(this.search.toLowerCase()) ||
-        user.email.toLowerCase().includes(this.search.toLowerCase());
+  const filtered = this.allUsers.filter(user => {
+    const matchSearch =
+      !this.search ||
+      user.name.toLowerCase().includes(this.search.toLowerCase()) ||
+      user.email.toLowerCase().includes(this.search.toLowerCase());
 
-      const matchStatus =
-        !this.statusFilter ||
-        user.isActive.toString() === this.statusFilter;
+    const matchStatus =
+      !this.statusFilter ||
+      user.isActive.toString() === this.statusFilter;
 
-      return matchSearch && matchStatus;
-    });
+    return matchSearch && matchStatus;
+  });
+  this.totalFilteredUsers = filtered.length;
+
+  this.totalPages = Math.ceil(filtered.length / this.limit) || 1;
+
+  if (this.page > this.totalPages) {
+    this.page = 1;
   }
 
+  const start = (this.page - 1) * this.limit;
+  const end = start + this.limit;
+
+  this.filteredUsers = filtered.slice(start, end);
+}
   clearFilters(): void {
     this.search      = '';
     this.statusFilter = '';
     this.applyFilters();
   }
+
+  prevPage(): void {
+  if (this.page > 1) {
+    this.page--;
+    this.applyFilters();
+  }
+}
+
+nextPage(): void {
+  if (this.page < this.totalPages) {
+    this.page++;
+    this.applyFilters();
+  }
+}
+
+goToPage(page: number): void {
+  this.page = page;
+  this.applyFilters();
+}
 
   // ── Modal open / close ───────────────────────────────────────
   openForm(): void {
