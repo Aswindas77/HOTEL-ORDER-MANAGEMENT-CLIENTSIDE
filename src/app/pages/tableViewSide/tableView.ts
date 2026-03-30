@@ -314,7 +314,6 @@ export class TableViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.orderApi.createOrder(payload).subscribe({
             next: (res) => {
-                console.log('Order created:', res);
 
                 alert('order created successfully')
 

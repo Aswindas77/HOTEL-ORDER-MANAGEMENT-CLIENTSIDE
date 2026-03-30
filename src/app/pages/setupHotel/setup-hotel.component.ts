@@ -9,6 +9,7 @@ import { SubscriptionApiService } from '../../services/subscription-api.service'
 import { ActivationRequestApiService } from '../../services/activation-request-api.service';
 import { AuthApiService } from '../../services/auth-api.service';
 import { jwtDecode } from 'jwt-decode';
+import { ToastService } from '../../services/toast';
 
 @Component({
   selector: 'app-setup-hotel',
@@ -56,7 +57,8 @@ export class SetupHotelComponent implements OnInit {
     private activationApi: ActivationRequestApiService,
     private authApi: AuthApiService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toast: ToastService,
   ) { }
 
   /* =============================
@@ -97,7 +99,7 @@ export class SetupHotelComponent implements OnInit {
   createHotel() {
 
     if (!this.hotelData.name) {
-      alert('Hotel name required');
+      this.toast.show('Hotel name required', 'error');
       return;
     }
 
@@ -119,7 +121,7 @@ export class SetupHotelComponent implements OnInit {
           this.hotelId = res?.data?._id || res?._id || '';
 
           if (!this.hotelId) {
-            alert('Hotel ID missing from response');
+            this.toast.show('Hotel ID missing from response', 'error');
             return;
           }
 
@@ -133,7 +135,7 @@ export class SetupHotelComponent implements OnInit {
         error: (err) => {
 
           console.error(err);
-          alert(err?.error?.message || 'Hotel creation failed');
+          this.toast.show(err?.error?.message || 'Hotel creation failed', 'error')
 
         }
 
@@ -148,12 +150,12 @@ export class SetupHotelComponent implements OnInit {
   createBranch() {
 
     if (!this.branchData.branchName || !this.branchData.city) {
-      alert('Branch name and city required');
+      this.toast.show('Branch name and city required', 'error');
       return;
     }
 
     if (!this.hotelId) {
-      alert('Hotel not created yet');
+      this.toast.show('Hotel not created yet', 'error');
       return;
     }
 
@@ -161,8 +163,6 @@ export class SetupHotelComponent implements OnInit {
       ...this.branchData,
       hotelId: this.hotelId
     };
-
-    console.log('Branch Payload:', payload);
 
     this.loading = true;
 
@@ -177,12 +177,10 @@ export class SetupHotelComponent implements OnInit {
 
         next: (res: any) => {
 
-          console.log('Branch Created:', res);
-
           this.branchId = res?.data?._id || res?._id || '';
 
           if (!this.branchId) {
-            alert('Branch ID missing');
+            this.toast.show('Branch ID missing', 'error');
             return;
           }
 
@@ -196,7 +194,7 @@ export class SetupHotelComponent implements OnInit {
         error: (err) => {
 
           console.error(err);
-          alert('Branch creation failed');
+          this.toast.show('Branch creation failed', 'error');
 
         }
 
@@ -211,7 +209,7 @@ export class SetupHotelComponent implements OnInit {
   selectPlan(plan: string) {
 
     if (!this.hotelId) {
-      alert('Hotel ID missing');
+      this.toast.show('Hotel ID missing', 'error');
       return;
     }
 
@@ -222,8 +220,6 @@ export class SetupHotelComponent implements OnInit {
       branchCount: 1,
       hotelId: this.hotelId
     };
-
-    console.log('Subscription Payload:', payload);
 
     this.loading = true;
 
@@ -238,12 +234,10 @@ export class SetupHotelComponent implements OnInit {
 
         next: (res: any) => {
 
-          console.log('Subscription Created:', res);
-
           this.subscriptionId = res?.data?._id || res?._id || '';
 
           if (!this.subscriptionId) {
-            alert('Subscription ID missing');
+            this.toast.show('Subscription ID missing', 'error');
             return;
           }
 
@@ -257,7 +251,7 @@ export class SetupHotelComponent implements OnInit {
         error: (err) => {
 
           console.error(err);
-          alert('Subscription creation failed');
+          this.toast.show('Subscription creation failed', 'error');
 
         }
 
@@ -272,7 +266,7 @@ export class SetupHotelComponent implements OnInit {
   finishSetup() {
 
     if (!this.hotelId || !this.subscriptionId || !this.branchId) {
-      alert('Setup incomplete');
+      this.toast.show('Setup incomplete', 'error');
       return;
     }
 
@@ -281,8 +275,6 @@ export class SetupHotelComponent implements OnInit {
       subscriptionId: this.subscriptionId,
       branchId: this.branchId
     };
-
-    console.log('Activation Payload:', payload);
 
     this.loading = true;
 
@@ -299,7 +291,7 @@ export class SetupHotelComponent implements OnInit {
 
           this.authApi.updateSetupStep(5).subscribe();
 
-          alert('Activation request sent to admin');
+          this.toast.show('Activation request sent to admin', 'success');
 
           this.router.navigate(['/waiting-approval']);
 
@@ -308,7 +300,7 @@ export class SetupHotelComponent implements OnInit {
         error: (err) => {
 
           console.error(err);
-          alert('Activation request failed');
+          this.toast.show('Activation request failed', 'error');
 
         }
 

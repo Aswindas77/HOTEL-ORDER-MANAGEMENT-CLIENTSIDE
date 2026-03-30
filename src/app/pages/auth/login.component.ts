@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthApiService } from '../../services/auth-api.service';
 import { jwtDecode } from 'jwt-decode';
+import { ToastService } from '../../services/toast';
+
 
 @Component({
   selector: 'app-login',
@@ -34,7 +36,8 @@ export class LoginComponent {
 
   constructor(
     private authApi: AuthApiService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) { }
 
   toggleMode() {
@@ -90,7 +93,7 @@ export class LoginComponent {
       },
 
       error: (err) => {
-        alert(err.error.message);
+        this.toast.show(err.error.message, 'error');
         this.loading = false;
       }
 
@@ -115,7 +118,7 @@ export class LoginComponent {
       },
 
       error: (err) => {
-        alert(err.error.message);
+        this.toast.show(err.error.message, 'error');
         this.loading = false;
       }
 

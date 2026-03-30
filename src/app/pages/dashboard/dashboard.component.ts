@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
 import { UserApiService } from '../../pages/users/service/user-api.service';
 import { AuthApiService } from '../../services/auth-api.service';
+import { ToastService } from '../../services/toast';
 
 @Component({
   standalone: true,
@@ -84,7 +85,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private userApi: UserApiService,
-    private authApi: AuthApiService
+    private authApi: AuthApiService,
+    private toast: ToastService,
   ) { }
 
 
@@ -218,20 +220,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadMenuBreakdown() {
 
-    const user = this.authApi.getUser();
-
     this.dashboardApi.getMenuBreakdown()
-      .subscribe((res: any) => {
+      .subscribe({
+        next: (res: any) => {
 
-        this.menuCategories = res.map((item: any, index: number) => ({
-          ...item,
-          color: this.getColor(index)
-        }));
+          if (!res || res.length === 0) {
+            this.toast.show('No menu data found', 'warning');
+            return;
+          }
 
-        // 🔥 VERY IMPORTANT
-        this.cdr.detectChanges();
-        this.initMenuChart();
+          this.menuCategories = res.map((item: any, index: number) => ({
+            name: item.name || item._id || 'Unknown',
+            count: item.count || 0,
+            color: this.getColor(index)
+          }));
 
+          this.cdr.detectChanges();
+          this.initMenuChart();
+        },
+
+        error: (err) => {
+          console.error(err);
+          this.toast.show('Failed to load menu breakdown', 'error');
+        }
       });
 
   }
@@ -403,7 +414,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   applyCustomFilter(): void {
 
     if (!this.startDate || !this.endDate) {
-      alert('Please select start and end date');
+      this.toast.show('Please select start and end date', 'error');
       return;
     }
 

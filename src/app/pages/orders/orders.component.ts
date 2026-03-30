@@ -10,6 +10,7 @@ import { PaymentStatus } from '../../enums/payment-status.enum';
 import { OrderApiService } from '../../services/order-api-services';
 import { AuthApiService } from '../../services/auth-api.service';
 import { jwtDecode } from 'jwt-decode';
+import { ToastService } from '../../services/toast';
 
 @Component({
   standalone: true,
@@ -58,6 +59,7 @@ export class OrdersComponent implements OnInit {
     private authApi: AuthApiService,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private toast: ToastService,
   ) { }
 
   // ───────── INIT ─────────
@@ -189,7 +191,7 @@ export class OrdersComponent implements OnInit {
         error: (err) => {
           console.error(err);
           this.processingOrderId = null;
-          alert(err?.error?.message || 'Please mark payment before completing order');
+          this.toast.show(err?.error?.message || 'Please mark payment before completing order', 'error');
         }
       });
   }
@@ -206,7 +208,7 @@ export class OrdersComponent implements OnInit {
         },
         error: () => {
           this.processingOrderId = null;
-          alert('Payment update failed');
+          this.toast.show('Payment update failed', 'error');
         }
       });
   }
@@ -223,7 +225,7 @@ export class OrdersComponent implements OnInit {
         },
         error: () => {
           this.processingOrderId = null;
-          alert('Payment update failed');
+          this.toast.show('Payment update failed', 'error');
         }
       });
   }

@@ -12,6 +12,7 @@ import { MenuApiService } from './service/menu-api.service';
 import { CategoryApiService } from './service/category-api.service';
 import { FoodType } from '../../enums/food-type.enum';
 import { AuthApiService } from '../../services/auth-api.service';
+import { ToastService } from '../../services/toast';
 
 @Component({
   standalone: true,
@@ -70,7 +71,8 @@ export class MenuComponent implements OnInit {
     private menuApi: MenuApiService,
     private categoryApi: CategoryApiService,
     private cdr: ChangeDetectorRef,
-    private authApi: AuthApiService
+    private authApi: AuthApiService,
+    private toast: ToastService,
   ) {}
 
   // ─────────── INIT ───────────
@@ -148,7 +150,7 @@ export class MenuComponent implements OnInit {
   saveMenu(): void {
 
     if (!this.menuForm.category) {
-      alert('Please select a category');
+      ('Please select a category');
       return;
     }
 
@@ -176,7 +178,7 @@ export class MenuComponent implements OnInit {
         this.closeModal();
         this.loadMenus();
       },
-      error: (err) => alert(err?.error?.message || 'Failed')
+      error: (err) => this.toast.show(err?.error?.message || 'Failed', 'error')
     });
   }
 
@@ -268,7 +270,7 @@ export class MenuComponent implements OnInit {
         this.menuForm.category = '';
         this.closeCategoryModal();
       },
-      error: (err) => alert(err?.error?.message || 'Failed')
+      error: (err) => this.toast.show(err?.error?.message || 'Failed', 'error')
     });
   }
 
