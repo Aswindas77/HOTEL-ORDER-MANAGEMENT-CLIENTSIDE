@@ -15,7 +15,6 @@ export class SubscriptionExpiryComponent implements OnInit {
   loading = false;
   selectedSub: any = null;
 
-  // ── NEW: stat chip counts for the header ──
   get expiredCount():  number { return this.subscriptions.filter(s => this.getStatus(s.expiryDate) === 'expired').length;  }
   get criticalCount(): number { return this.subscriptions.filter(s => this.getStatus(s.expiryDate) === 'critical').length; }
   get expiringCount(): number { return this.subscriptions.filter(s => this.getStatus(s.expiryDate) === 'expiring').length; }

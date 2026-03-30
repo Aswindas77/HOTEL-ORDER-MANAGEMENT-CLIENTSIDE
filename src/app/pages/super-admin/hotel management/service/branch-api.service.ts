@@ -11,12 +11,10 @@ export class BranchApiService {
 
   constructor(private http: HttpClient) {}
 
-  // GET all branches
   getBranches() {
     return this.http.get(this.baseUrl);
   }
 
-  // GET branch by ID
   getBranchById(id: string) {
     return this.http.get(`${this.baseUrl}/${id}`);
   }

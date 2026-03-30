@@ -23,7 +23,6 @@ import { AuthApiService } from '../../services/auth-api.service';
 })
 export class MenuComponent implements OnInit {
 
-  // ✅ FIX: for HTML Math usage
   readonly Math = Math;
 
   menus: any[] = [];
@@ -73,12 +72,10 @@ export class MenuComponent implements OnInit {
     private authApi: AuthApiService
   ) {}
 
-  // ─────────── INIT ───────────
   ngOnInit(): void {
     this.loadCategories();
   }
 
-  // ─────────── LOAD CATEGORIES ───────────
   loadCategories(): void {
     this.categoryApi.getCategories().subscribe({
       next: (res: any) => {
@@ -92,7 +89,6 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  // ─────────── LOAD MENUS ───────────
   loadMenus(): void {
     this.loading = true;
 
@@ -119,7 +115,6 @@ export class MenuComponent implements OnInit {
       });
   }
 
-  // ─────────── MENU CRUD ───────────
   openAddMenu(): void {
     this.editingMenuId = null;
     this.resetForm();
@@ -190,7 +185,6 @@ export class MenuComponent implements OnInit {
     req$.subscribe(() => this.loadMenus());
   }
 
-  // ─────────── FILTERS ───────────
   applyFilters(): void {
     this.currentPage = 1;
     this.loadMenus();
@@ -207,7 +201,6 @@ export class MenuComponent implements OnInit {
     this.applyFilters();
   }
 
-  // ─────────── PAGINATION ───────────
   updatePagination(): void {
     const start = (this.currentPage - 1) * this.pageSize;
     this.paginatedMenus = this.menus.slice(start, start + this.pageSize);
@@ -230,12 +223,10 @@ export class MenuComponent implements OnInit {
     this.goToPage(this.currentPage - 1);
   }
 
-  // ─────────── EXPAND ───────────
   toggleExpand(id: string): void {
     this.expandedMenuId = this.expandedMenuId === id ? null : id;
   }
 
-  // ─────────── CATEGORY CRUD ───────────
   openCreateCategory(): void {
     this.categoryName = '';
     this.editingCategoryId = null;
@@ -276,7 +267,6 @@ export class MenuComponent implements OnInit {
     this.showCategoryModal = false;
   }
 
-  // ─────────── HELPERS ───────────
   getCategoryName(id: string): string {
     if (!id || !this.categories?.length) return '';
     const cat = this.categories.find(c => c._id === id);

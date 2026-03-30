@@ -59,10 +59,6 @@ export class SetupHotelComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) { }
 
-  /* =============================
-     LOAD CURRENT STEP
-  ============================= */
-
   ngOnInit() {
 
     const token = this.authApi.getToken();
@@ -78,9 +74,6 @@ export class SetupHotelComponent implements OnInit {
     this.subscriptionId = decoded.subscriptionId || ''
 
   }
-  /* =============================
-     NAVIGATION
-  ============================= */
 
   prevStep() {
 
@@ -90,9 +83,6 @@ export class SetupHotelComponent implements OnInit {
 
   }
 
-  /* =============================
-     STEP 1 : CREATE HOTEL
-  ============================= */
 
   createHotel() {
 
@@ -141,9 +131,6 @@ export class SetupHotelComponent implements OnInit {
 
   }
 
-  /* =============================
-     STEP 2 : CREATE BRANCH
-  ============================= */
 
   createBranch() {
 
@@ -204,10 +191,6 @@ export class SetupHotelComponent implements OnInit {
 
   }
 
-  /* =============================
-     STEP 3 : SELECT PLAN
-  ============================= */
-
   selectPlan(plan: string) {
 
     if (!this.hotelId) {
@@ -264,10 +247,6 @@ export class SetupHotelComponent implements OnInit {
       });
 
   }
-
-  /* =============================
-     STEP 4 : FINISH SETUP
-  ============================= */
 
   finishSetup() {
 

@@ -12,20 +12,20 @@ export const LoginGuard: CanActivateFn = () => {
   }
 
   const role = authApi.getUserRole();
-  const user = authApi.getUser(); // 🔥 decoded user (store once in service)
+  const user = authApi.getUser(); 
 
-  // ✅ SUPER ADMIN
+  
   if (role === 'ADMIN') {
     router.navigate(['/super-admin/dashboard']);
     return false;
   }
 
-  // ✅ MANAGER FLOW
+  
   if (role === 'MANAGER') {
 
     const step = user?.setupStep || 1;
 
-    // 🔥 STEP FLOW
+    
     if (step <= 4) {
       router.navigate(['/setup']);
       return false;
@@ -38,7 +38,7 @@ export const LoginGuard: CanActivateFn = () => {
 
     if (step === 6) {
 
-      // ✅ EXTRA SAFETY (NEW 🔥)
+      
       if (!user.hotelId || !user.branchId) {
         router.navigate(['/setup']);
         return false;

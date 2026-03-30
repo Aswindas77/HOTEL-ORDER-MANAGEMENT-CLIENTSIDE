@@ -22,13 +22,11 @@ export class HotelsComponent implements OnInit {
 
   status = '';
 
-  // pagination
   page = 1;
   limit = 10;
   total = 0;
   totalPages = 0;
 
-  // search
   search = '';
 
   constantTotal = 0;
@@ -81,7 +79,6 @@ export class HotelsComponent implements OnInit {
        
     });
 
-      // constant total (no filter)
   this.hotelApi.getHotels(
     1,
     1,
@@ -89,7 +86,7 @@ export class HotelsComponent implements OnInit {
     ''
   ).subscribe((res: any) => {
 
-    this.constantTotal = res.total;  // always full total
+    this.constantTotal = res.total; 
 
   });
 

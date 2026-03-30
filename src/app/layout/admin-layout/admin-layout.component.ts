@@ -121,12 +121,12 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       next: (res) => {
         const orders = res?.data || [];
 
-        // ✅ LIVE = NOT COMPLETED
+        
         this.liveOrderCount = orders.filter(o =>
           o.status !== OrderStatus.COMPLETED
         ).length;
 
-        // ✅ PENDING
+        
         this.pendingOrderCount = orders.filter(o =>
           o.status === OrderStatus.PENDING
         ).length;
@@ -154,7 +154,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
           ? Math.round((this.occupiedTables / this.totalTables) * 100)
           : 0;
 
-        // ✅ SAFE detect
+        //  SAFE detect
         setTimeout(() => {
           this.cdr.detectChanges();
         });
@@ -170,7 +170,7 @@ loadHotel(): void {
     return;
   }
 
-  // ✅ decode token
+  
   const decoded: any = JSON.parse(atob(token.split('.')[1]));
 
   const userId =
@@ -184,7 +184,7 @@ loadHotel(): void {
     return;
   }
 
-  // ✅ SERVICE CALL (USER)
+  
   this.userApi.getUserById(userId).subscribe({
     next: (user: any) => {
       console.log('USER:', user);
@@ -198,7 +198,7 @@ loadHotel(): void {
         return;
       }
 
-      // ✅ SERVICE CALL (HOTEL)
+      
       this.hotelApi.getHotelById(hotelId).subscribe({
         next: (hotel: any) => {
           console.log('HOTEL:', hotel);

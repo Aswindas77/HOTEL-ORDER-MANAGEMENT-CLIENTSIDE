@@ -66,8 +66,6 @@ filteredUsers: User[] = [];
       });
   }
 
-
-
   loadUsers() {
 
     this.loading = true;
@@ -164,7 +162,6 @@ updateUrl() {
   });
 
 }
-  /* ---------- MODAL ---------- */
 
   openAddModal() {
     this.modalMode = 'add';
