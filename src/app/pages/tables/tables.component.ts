@@ -24,19 +24,15 @@ import { TableStatus } from '../../enums/table-status.enum';
 })
 export class TablesComponent implements OnInit {
 
-  // ── Enum ─────────────────────────────────────────
   readonly TableStatus = TableStatus;
 
-  // ── Data ─────────────────────────────────────────
   tables: Table[] = [];
   loading = false;
 
-  // ── Filters ──────────────────────────────────────
   search = '';
   selectedStatus: TableStatus | null = null;
   statuses = Object.values(TableStatus);
 
-  // ── Pagination ───────────────────────────────────
   currentPage = 1;
   pageSize = 12;
   totalPages = 1;
@@ -49,7 +45,6 @@ export class TablesComponent implements OnInit {
     return this.tables;
   }
 
-  // ── Stats ────────────────────────────────────────
   get availableCount(): number {
     return this.tables.filter(t => t.status === TableStatus.AVAILABLE).length;
   }
@@ -63,7 +58,6 @@ export class TablesComponent implements OnInit {
     return Math.round((this.occupiedCount / this.tables.length) * 100);
   }
 
-  // ── Modal ────────────────────────────────────────
   modalOpen = false;
   modalMode: 'add' | 'edit' = 'add';
   selectedTable: Table | null = null;
@@ -73,7 +67,6 @@ export class TablesComponent implements OnInit {
     capacity: null as number | null,
   };
 
-  // ── Toast ────────────────────────────────────────
   toast: { message: string; type: 'success' | 'error' } | null = null;
   private toastTimer: any;
 
@@ -84,7 +77,6 @@ export class TablesComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
-  // ── INIT ─────────────────────────────────────────
   ngOnInit(): void {
 
     this.router.events
@@ -106,7 +98,6 @@ export class TablesComponent implements OnInit {
     this.loadTables();
   }
 
-  // ── LOAD TABLES ──────────────────────────────────
   loadTables(): void {
     this.loading = true;
 
@@ -131,7 +122,6 @@ export class TablesComponent implements OnInit {
     });
   }
 
-  // ── FILTERS ──────────────────────────────────────
   applyFilters(): void {
     this.currentPage = 1;
     this.updateUrl();
@@ -146,7 +136,6 @@ export class TablesComponent implements OnInit {
     this.loadTables();
   }
 
-  // ── PAGINATION ───────────────────────────────────
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
@@ -182,7 +171,6 @@ export class TablesComponent implements OnInit {
     });
   }
 
-  // ── TABLE ACTIONS ────────────────────────────────
   openTable(table: Table): void {
     this.tableApi.openTable(table._id).subscribe({
       next: () => {
@@ -215,7 +203,6 @@ export class TablesComponent implements OnInit {
     });
   }
 
-  // ── MODAL ────────────────────────────────────────
   openAddModal(): void {
     this.modalMode = 'add';
     this.selectedTable = null;
@@ -277,7 +264,6 @@ export class TablesComponent implements OnInit {
     }
   }
 
-  // ── CSS HELPERS ──────────────────────────────────
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       AVAILABLE: 'tb-available',
@@ -287,7 +273,6 @@ export class TablesComponent implements OnInit {
     return map[status] ?? '';
   }
 
-  // ── TOAST ────────────────────────────────────────
   showToast(message: string, type: 'success' | 'error' = 'success'): void {
     this.toast = { message, type };
 
@@ -299,7 +284,6 @@ export class TablesComponent implements OnInit {
     }, 3000);
   }
 
-  // ── ESC KEY ──────────────────────────────────────
   @HostListener('document:keydown.escape')
   onEscape(): void {
     if (this.modalOpen) this.closeModal();

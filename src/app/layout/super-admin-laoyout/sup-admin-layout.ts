@@ -14,8 +14,6 @@ import { BranchRequestApiService } from '../../pages/super-admin/branch-requests
   styleUrls: ['./sup-admin-layout.scss'],
 })
 export class SuperAdminLayoutComponent implements OnInit {
-
-  // ── Display data ─────────────────────────────────────────────
   adminName = 'Aswin das';
   adminInitials = 'AS';
   totalHotels = 0;
@@ -24,11 +22,8 @@ export class SuperAdminLayoutComponent implements OnInit {
   expiringCount = 0;
   hasNotifications = true;
 
-  // ── Dropdown state ───────────────────────────────────────────
-  /** Which nav dropdown is currently open; null = none */
   activeDropdown: string | null = null;
 
-  /** Whether the profile dropdown is visible */
   showProfileMenu = false;
 
   private closeTimers: Record<string, ReturnType<typeof setTimeout>> = {};
@@ -49,7 +44,7 @@ export class SuperAdminLayoutComponent implements OnInit {
       .slice(0, 2)
       .join('')
       .toUpperCase();
-    this.loadHotelsCount();        // ✅ ONLY hotels
+    this.loadHotelsCount();        
     this.loadExpiringCount();
     this.loadUsersCount();
     this.loadPendingRequestsCount();
@@ -60,7 +55,7 @@ export class SuperAdminLayoutComponent implements OnInit {
     this.superAdminApi.getHotels().subscribe((res: any) => {
       console.log('Hotels:', res);
 
-      this.totalHotels = res?.total || 0;   // ✅ ALWAYS use total
+      this.totalHotels = res?.total || 0;   
       this.cdr.detectChanges();
     });
   }
@@ -88,7 +83,6 @@ loadUsersCount(): void {
 
     const users = res?.data || res || [];
 
-    // ✅ SAME LOGIC AS USER MANAGEMENT
     const managerUsers = users.filter((u: any) =>
       u.role === 'MANAGER' &&
       (u.isActive === true || u.isActive === 'true')
@@ -119,19 +113,12 @@ loadPendingRequestsCount(): void {
 }
 
 
-  // ── Nav blur helper ──────────────────────────────────────────
-  /**
-   * Returns true when any dropdown is open.
-   * Used in the template to toggle the `has-open` class on .sa-nb-nav,
-   * which triggers the CSS blur/dim on all non-active sibling triggers.
-   */
+  
   get hasOpenDropdown(): boolean {
     return this.activeDropdown !== null;
   }
 
-  // ── Navigation dropdown helpers ──────────────────────────────
-
-  /** Open a named dropdown immediately, cancelling any pending close timer */
+ 
   openMenu(name: string): void {
     if (this.closeTimers[name]) {
       clearTimeout(this.closeTimers[name]);
@@ -140,10 +127,7 @@ loadPendingRequestsCount(): void {
     this.activeDropdown = name;
   }
 
-  /**
-   * Schedule closing a named dropdown with a short delay so the mouse
-   * can travel from trigger → mega-panel without flickering.
-   */
+  
   scheduleClose(name: string): void {
     this.closeTimers[name] = setTimeout(() => {
       if (this.activeDropdown === name) {
@@ -152,7 +136,7 @@ loadPendingRequestsCount(): void {
     }, 130);
   }
 
-  /** Close all dropdowns instantly (e.g. after a navigation click) */
+  
   closeMenus(): void {
     Object.values(this.closeTimers).forEach(t => clearTimeout(t));
     this.closeTimers = {};
@@ -160,18 +144,16 @@ loadPendingRequestsCount(): void {
     this.showProfileMenu = false;
   }
 
-  // ── Profile dropdown ─────────────────────────────────────────
+  
 
   toggleProfile(): void {
     this.showProfileMenu = !this.showProfileMenu;
     if (this.showProfileMenu) {
-      this.activeDropdown = null;   // close nav dropdowns when profile opens
+      this.activeDropdown = null;   
     }
   }
 
-  // ── Close-on-outside-click ───────────────────────────────────
-
-  /** Dismiss all overlays when clicking outside the navbar */
+  
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -180,13 +162,10 @@ loadPendingRequestsCount(): void {
     }
   }
 
-  /** Close everything on Escape */
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.closeMenus();
   }
-
-  // ── Router hooks ─────────────────────────────────────────────
 
   onPageActivate(_component: unknown): void {
     this.closeMenus();
@@ -196,19 +175,13 @@ loadPendingRequestsCount(): void {
     this.closeMenus();
   }
 
-  // ── Search / Notifications ───────────────────────────────────
-
   openSearch(): void {
-    // Connect to your command-palette / search modal here
-    console.log('Open search');
+      console.log('Open search');
   }
 
   openNotifications(): void {
-    // Connect to your notifications drawer here
     console.log('Open notifications');
   }
-
-  // ── Auth ─────────────────────────────────────────────────────
 
   logout(): void {
     this.closeMenus();

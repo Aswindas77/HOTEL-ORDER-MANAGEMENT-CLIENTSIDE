@@ -87,8 +87,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private authApi: AuthApiService
   ) { }
 
-
-
   ngOnInit(): void {
     this.loadDashboard();
     this.loadOrderAnalytics();
@@ -228,7 +226,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           color: this.getColor(index)
         }));
 
-        // 🔥 VERY IMPORTANT
+        
         this.cdr.detectChanges();
         this.initMenuChart();
 
@@ -249,7 +247,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // ✅ decode token
     const decoded: any = JSON.parse(atob(token.split('.')[1]));
 
     const userId =

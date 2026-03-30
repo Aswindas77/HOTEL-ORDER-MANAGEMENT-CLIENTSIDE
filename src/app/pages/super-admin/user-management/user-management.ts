@@ -43,7 +43,6 @@ export class UserManagementComponent implements OnInit {
     this.fetchUsers();
   }
 
-  // ── Fetch ────────────────────────────────────────────────────
   fetchUsers(): void {
   this.api.getUsers(1, 1000).subscribe((res: any) => {
     const all = res.data || res;
@@ -60,7 +59,6 @@ export class UserManagementComponent implements OnInit {
   });
 }
 
-  // ── Filter ───────────────────────────────────────────────────
   applyFilters(): void {
   const filtered = this.allUsers.filter(user => {
     const matchSearch =
@@ -112,21 +110,18 @@ goToPage(page: number): void {
   this.applyFilters();
 }
 
-  // ── Modal open / close ───────────────────────────────────────
   openForm(): void {
     this.editingUserId = null;
     this.newUser = { name: '', email: '', password: '', role: 'MANAGER' };
     this.showForm = true;
   }
 
-  /** Close modal when clicking the backdrop (not the card itself) */
   onOverlayClick(event: MouseEvent): void {
     if ((event.target as HTMLElement).classList.contains('um-modal-overlay')) {
       this.showForm = false;
     }
   }
 
-  // ── Submit (create or update) ────────────────────────────────
   submitUser(): void {
     if (this.editingUserId) {
       this.api.updateUser(this.editingUserId, this.newUser).subscribe(() => {
@@ -142,14 +137,12 @@ goToPage(page: number): void {
     }
   }
 
-  // ── Edit ─────────────────────────────────────────────────────
   editUser(user: any): void {
     this.editingUserId = user._id;
     this.newUser = { name: user.name, email: user.email, password: '', role: user.role };
     this.showForm = true;
   }
 
-  // ── Activate / Deactivate ────────────────────────────────────
   activateUser(id: string): void {
     this.api.updateUser(id, { isActive: true }).subscribe({
       next: () => this.fetchUsers(),
@@ -164,9 +157,6 @@ goToPage(page: number): void {
     });
   }
 
-  // ── Helpers ──────────────────────────────────────────────────
-
-  /** Returns 1-2 initials from a full name */
   getInitials(name: string): string {
     if (!name) return '?';
     return name.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();

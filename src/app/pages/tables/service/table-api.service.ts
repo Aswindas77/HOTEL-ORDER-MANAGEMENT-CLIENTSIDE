@@ -16,7 +16,6 @@ export class TableApiService {
     private authService: AuthApiService
   ) {}
 
-  // 🔹 GET TABLES
   getTables(
     page: number = 1,
     limit: number = 12,

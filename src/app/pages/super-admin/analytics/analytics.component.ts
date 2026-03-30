@@ -15,10 +15,8 @@ export class AnalyticsComponent implements OnInit {
 
   data: any = null;
 
-  /** SVG circumference for r=30 ring: 2π × 30 ≈ 188.5 */
   private readonly RING_CIRC   = 188.5;
 
-  /** SVG circumference for r=50 health ring: 2π × 50 ≈ 314.2 */
   private readonly HEALTH_CIRC = 314.2;
 
   constructor(
@@ -30,11 +28,9 @@ export class AnalyticsComponent implements OnInit {
     this.loadAnalytics();
   }
 
-  // ── Data loading ──────────────────────────────────────────
   loadAnalytics(): void {
       console.log('Refreshing analytics...');
 
-  // 👇 Force UI reset (important)
   this.data = null;
 
     this.analyticsApi.getAnalytics().subscribe({
@@ -46,14 +42,12 @@ export class AnalyticsComponent implements OnInit {
     });
   }
 
-  // ── Date display ──────────────────────────────────────────
   get today(): string {
     return new Date().toLocaleDateString('en-IN', {
       day: 'numeric', month: 'long', year: 'numeric',
     });
   }
 
-  // ── Aggregates ────────────────────────────────────────────
 
   get totalRequests(): number {
     const r = this.data?.activationRequests;
@@ -77,7 +71,6 @@ export class AnalyticsComponent implements OnInit {
     return (this.data.users / this.data.hotels).toFixed(1);
   }
 
-  // ── Request percentages ───────────────────────────────────
 
   getReqPct(type: 'pending' | 'approved' | 'rejected'): number {
     if (!this.totalRequests) return 0;
@@ -91,9 +84,7 @@ export class AnalyticsComponent implements OnInit {
     return Math.round((approved / this.totalRequests) * 100);
   }
 
-  // ── Subscription ring dash ────────────────────────────────
 
-  /** Returns stroke-dasharray value for a subscription ring (r=30, circ≈188.5) */
   getRingDash(type: 'premium' | 'standard' | 'classic'): string {
     if (!this.totalSubscriptions) return `0 ${this.RING_CIRC}`;
     const val  = this.data?.subscriptions?.[type] || 0;
@@ -108,30 +99,17 @@ export class AnalyticsComponent implements OnInit {
     return Math.round((val / this.totalSubscriptions) * 100);
   }
 
-  // ── Platform Health Score ─────────────────────────────────
-
-  /**
-   * Composite score (0–100) based on:
-   *  - Approval rate (40 pts)
-   *  - Premium subscription share (30 pts)
-   *  - Hotels > 0 check (15 pts)
-   *  - Users > 10 check (15 pts)
-   */
   get healthScore(): number {
     if (!this.data) return 0;
 
     let score = 0;
 
-    // Approval rate contributes up to 40 pts
     score += (this.approvalRate / 100) * 40;
 
-    // Premium share contributes up to 30 pts
     score += (this.getSubPct('premium') / 100) * 30;
 
-    // Has hotels → 15 pts
     if ((this.data.hotels || 0) > 0) score += 15;
 
-    // Has enough users → 15 pts
     if ((this.data.users || 0) >= 10) score += 15;
 
     return Math.round(Math.min(score, 100));
@@ -145,7 +123,6 @@ export class AnalyticsComponent implements OnInit {
     return 'Needs attention';
   }
 
-  /** stroke-dasharray for health ring (r=50, circ≈314.2) */
   get healthDash(): string {
     const fill = (this.healthScore / 100) * this.HEALTH_CIRC;
     return `${fill} ${this.HEALTH_CIRC - fill}`;

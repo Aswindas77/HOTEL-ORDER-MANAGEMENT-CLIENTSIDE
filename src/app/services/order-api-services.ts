@@ -8,7 +8,6 @@ export class OrderApiService {
 
   constructor(private http: HttpClient) { }
 
-  // ───────── CREATE ORDER ─────────
 
   createOrder(payload: {
     tableToken: string;
@@ -20,7 +19,6 @@ export class OrderApiService {
     );
   }
 
-  // ───────── UPDATE ORDER STATUS ─────────
 
   updateOrderStatus(id: string, status: string, branchId: string) {
     return this.http.patch<Order>(
@@ -29,7 +27,6 @@ export class OrderApiService {
     );
   }
 
-  // ───────── PAYMENT ACTIONS ─────────
 
   markAsPaid(id: string, branchId: string) {
     return this.http.patch<Order>(
@@ -45,7 +42,6 @@ export class OrderApiService {
     );
   }
 
-  // ───────── CHEF ORDERS ─────────
 
   getChefOrders(params?: {
     page?: number;
@@ -79,7 +75,6 @@ export class OrderApiService {
     );
   }
 
-  // ───────── MANAGER ORDERS ─────────
 
   getManagerOrders(branchId: string, page: number = 1, limit: number = 10) {
 
@@ -99,7 +94,6 @@ export class OrderApiService {
     );
   }
 
-  // ───────── ALL ORDERS (ADMIN) ─────────
 
   getOrders(filters?: any) {
 
@@ -125,10 +119,9 @@ export class OrderApiService {
       params = params.set('limit', String(filters.limit));
     }
 
-    // 🔥 IMPORTANT FIX
     params = params.set('branchId', filters?.branchId || '');
 
-    console.log('FINAL PARAMS:', params.toString()); // debug
+    console.log('FINAL PARAMS:', params.toString()); 
 
     return this.http.get<{
       total: number;

@@ -21,13 +21,11 @@ export class BranchRequestsComponent implements OnInit {
   selectedRequest: any = null;
   showDetailsModal = false;
 
-  // pagination
   page = 1;
   limit = 10;
   total = 0;
   totalPages = 0;
 
-  // filters
   search = '';
   status = '';
 
@@ -132,7 +130,7 @@ export class BranchRequestsComponent implements OnInit {
 
   closeDetailsModal() {
     this.showDetailsModal = false;
-    this.selectedRequest = null;  // ← also clear selection on close
+    this.selectedRequest = null;  
   }
 
   nextPage() {

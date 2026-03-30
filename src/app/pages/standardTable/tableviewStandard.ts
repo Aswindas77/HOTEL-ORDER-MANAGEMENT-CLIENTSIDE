@@ -12,8 +12,6 @@ import { MenuApiService } from '../../services/menu-api-services';
 import { OrderApiService } from '../../services/order-api-services';
 import { ActivatedRoute, Router } from '@angular/router';
 
-// ── Toast types ───────────────────────────────────────────
-
 export type ToastType = 'success' | 'error' | 'info';
 
 export interface Toast {
@@ -25,20 +23,18 @@ export interface Toast {
   removing: boolean;
 }
 
-// ── Data interfaces ───────────────────────────────────────
 
 export interface MenuItem {
   _id: string;
   name: string;
   description?: string;
   price: number;
-  category: string;          // resolved to name after mapping
+  category: string;    
   foodType: 'VEG' | 'NON_VEG';
   isAvailable: boolean;
   image?: string;
   preparationTime?: number;
 
-  // UI-only
   added?: boolean;
   tag?: string;
   bg?: string;
@@ -58,7 +54,6 @@ declare const THREE: any;
 export class TableViewStandardComponent
   implements OnInit, AfterViewInit, OnDestroy {
 
-  // ── Toast state ─────────────────────────────────────────
   toasts: Toast[] = [];
   private toastCounter = 0;
   hotel: any = {};
@@ -95,7 +90,6 @@ export class TableViewStandardComponent
 
   trackToast(_: number, toast: Toast): number { return toast.id; }
 
-  // ── Menu / filter state ──────────────────────────────────
   categories: { id: string; name: string }[] = [];
   activeCategory = 'All';
   searchQuery = '';
@@ -103,7 +97,6 @@ export class TableViewStandardComponent
   searchFocused = false;
   menuItems: MenuItem[] = [];
 
-  // ── Cart ─────────────────────────────────────────────────
   cart: {
     menuItemId: string;
     name: string;
@@ -119,12 +112,11 @@ export class TableViewStandardComponent
   }
 
   // ── Theme ─────────────────────────────────────────────────
-  isDayMode = true;   // Standard package defaults to light/day
+  isDayMode = true;   
 
   @HostBinding('class.night-mode') get nightClass() { return !this.isDayMode; }
   @HostBinding('class.day-mode') get dayClass() { return this.isDayMode; }
 
-  // ── Three.js refs ─────────────────────────────────────────
   private animationId: number | null = null;
   private threeRenderer: any;
   private scene: any;
@@ -148,7 +140,6 @@ export class TableViewStandardComponent
     private cdr: ChangeDetectorRef
   ) { }
 
-  // ── Lifecycle ─────────────────────────────────────────────
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -174,7 +165,6 @@ export class TableViewStandardComponent
     this.threeRenderer?.dispose();
   }
 
-  // ── Menu loading ──────────────────────────────────────────
 
   loadMenu(category?: string): void {
     const params: any = {};
@@ -239,7 +229,6 @@ export class TableViewStandardComponent
     return 'cover-all';
   }
 
-  // ── Cart operations ───────────────────────────────────────
 
   addToOrder(item: MenuItem): void {
     const existing = this.cart.find(c => c.menuItemId === item._id);
@@ -308,7 +297,6 @@ export class TableViewStandardComponent
     });
   }
 
-  // ── Theme ─────────────────────────────────────────────────
 
   toggleTheme(): void {
     this.isDayMode = !this.isDayMode;
@@ -316,7 +304,6 @@ export class TableViewStandardComponent
     this.cdr.markForCheck();
   }
 
-  // ── Three.js ambient background ───────────────────────────
 
   private initThreeBackground(): void {
     if (typeof THREE === 'undefined') return;
@@ -356,7 +343,6 @@ export class TableViewStandardComponent
     this.particleGeo = new THREE.BufferGeometry();
     this.particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    // Green-tinted particles to match the food/nature theme
     this.particleMat = new THREE.PointsMaterial({
       color: 0x4caf5c,
       size: 0.035,
@@ -382,19 +368,16 @@ export class TableViewStandardComponent
         opacity,
       });
 
-    // Icosahedron (organic feel)
     const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 0), wireMat(0.04));
     ico.position.set(4.5, 1.5, -4);
     this.scene.add(ico);
     this.decorShapes.push({ mesh: ico, rx: 0.003, ry: 0.005 });
 
-    // Torus (plate ring metaphor)
     const torus = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.25, 8, 24), wireMat(0.035));
     torus.position.set(-4.5, -1.5, -3);
     this.scene.add(torus);
     this.decorShapes.push({ mesh: torus, rx: 0.004, ry: -0.003 });
 
-    // Small sphere
     const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), wireMat(0.05));
     sphere.position.set(3, -2.5, -2);
     this.scene.add(sphere);
@@ -410,7 +393,6 @@ export class TableViewStandardComponent
     this.camera.position.x = this.targetX * 0.4;
     this.camera.position.y = -this.targetY * 0.25;
 
-    // Move particles
     const pos = this.particleGeo.attributes['position'].array as Float32Array;
     const count = pos.length / 3;
     for (let i = 0; i < count; i++) {
@@ -422,10 +404,8 @@ export class TableViewStandardComponent
     }
     this.particleGeo.attributes['position'].needsUpdate = true;
 
-    // Pulse opacity gently
     this.particleMat.opacity = 0.20 + Math.sin(this.frame * 0.018) * 0.12;
 
-    // Rotate decorative shapes
     for (const s of this.decorShapes) {
       s.mesh.rotation.x += s.rx;
       s.mesh.rotation.y += s.ry;
