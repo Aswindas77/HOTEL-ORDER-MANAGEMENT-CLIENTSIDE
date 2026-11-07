@@ -269,9 +269,6 @@ export class SetupHotelComponent implements OnInit {
         next: () => {
 
           this.authApi.updateSetupStep(5).subscribe();
-
-          this.toast.show('Activation request sent to admin', 'success');
-
           this.router.navigate(['/waiting-approval']);
 
         },
