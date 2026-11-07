@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  host: 'http://localhost:3000'
+  production: true,
+  host: 'https://hotel-order-management-serverside.onrender.com'
 };
